@@ -1,0 +1,3216 @@
+{
+ "ssp": "xandr",
+ "key": "content-category-universal",
+ "taxonomy": "Xandr platform universal content categories (IAB-1.0-derived names, platform-specific; NOT IAB)",
+ "pulledAt": "2026-07-14",
+ "values": [
+  {
+   "label": "Pets & Animals",
+   "id": 4
+  },
+  {
+   "label": "Fun & Trivia",
+   "id": 5
+  },
+  {
+   "label": "Autos & Vehicles",
+   "id": 6
+  },
+  {
+   "label": "Beauty & Personal Care",
+   "id": 7
+  },
+  {
+   "label": "Business & Industry",
+   "id": 8
+  },
+  {
+   "label": "Computers & Electronics",
+   "id": 9
+  },
+  {
+   "label": "Arts & Entertainment",
+   "id": 10
+  },
+  {
+   "label": "Finance",
+   "id": 11
+  },
+  {
+   "label": "Food & Drink",
+   "id": 12
+  },
+  {
+   "label": "Games",
+   "id": 13
+  },
+  {
+   "label": "Health",
+   "id": 14
+  },
+  {
+   "label": "Home & Garden",
+   "id": 15
+  },
+  {
+   "label": "Internet & Telecom",
+   "id": 17
+  },
+  {
+   "label": "Lifestyles",
+   "id": 18
+  },
+  {
+   "label": "Local News",
+   "id": 19
+  },
+  {
+   "label": "News",
+   "id": 20
+  },
+  {
+   "label": "Online Communities",
+   "id": 21
+  },
+  {
+   "label": "Photo & Video Sharing",
+   "id": 22
+  },
+  {
+   "label": "Real Estate",
+   "id": 23
+  },
+  {
+   "label": "Recreation",
+   "id": 24
+  },
+  {
+   "label": "Reference & Language",
+   "id": 25
+  },
+  {
+   "label": "Science",
+   "id": 26
+  },
+  {
+   "label": "Shopping",
+   "id": 27
+  },
+  {
+   "label": "Sports",
+   "id": 29
+  },
+  {
+   "label": "Consumer Electronics",
+   "id": 30
+  },
+  {
+   "label": "Travel",
+   "id": 31
+  },
+  {
+   "label": "Books & Literature",
+   "id": 7984
+  },
+  {
+   "label": "Education",
+   "id": 7986
+  },
+  {
+   "label": "Law & Government",
+   "id": 7988
+  },
+  {
+   "label": "World Localities",
+   "id": 7990
+  },
+  {
+   "label": "Celebrity News",
+   "id": 7992
+  },
+  {
+   "label": "Comics & Animation",
+   "id": 7994
+  },
+  {
+   "label": "Entertainment Industry",
+   "id": 7996
+  },
+  {
+   "label": "Nightlife Events",
+   "id": 7998
+  },
+  {
+   "label": "Humor",
+   "id": 8000
+  },
+  {
+   "label": "Movies",
+   "id": 8002
+  },
+  {
+   "label": "Music",
+   "id": 8004
+  },
+  {
+   "label": "Offbeat",
+   "id": 8006
+  },
+  {
+   "label": "Performing Arts",
+   "id": 8008
+  },
+  {
+   "label": "Radio",
+   "id": 8010
+  },
+  {
+   "label": "TV & Video",
+   "id": 8012
+  },
+  {
+   "label": "Visual Art & Design",
+   "id": 8014
+  },
+  {
+   "label": "Bicycles",
+   "id": 8016
+  },
+  {
+   "label": "Boats & Watercraft",
+   "id": 8018
+  },
+  {
+   "label": "Campers & RVs",
+   "id": 8020
+  },
+  {
+   "label": "Classic Vehicles",
+   "id": 8022
+  },
+  {
+   "label": "Commercial Vehicles",
+   "id": 8024
+  },
+  {
+   "label": "Performance Vehicles",
+   "id": 8026
+  },
+  {
+   "label": "Hybrid & Alternative Vehicles",
+   "id": 8028
+  },
+  {
+   "label": "Motorcycles",
+   "id": 8030
+  },
+  {
+   "label": "Off-Road Vehicles",
+   "id": 8032
+  },
+  {
+   "label": "Personal Aircraft",
+   "id": 8034
+  },
+  {
+   "label": "Scooters & Mopeds",
+   "id": 8036
+  },
+  {
+   "label": "Trucks & SUVs",
+   "id": 8038
+  },
+  {
+   "label": "Vehicle Brands",
+   "id": 8040
+  },
+  {
+   "label": "Concept Vehicles",
+   "id": 8042
+  },
+  {
+   "label": "Vehicle Maintenance",
+   "id": 8044
+  },
+  {
+   "label": "Vehicle Parts & Accessories",
+   "id": 8046
+  },
+  {
+   "label": "Automotive Technology",
+   "id": 8048
+  },
+  {
+   "label": "Locomotives and Trains",
+   "id": 8050
+  },
+  {
+   "label": "Beauty Pageants",
+   "id": 8054
+  },
+  {
+   "label": "Body Art & Tattoos",
+   "id": 8056
+  },
+  {
+   "label": "Cosmetic Procedures",
+   "id": 8058
+  },
+  {
+   "label": "Cosmetology",
+   "id": 8060
+  },
+  {
+   "label": "Skin Care",
+   "id": 8062
+  },
+  {
+   "label": "Fashion & Style",
+   "id": 8064
+  },
+  {
+   "label": "Fitness",
+   "id": 8066
+  },
+  {
+   "label": "Hair Care",
+   "id": 8068
+  },
+  {
+   "label": "Spas & Beauty Services",
+   "id": 8070
+  },
+  {
+   "label": "Weight Loss",
+   "id": 8072
+  },
+  {
+   "label": "Book Retailers",
+   "id": 8074
+  },
+  {
+   "label": "Children's Literature",
+   "id": 8076
+  },
+  {
+   "label": "E-Books",
+   "id": 8078
+  },
+  {
+   "label": "Fan Fiction",
+   "id": 8080
+  },
+  {
+   "label": "Classic Literature",
+   "id": 8082
+  },
+  {
+   "label": "Magazines",
+   "id": 8084
+  },
+  {
+   "label": "Poetry",
+   "id": 8086
+  },
+  {
+   "label": "Writers Resources",
+   "id": 8088
+  },
+  {
+   "label": "Advertising & Marketing",
+   "id": 8090
+  },
+  {
+   "label": "Aerospace & Defense",
+   "id": 8092
+  },
+  {
+   "label": "Agriculture & Forestry",
+   "id": 8094
+  },
+  {
+   "label": "Automotive Industry",
+   "id": 8096
+  },
+  {
+   "label": "Business Education",
+   "id": 8098
+  },
+  {
+   "label": "Business Operations",
+   "id": 8102
+  },
+  {
+   "label": "Business Services",
+   "id": 8104
+  },
+  {
+   "label": "Directories",
+   "id": 8106
+  },
+  {
+   "label": "Intellectual Property",
+   "id": 8108
+  },
+  {
+   "label": "Energy & Utilities",
+   "id": 8110
+  },
+  {
+   "label": "Hospitality Industry",
+   "id": 8112
+  },
+  {
+   "label": "Opportunities",
+   "id": 8114
+  },
+  {
+   "label": "International Business",
+   "id": 8116
+  },
+  {
+   "label": "Jobs",
+   "id": 8118
+  },
+  {
+   "label": "Pharmaceuticals & Biotech",
+   "id": 8120
+  },
+  {
+   "label": "Printing & Publishing",
+   "id": 8122
+  },
+  {
+   "label": "Professional & Trade Associations",
+   "id": 8124
+  },
+  {
+   "label": "Retail Trade",
+   "id": 8126
+  },
+  {
+   "label": "Small Business",
+   "id": 8128
+  },
+  {
+   "label": "Transportation & Logistics",
+   "id": 8130
+  },
+  {
+   "label": "Cameras and Camcorders",
+   "id": 8132
+  },
+  {
+   "label": "Audio Players and Systems",
+   "id": 8134
+  },
+  {
+   "label": "Cell Phones, PDAs",
+   "id": 8136
+  },
+  {
+   "label": "Computer Security",
+   "id": 8138
+  },
+  {
+   "label": "Electronics & Electrical",
+   "id": 8140
+  },
+  {
+   "label": "Enterprise Technology",
+   "id": 8142
+  },
+  {
+   "label": "Game Systems",
+   "id": 8144
+  },
+  {
+   "label": "Home Theater, TV",
+   "id": 8146
+  },
+  {
+   "label": "Hardware",
+   "id": 8148
+  },
+  {
+   "label": "Networking",
+   "id": 8150
+  },
+  {
+   "label": "Programming",
+   "id": 8152
+  },
+  {
+   "label": "Software",
+   "id": 8154
+  },
+  {
+   "label": "Accounting & Auditing",
+   "id": 8156
+  },
+  {
+   "label": "Banking",
+   "id": 8158
+  },
+  {
+   "label": "Credit & Lending",
+   "id": 8160
+  },
+  {
+   "label": "Currencies & Foreign Exchange",
+   "id": 8162
+  },
+  {
+   "label": "Financial Planning",
+   "id": 8164
+  },
+  {
+   "label": "Grants & Financial Assistance",
+   "id": 8166
+  },
+  {
+   "label": "Insurance",
+   "id": 8168
+  },
+  {
+   "label": "Investing",
+   "id": 8170
+  },
+  {
+   "label": "Mortgages and Loans",
+   "id": 8172
+  },
+  {
+   "label": "Retirement & Pension",
+   "id": 8174
+  },
+  {
+   "label": "Taxes",
+   "id": 8176
+  },
+  {
+   "label": "Alcoholic Beverages",
+   "id": 8178
+  },
+  {
+   "label": "Candy & Sweets",
+   "id": 8180
+  },
+  {
+   "label": "Cooking & Recipes",
+   "id": 8182
+  },
+  {
+   "label": "Grocery & Food Retailers",
+   "id": 8186
+  },
+  {
+   "label": "Non-Alcoholic Beverages",
+   "id": 8188
+  },
+  {
+   "label": "Restaurants",
+   "id": 8190
+  },
+  {
+   "label": "Vegetarian, Vegan",
+   "id": 8192
+  },
+  {
+   "label": "Arcade & Coin-Op Games",
+   "id": 8194
+  },
+  {
+   "label": "Board Games",
+   "id": 8196
+  },
+  {
+   "label": "Card Games",
+   "id": 8198
+  },
+  {
+   "label": "Children's Games & Activities",
+   "id": 8200
+  },
+  {
+   "label": "Computer & Video Games",
+   "id": 8202
+  },
+  {
+   "label": "Gambling",
+   "id": 8204
+  },
+  {
+   "label": "Online Games",
+   "id": 8206
+  },
+  {
+   "label": "Party Games",
+   "id": 8208
+  },
+  {
+   "label": "Puzzles & Brainteasers",
+   "id": 8210
+  },
+  {
+   "label": "Roleplaying Games",
+   "id": 8212
+  },
+  {
+   "label": "Table Games",
+   "id": 8214
+  },
+  {
+   "label": "Aging & Geriatrics",
+   "id": 8216
+  },
+  {
+   "label": "Alternative & Natural Medicine",
+   "id": 8218
+  },
+  {
+   "label": "Health Conditions",
+   "id": 8220
+  },
+  {
+   "label": "Health Education & Medical Training",
+   "id": 8222
+  },
+  {
+   "label": "Health Foundations & Medical Research",
+   "id": 8224
+  },
+  {
+   "label": "Medical Devices & Equipment",
+   "id": 8226
+  },
+  {
+   "label": "Medical Facilities & Services",
+   "id": 8228
+  },
+  {
+   "label": "Medical Literature & Resources",
+   "id": 8230
+  },
+  {
+   "label": "Men's Health",
+   "id": 8232
+  },
+  {
+   "label": "Mental Health",
+   "id": 8234
+  },
+  {
+   "label": "Nursing",
+   "id": 8236
+  },
+  {
+   "label": "Nutrition",
+   "id": 8238
+  },
+  {
+   "label": "Oral & Dental Care",
+   "id": 8240
+  },
+  {
+   "label": "Pediatrics",
+   "id": 8242
+  },
+  {
+   "label": "Pharmacy",
+   "id": 8244
+  },
+  {
+   "label": "Public Health",
+   "id": 8246
+  },
+  {
+   "label": "Reproductive Health",
+   "id": 8248
+  },
+  {
+   "label": "Substance Abuse",
+   "id": 8250
+  },
+  {
+   "label": "Vision Care",
+   "id": 8252
+  },
+  {
+   "label": "Women's Health",
+   "id": 8254
+  },
+  {
+   "label": "Clubs & Organizations",
+   "id": 8258
+  },
+  {
+   "label": "Crafts",
+   "id": 8260
+  },
+  {
+   "label": "Outdoors",
+   "id": 8262
+  },
+  {
+   "label": "Paintball",
+   "id": 8264
+  },
+  {
+   "label": "Radio Control & Modeling",
+   "id": 8266
+  },
+  {
+   "label": "Recreational Aviation",
+   "id": 8268
+  },
+  {
+   "label": "Special Occasions",
+   "id": 8270
+  },
+  {
+   "label": "Water Activities",
+   "id": 8272
+  },
+  {
+   "label": "Bed & Bath",
+   "id": 8274
+  },
+  {
+   "label": "Domestic Services",
+   "id": 8276
+  },
+  {
+   "label": "Gardening & Landscaping",
+   "id": 8278
+  },
+  {
+   "label": "Home Appliances",
+   "id": 8280
+  },
+  {
+   "label": "Home Furnishings",
+   "id": 8282
+  },
+  {
+   "label": "Home Improvement",
+   "id": 8284
+  },
+  {
+   "label": "Kitchen & Dining",
+   "id": 8288
+  },
+  {
+   "label": "Pest Control",
+   "id": 8290
+  },
+  {
+   "label": "Swimming Pools & Spas",
+   "id": 8292
+  },
+  {
+   "label": "Yard & Patio",
+   "id": 8294
+  },
+  {
+   "label": "Culture",
+   "id": 8296
+  },
+  {
+   "label": "Email & Messaging",
+   "id": 8298
+  },
+  {
+   "label": "Mobile & Wireless",
+   "id": 8300
+  },
+  {
+   "label": "Search Engines",
+   "id": 8302
+  },
+  {
+   "label": "Service Providers",
+   "id": 8304
+  },
+  {
+   "label": "Teleconferencing",
+   "id": 8306
+  },
+  {
+   "label": "VOIP & Internet Telephony",
+   "id": 8308
+  },
+  {
+   "label": "Web Apps & Online Tools",
+   "id": 8310
+  },
+  {
+   "label": "Web Portals",
+   "id": 8312
+  },
+  {
+   "label": "Web Design",
+   "id": 8314
+  },
+  {
+   "label": "Childhood Education",
+   "id": 8320
+  },
+  {
+   "label": "College and University",
+   "id": 8322
+  },
+  {
+   "label": "Continuing Education",
+   "id": 8324
+  },
+  {
+   "label": "Instructional Technology",
+   "id": 8330
+  },
+  {
+   "label": "Legal",
+   "id": 8340
+  },
+  {
+   "label": "Military",
+   "id": 8342
+  },
+  {
+   "label": "Public Safety",
+   "id": 8344
+  },
+  {
+   "label": "Social Services",
+   "id": 8346
+  },
+  {
+   "label": "Broadcast & Network News",
+   "id": 8348
+  },
+  {
+   "label": "Business News",
+   "id": 8350
+  },
+  {
+   "label": "Health News",
+   "id": 8354
+  },
+  {
+   "label": "Journalism & News Industry",
+   "id": 8356
+  },
+  {
+   "label": "Politics",
+   "id": 8360
+  },
+  {
+   "label": "Sports News",
+   "id": 8362
+  },
+  {
+   "label": "Technology News",
+   "id": 8364
+  },
+  {
+   "label": "Weather",
+   "id": 8366
+  },
+  {
+   "label": "World News",
+   "id": 8368
+  },
+  {
+   "label": "Blogging Resources & Services",
+   "id": 8370
+  },
+  {
+   "label": "Dating & Personals",
+   "id": 8372
+  },
+  {
+   "label": "File Sharing & Hosting",
+   "id": 8374
+  },
+  {
+   "label": "Forum & Chat Providers",
+   "id": 8376
+  },
+  {
+   "label": "Online Goodies",
+   "id": 8378
+  },
+  {
+   "label": "Online Journals & Personal Sites",
+   "id": 8380
+  },
+  {
+   "label": "Social Networks",
+   "id": 8382
+  },
+  {
+   "label": "Virtual Worlds",
+   "id": 8384
+  },
+  {
+   "label": "Disabled & Special Needs",
+   "id": 8386
+  },
+  {
+   "label": "Ethnic & Identity Groups",
+   "id": 8388
+  },
+  {
+   "label": "Family & Relationships",
+   "id": 8390
+  },
+  {
+   "label": "Genealogy",
+   "id": 8392
+  },
+  {
+   "label": "Kids & Teens",
+   "id": 8394
+  },
+  {
+   "label": "Men's Interests",
+   "id": 8396
+  },
+  {
+   "label": "Religion & Belief",
+   "id": 8398
+  },
+  {
+   "label": "Seniors & Retirement",
+   "id": 8400
+  },
+  {
+   "label": "Social Issues & Advocacy",
+   "id": 8402
+  },
+  {
+   "label": "Social Sciences",
+   "id": 8404
+  },
+  {
+   "label": "Subcultures & Niche Interests",
+   "id": 8406
+  },
+  {
+   "label": "Women's Interests",
+   "id": 8408
+  },
+  {
+   "label": "Animal Products & Services",
+   "id": 8410
+  },
+  {
+   "label": "Pets",
+   "id": 8412
+  },
+  {
+   "label": "Wildlife",
+   "id": 8414
+  },
+  {
+   "label": "Apartments & Residential Rentals",
+   "id": 8416
+  },
+  {
+   "label": "Commercial & Investment Real Estate",
+   "id": 8418
+  },
+  {
+   "label": "Property Development",
+   "id": 8420
+  },
+  {
+   "label": "Property Inspections & Appraisals",
+   "id": 8422
+  },
+  {
+   "label": "Property Management",
+   "id": 8424
+  },
+  {
+   "label": "Real Estate Agencies",
+   "id": 8426
+  },
+  {
+   "label": "Real Estate Listings",
+   "id": 8428
+  },
+  {
+   "label": "Timeshares & Vacation Properties",
+   "id": 8430
+  },
+  {
+   "label": "General Reference",
+   "id": 8434
+  },
+  {
+   "label": "Geographic Reference",
+   "id": 8436
+  },
+  {
+   "label": "Humanities",
+   "id": 8438
+  },
+  {
+   "label": "Language Resources",
+   "id": 8440
+  },
+  {
+   "label": "Libraries & Museums",
+   "id": 8442
+  },
+  {
+   "label": "Technical Reference",
+   "id": 8444
+  },
+  {
+   "label": "Astronomy",
+   "id": 8446
+  },
+  {
+   "label": "Biological Sciences",
+   "id": 8448
+  },
+  {
+   "label": "Chemistry",
+   "id": 8450
+  },
+  {
+   "label": "Computer Science",
+   "id": 8452
+  },
+  {
+   "label": "Earth Sciences",
+   "id": 8454
+  },
+  {
+   "label": "Ecology & Environment",
+   "id": 8456
+  },
+  {
+   "label": "Engineering & Technology",
+   "id": 8458
+  },
+  {
+   "label": "Mathematics",
+   "id": 8460
+  },
+  {
+   "label": "Medical Science",
+   "id": 8462
+  },
+  {
+   "label": "Physics",
+   "id": 8464
+  },
+  {
+   "label": "Scientific Institutions",
+   "id": 8466
+  },
+  {
+   "label": "Space Science",
+   "id": 8468
+  },
+  {
+   "label": "Accessories",
+   "id": 8470
+  },
+  {
+   "label": "Antiques & Collectibles",
+   "id": 8472
+  },
+  {
+   "label": "Apparel",
+   "id": 8474
+  },
+  {
+   "label": "Auctions",
+   "id": 8476
+  },
+  {
+   "label": "Classifieds",
+   "id": 8478
+  },
+  {
+   "label": "Consumer Affairs & Product Reviews",
+   "id": 8480
+  },
+  {
+   "label": "Coupons & Discount Offers",
+   "id": 8482
+  },
+  {
+   "label": "Customer Services",
+   "id": 8484
+  },
+  {
+   "label": "Gifts & Special Event Items",
+   "id": 8488
+  },
+  {
+   "label": "Luxury Goods",
+   "id": 8490
+  },
+  {
+   "label": "Photo & Video Services",
+   "id": 8494
+  },
+  {
+   "label": "Shopping Portals & Search Engines",
+   "id": 8496
+  },
+  {
+   "label": "Swap Meets & Outdoor Markets",
+   "id": 8498
+  },
+  {
+   "label": "Footwear",
+   "id": 8500
+  },
+  {
+   "label": "Free Stuff",
+   "id": 8502
+  },
+  {
+   "label": "Health and Beauty",
+   "id": 8504
+  },
+  {
+   "label": "Home and Garden",
+   "id": 8506
+  },
+  {
+   "label": "Music, Books, Videos, Games",
+   "id": 8508
+  },
+  {
+   "label": "Office Supplies",
+   "id": 8510
+  },
+  {
+   "label": "Retail Stores",
+   "id": 8512
+  },
+  {
+   "label": "Sporting Goods",
+   "id": 8514
+  },
+  {
+   "label": "Tobacco Products",
+   "id": 8516
+  },
+  {
+   "label": "Toys",
+   "id": 8518
+  },
+  {
+   "label": "Car Shopping",
+   "id": 8520
+  },
+  {
+   "label": "Wholesalers & Liquidators",
+   "id": 8522
+  },
+  {
+   "label": "Baseball",
+   "id": 8524
+  },
+  {
+   "label": "Basketball",
+   "id": 8526
+  },
+  {
+   "label": "Boating",
+   "id": 8528
+  },
+  {
+   "label": "Bowling",
+   "id": 8530
+  },
+  {
+   "label": "Boxing",
+   "id": 8532
+  },
+  {
+   "label": "College",
+   "id": 8534
+  },
+  {
+   "label": "Cricket",
+   "id": 8536
+  },
+  {
+   "label": "Cycling",
+   "id": 8538
+  },
+  {
+   "label": "Equestrian",
+   "id": 8540
+  },
+  {
+   "label": "Extreme Sports",
+   "id": 8542
+  },
+  {
+   "label": "Football",
+   "id": 8544
+  },
+  {
+   "label": "Golf",
+   "id": 8546
+  },
+  {
+   "label": "Hockey",
+   "id": 8548
+  },
+  {
+   "label": "Martial Arts",
+   "id": 8550
+  },
+  {
+   "label": "Motor Sports",
+   "id": 8552
+  },
+  {
+   "label": "Olympics",
+   "id": 8556
+  },
+  {
+   "label": "Outdoors",
+   "id": 8558
+  },
+  {
+   "label": "Precision Sports",
+   "id": 8560
+  },
+  {
+   "label": "Racquet Sports",
+   "id": 8562
+  },
+  {
+   "label": "Soccer",
+   "id": 8564
+  },
+  {
+   "label": "Strength Sports",
+   "id": 8566
+  },
+  {
+   "label": "Table Sports",
+   "id": 8568
+  },
+  {
+   "label": "Water Sports",
+   "id": 8570
+  },
+  {
+   "label": "Weight Lifting",
+   "id": 8572
+  },
+  {
+   "label": "Winter Sports",
+   "id": 8574
+  },
+  {
+   "label": "Wrestling",
+   "id": 8576
+  },
+  {
+   "label": "Air Travel",
+   "id": 8578
+  },
+  {
+   "label": "Amusement and Theme Parks",
+   "id": 8580
+  },
+  {
+   "label": "Bus & Rail",
+   "id": 8582
+  },
+  {
+   "label": "Car Rental & Taxi Services",
+   "id": 8584
+  },
+  {
+   "label": "Cruises & Charters",
+   "id": 8586
+  },
+  {
+   "label": "Hotels & Accommodations",
+   "id": 8588
+  },
+  {
+   "label": "Luggage & Travel Accessories",
+   "id": 8590
+  },
+  {
+   "label": "Museums and Galleries",
+   "id": 8592
+  },
+  {
+   "label": "Transportation",
+   "id": 8594
+  },
+  {
+   "label": "Tourist Destinations",
+   "id": 8596
+  },
+  {
+   "label": "Travel Agencies & Services",
+   "id": 8598
+  },
+  {
+   "label": "Travel Guides & Travelogues",
+   "id": 8600
+  },
+  {
+   "label": "Africa",
+   "id": 8602
+  },
+  {
+   "label": "Asia",
+   "id": 8604
+  },
+  {
+   "label": "Europe",
+   "id": 8606
+  },
+  {
+   "label": "Latin America",
+   "id": 8608
+  },
+  {
+   "label": "Middle East",
+   "id": 8610
+  },
+  {
+   "label": "North America",
+   "id": 8612
+  },
+  {
+   "label": "Oceania",
+   "id": 8614
+  },
+  {
+   "label": "Polar Regions",
+   "id": 8616
+  },
+  {
+   "label": "Cheats & Walkthroughs",
+   "id": 8900
+  },
+  {
+   "label": "Apple AppStore: Games",
+   "id": 53567
+  },
+  {
+   "label": "Apple AppStore: Lifestyle",
+   "id": 53568
+  },
+  {
+   "label": "Apple AppStore: Entertainment",
+   "id": 53569
+  },
+  {
+   "label": "Apple AppStore: Puzzle",
+   "id": 53570
+  },
+  {
+   "label": "Apple AppStore: Productivity",
+   "id": 53571
+  },
+  {
+   "label": "Apple AppStore: Arcade",
+   "id": 53572
+  },
+  {
+   "label": "Apple AppStore: Divertissement",
+   "id": 53573
+  },
+  {
+   "label": "Apple AppStore: Photo & Video",
+   "id": 53574
+  },
+  {
+   "label": "Apple AppStore: Action",
+   "id": 53575
+  },
+  {
+   "label": "Apple AppStore: Family",
+   "id": 53576
+  },
+  {
+   "label": "Apple AppStore: Business",
+   "id": 53577
+  },
+  {
+   "label": "Apple AppStore: Music",
+   "id": 53578
+  },
+  {
+   "label": "Apple AppStore: Racing",
+   "id": 53579
+  },
+  {
+   "label": "Apple AppStore: Education",
+   "id": 53580
+  },
+  {
+   "label": "Apple AppStore: Educational",
+   "id": 53581
+  },
+  {
+   "label": "Apple AppStore: Social Networking",
+   "id": 53582
+  },
+  {
+   "label": "Apple AppStore: Navigation",
+   "id": 53583
+  },
+  {
+   "label": "Apple AppStore: Travel",
+   "id": 53584
+  },
+  {
+   "label": "Apple AppStore: Utilities",
+   "id": 53585
+  },
+  {
+   "label": "Apple AppStore: Trivia",
+   "id": 53586
+  },
+  {
+   "label": "Apple AppStore: News",
+   "id": 53587
+  },
+  {
+   "label": "Apple AppStore: Health & Fitness",
+   "id": 53588
+  },
+  {
+   "label": "Apple AppStore: Forme et santé",
+   "id": 53589
+  },
+  {
+   "label": "Google PlayStore",
+   "id": 53590
+  },
+  {
+   "label": "Google PlayStore: Productivity",
+   "id": 53591
+  },
+  {
+   "label": "Google PlayStore: Tools",
+   "id": 53592
+  },
+  {
+   "label": "Google PlayStore: Finance",
+   "id": 53593
+  },
+  {
+   "label": "Google PlayStore: Lifestyle",
+   "id": 53594
+  },
+  {
+   "label": "Apple AppStore: Book",
+   "id": 53595
+  },
+  {
+   "label": "Apple AppStore: Books",
+   "id": 53596
+  },
+  {
+   "label": "Google PlayStore: Puzzle",
+   "id": 53597
+  },
+  {
+   "label": "Apple AppStore: Board",
+   "id": 53598
+  },
+  {
+   "label": "Apple AppStore: Adventure",
+   "id": 53599
+  },
+  {
+   "label": "Google PlayStore: Arcade",
+   "id": 53600
+  },
+  {
+   "label": "Apple AppStore: Dice",
+   "id": 53601
+  },
+  {
+   "label": "Google PlayStore: Books & Reference",
+   "id": 53602
+  },
+  {
+   "label": "Google PlayStore: Health & Fitness",
+   "id": 53603
+  },
+  {
+   "label": "Google PlayStore: Travel & Local",
+   "id": 53604
+  },
+  {
+   "label": "Apple AppStore: Reference",
+   "id": 53605
+  },
+  {
+   "label": "Google PlayStore: Shopping",
+   "id": 53606
+  },
+  {
+   "label": "Google PlayStore: Music & Audio",
+   "id": 53607
+  },
+  {
+   "label": "Google PlayStore: Business",
+   "id": 53608
+  },
+  {
+   "label": "Google PlayStore: Entertainment",
+   "id": 53609
+  },
+  {
+   "label": "Google PlayStore: News & Magazines",
+   "id": 53610
+  },
+  {
+   "label": "Google PlayStore: Personalization",
+   "id": 53611
+  },
+  {
+   "label": "Google PlayStore: Art & Design",
+   "id": 53612
+  },
+  {
+   "label": "Apple AppStore: Navegação",
+   "id": 53613
+  },
+  {
+   "label": "Apple AppStore: Sports",
+   "id": 53614
+  },
+  {
+   "label": "Apple AppStore: Card",
+   "id": 53615
+  },
+  {
+   "label": "Google PlayStore: Photography",
+   "id": 53616
+  },
+  {
+   "label": "Google PlayStore: Parenting",
+   "id": 53617
+  },
+  {
+   "label": "Apple AppStore: Références",
+   "id": 53618
+  },
+  {
+   "label": "Apple AppStore: Catalogs",
+   "id": 53619
+  },
+  {
+   "label": "Apple AppStore: Catalogues",
+   "id": 53620
+  },
+  {
+   "label": "Apple AppStore: Food & Drink",
+   "id": 53621
+  },
+  {
+   "label": "Google PlayStore: Casual",
+   "id": 53622
+  },
+  {
+   "label": "Apple AppStore: Photo et vidéo",
+   "id": 53623
+  },
+  {
+   "label": "Google PlayStore: Education",
+   "id": 53624
+  },
+  {
+   "label": "Google PlayStore: Card",
+   "id": 53625
+  },
+  {
+   "label": "Apple AppStore: Weather",
+   "id": 53626
+  },
+  {
+   "label": "Apple AppStore: Météo",
+   "id": 53627
+  },
+  {
+   "label": "Apple AppStore: Jeux",
+   "id": 53628
+  },
+  {
+   "label": "Google PlayStore: Casino",
+   "id": 53629
+  },
+  {
+   "label": "Apple AppStore: Word",
+   "id": 53630
+  },
+  {
+   "label": "Google PlayStore: Action",
+   "id": 53631
+  },
+  {
+   "label": "Apple AppStore: Actualités",
+   "id": 53632
+  },
+  {
+   "label": "Apple AppStore: Shopping",
+   "id": 53633
+  },
+  {
+   "label": "Google PlayStore: Adventure",
+   "id": 53634
+  },
+  {
+   "label": "Apple AppStore: Esportes",
+   "id": 53635
+  },
+  {
+   "label": "Apple AppStore: Deportes",
+   "id": 53636
+  },
+  {
+   "label": "Google PlayStore: Role Playing",
+   "id": 53637
+  },
+  {
+   "label": "Apple AppStore: Medical",
+   "id": 53638
+  },
+  {
+   "label": "Apple AppStore: Simulation",
+   "id": 53639
+  },
+  {
+   "label": "Google PlayStore: Video Players & Editors",
+   "id": 53640
+  },
+  {
+   "label": "Google PlayStore: Trivia",
+   "id": 53641
+  },
+  {
+   "label": "Apple AppStore: Role Playing",
+   "id": 53642
+  },
+  {
+   "label": "Google PlayStore: Racing",
+   "id": 53643
+  },
+  {
+   "label": "Google PlayStore: Simulation",
+   "id": 53644
+  },
+  {
+   "label": "Google PlayStore: Sports",
+   "id": 53645
+  },
+  {
+   "label": "Google PlayStore: Communication",
+   "id": 53646
+  },
+  {
+   "label": "Google PlayStore: Word",
+   "id": 53647
+  },
+  {
+   "label": "Apple AppStore: Finance",
+   "id": 53648
+  },
+  {
+   "label": "Apple AppStore: Finanzen",
+   "id": 53649
+  },
+  {
+   "label": "Google PlayStore: Educational",
+   "id": 53650
+  },
+  {
+   "label": "Google PlayStore: Social",
+   "id": 53651
+  },
+  {
+   "label": "Apple AppStore: Économie et entreprise",
+   "id": 53652
+  },
+  {
+   "label": "Apple AppStore: 图书",
+   "id": 53653
+  },
+  {
+   "label": "Google PlayStore: Board",
+   "id": 53654
+  },
+  {
+   "label": "Apple AppStore: Casino",
+   "id": 53655
+  },
+  {
+   "label": "Apple AppStore: Musique",
+   "id": 53656
+  },
+  {
+   "label": "Apple AppStore: Strategy",
+   "id": 53657
+  },
+  {
+   "label": "Apple AppStore: ゲーム",
+   "id": 53658
+  },
+  {
+   "label": "Google PlayStore: Food & Drink",
+   "id": 53659
+  },
+  {
+   "label": "Apple AppStore: Compras",
+   "id": 53660
+  },
+  {
+   "label": "Apple AppStore: Médecine",
+   "id": 53661
+  },
+  {
+   "label": "Apple AppStore: Finanças",
+   "id": 53662
+  },
+  {
+   "label": "Google PlayStore: Weather",
+   "id": 53663
+  },
+  {
+   "label": "Google PlayStore: Medical",
+   "id": 53664
+  },
+  {
+   "label": "Google PlayStore: Maps & Navigation",
+   "id": 53665
+  },
+  {
+   "label": "Apple AppStore: Voyages",
+   "id": 53666
+  },
+  {
+   "label": "Apple AppStore: ソーシャルネットワーキング",
+   "id": 53667
+  },
+  {
+   "label": "Google PlayStore: Strategy",
+   "id": 53668
+  },
+  {
+   "label": "Apple AppStore: Style de vie",
+   "id": 53669
+  },
+  {
+   "label": "Google PlayStore: Dating",
+   "id": 53670
+  },
+  {
+   "label": "Apple AppStore: Utilitaires",
+   "id": 53671
+  },
+  {
+   "label": "Apple AppStore: Magazines & Newspapers",
+   "id": 53672
+  },
+  {
+   "label": "Apple AppStore: Réseaux sociaux",
+   "id": 53673
+  },
+  {
+   "label": "Google PlayStore: House & Home",
+   "id": 53674
+  },
+  {
+   "label": "Apple AppStore: Cuisine et boissons",
+   "id": 53675
+  },
+  {
+   "label": "Google PlayStore: Libraries & Demo",
+   "id": 53676
+  },
+  {
+   "label": "Google PlayStore: Beauty",
+   "id": 53677
+  },
+  {
+   "label": "Google PlayStore: Comics",
+   "id": 53678
+  },
+  {
+   "label": "Apple AppStore: Jogos",
+   "id": 53679
+  },
+  {
+   "label": "Google PlayStore: Auto & Vehicles",
+   "id": 53680
+  },
+  {
+   "label": "Apple AppStore: Intrattenimento",
+   "id": 53681
+  },
+  {
+   "label": "Apple AppStore: Dienstprogramme",
+   "id": 53682
+  },
+  {
+   "label": "Apple AppStore: Educação",
+   "id": 53683
+  },
+  {
+   "label": "Apple AppStore: Productivité",
+   "id": 53684
+  },
+  {
+   "label": "Apple AppStore: Nachrichten",
+   "id": 53685
+  },
+  {
+   "label": "Apple AppStore: 游戏",
+   "id": 53686
+  },
+  {
+   "label": "Apple AppStore: Foto e video",
+   "id": 53687
+  },
+  {
+   "label": "Apple AppStore: Puzzel",
+   "id": 53688
+  },
+  {
+   "label": "Apple AppStore: Educación",
+   "id": 53689
+  },
+  {
+   "label": "Apple AppStore: ユーティリティ",
+   "id": 53711
+  },
+  {
+   "label": "Apple AppStore: Regional News",
+   "id": 53712
+  },
+  {
+   "label": "Apple AppStore: ブック",
+   "id": 53713
+  },
+  {
+   "label": "Apple AppStore: Notícias",
+   "id": 53714
+  },
+  {
+   "label": "Apple AppStore: Entretenimento",
+   "id": 53715
+  },
+  {
+   "label": "Apple AppStore: Medicina",
+   "id": 53716
+  },
+  {
+   "label": "Apple AppStore: Estilo de vida",
+   "id": 53717
+  },
+  {
+   "label": "Apple AppStore: Giochi",
+   "id": 53718
+  },
+  {
+   "label": "Apple AppStore: Saúde e fitness",
+   "id": 53719
+  },
+  {
+   "label": "Apple AppStore: Role-Playing",
+   "id": 53720
+  },
+  {
+   "label": "Apple AppStore: Utilidades",
+   "id": 53721
+  },
+  {
+   "label": "Apple AppStore: Musik",
+   "id": 53722
+  },
+  {
+   "label": "Apple AppStore: 效率",
+   "id": 53723
+  },
+  {
+   "label": "Apple AppStore: Underhållning",
+   "id": 53724
+  },
+  {
+   "label": "Apple AppStore: Música",
+   "id": 53725
+  },
+  {
+   "label": "Apple AppStore: ビジネス",
+   "id": 53726
+  },
+  {
+   "label": "Apple AppStore: Eten en drinken",
+   "id": 53727
+  },
+  {
+   "label": "Apple AppStore: Spiele",
+   "id": 53728
+  },
+  {
+   "label": "Apple AppStore: Livres",
+   "id": 53729
+  },
+  {
+   "label": "Apple AppStore: Spel",
+   "id": 53730
+  },
+  {
+   "label": "Apple AppStore: Redes sociais",
+   "id": 53731
+  },
+  {
+   "label": "Apple AppStore: Fashion & Style",
+   "id": 53732
+  },
+  {
+   "label": "Apple AppStore: 体育",
+   "id": 53733
+  },
+  {
+   "label": "Apple AppStore: Bildung",
+   "id": 53734
+  },
+  {
+   "label": "Apple AppStore: Wirtschaft",
+   "id": 53735
+  },
+  {
+   "label": "Apple AppStore: Foto y vídeo",
+   "id": 53736
+  },
+  {
+   "label": "Apple AppStore: Referência",
+   "id": 53737
+  },
+  {
+   "label": "Apple AppStore: ヘルスケア／フィットネス",
+   "id": 53738
+  },
+  {
+   "label": "Apple AppStore: Unterhaltung",
+   "id": 53739
+  },
+  {
+   "label": "Apple AppStore: Игры",
+   "id": 53740
+  },
+  {
+   "label": "Apple AppStore: History",
+   "id": 53741
+  },
+  {
+   "label": "Apple AppStore: スポーツ",
+   "id": 53742
+  },
+  {
+   "label": "Apple AppStore: 写真／ビデオ",
+   "id": 53743
+  },
+  {
+   "label": "Apple AppStore: エンターテインメント",
+   "id": 53744
+  },
+  {
+   "label": "Apple AppStore: Libros",
+   "id": 53745
+  },
+  {
+   "label": "Apple AppStore: Reisen",
+   "id": 53746
+  },
+  {
+   "label": "Apple AppStore: Finanzas",
+   "id": 53747
+  },
+  {
+   "label": "Apple AppStore: Livros",
+   "id": 53748
+  },
+  {
+   "label": "Apple AppStore: Bücher",
+   "id": 53749
+  },
+  {
+   "label": "Apple AppStore: Finans",
+   "id": 53750
+  },
+  {
+   "label": "Apple AppStore: Juegos",
+   "id": 53751
+  },
+  {
+   "label": "Apple AppStore: Cooking, Food & Drink",
+   "id": 53752
+  },
+  {
+   "label": "Apple AppStore: Produktivität",
+   "id": 53753
+  },
+  {
+   "label": "Apple AppStore: News & Politics",
+   "id": 53754
+  },
+  {
+   "label": "Apple AppStore: 新闻",
+   "id": 53755
+  },
+  {
+   "label": "Apple AppStore: Nachschlagewerke",
+   "id": 53756
+  },
+  {
+   "label": "Apple AppStore: Sport",
+   "id": 53757
+  },
+  {
+   "label": "Apple AppStore: 教育",
+   "id": 53758
+  },
+  {
+   "label": "Apple AppStore: Catálogos",
+   "id": 53759
+  },
+  {
+   "label": "Apple AppStore: Справочники",
+   "id": 53760
+  },
+  {
+   "label": "Apple AppStore: 娱乐",
+   "id": 53761
+  },
+  {
+   "label": "Apple AppStore: Wetter",
+   "id": 53762
+  },
+  {
+   "label": "Apple AppStore: Entretenimiento",
+   "id": 53763
+  },
+  {
+   "label": "Apple AppStore: Viagens",
+   "id": 53764
+  },
+  {
+   "label": "Apple AppStore: Negócios",
+   "id": 53765
+  },
+  {
+   "label": "Apple AppStore: Produtividade",
+   "id": 53766
+  },
+  {
+   "label": "Apple AppStore: Produttività",
+   "id": 53767
+  },
+  {
+   "label": "Apple AppStore: Amusement",
+   "id": 53768
+  },
+  {
+   "label": "Apple AppStore: Essen und Trinken",
+   "id": 53769
+  },
+  {
+   "label": "Apple AppStore: Stili e tendenze",
+   "id": 53770
+  },
+  {
+   "label": "Apple AppStore: Comida y bebida",
+   "id": 53771
+  },
+  {
+   "label": "Apple AppStore: Gastronomia e bebidas",
+   "id": 53772
+  },
+  {
+   "label": "Apple AppStore: ミュージック",
+   "id": 53773
+  },
+  {
+   "label": "Apple AppStore: Образ жизни",
+   "id": 53774
+  },
+  {
+   "label": "Apple AppStore: Социальные сети",
+   "id": 53775
+  },
+  {
+   "label": "Apple AppStore: Previsão do tempo",
+   "id": 53776
+  },
+  {
+   "label": "Apple AppStore: Onderwijs",
+   "id": 53777
+  },
+  {
+   "label": "Apple AppStore: Foto und Video",
+   "id": 53778
+  },
+  {
+   "label": "Apple AppStore: Cibi e bevande",
+   "id": 53779
+  },
+  {
+   "label": "Apple AppStore: 旅游",
+   "id": 53780
+  },
+  {
+   "label": "Apple AppStore: Computers & Internet",
+   "id": 53781
+  },
+  {
+   "label": "Apple AppStore: Productividad",
+   "id": 53782
+  },
+  {
+   "label": "Apple AppStore: 参考",
+   "id": 53783
+  },
+  {
+   "label": "Apple AppStore: 生活",
+   "id": 53784
+  },
+  {
+   "label": "Apple AppStore: ライフスタイル",
+   "id": 53785
+  },
+  {
+   "label": "Apple AppStore: Gesundheit und Fitness",
+   "id": 53786
+  },
+  {
+   "label": "Apple AppStore: Winkelen",
+   "id": 53787
+  },
+  {
+   "label": "Apple AppStore: Navegación",
+   "id": 53788
+  },
+  {
+   "label": "Apple AppStore: Navigazione",
+   "id": 53789
+  },
+  {
+   "label": "Apple AppStore: Utility",
+   "id": 53790
+  },
+  {
+   "label": "Apple AppStore: 财务",
+   "id": 53791
+  },
+  {
+   "label": "Apple AppStore: Istruzione",
+   "id": 53792
+  },
+  {
+   "label": "Apple AppStore: 摄影与录像",
+   "id": 53793
+  },
+  {
+   "label": "Apple AppStore: 工具",
+   "id": 53794
+  },
+  {
+   "label": "Apple AppStore: Stickers",
+   "id": 53795
+  },
+  {
+   "label": "Apple AppStore: Новости",
+   "id": 53796
+  },
+  {
+   "label": "Apple AppStore: Sociala nätverk",
+   "id": 53797
+  },
+  {
+   "label": "Apple AppStore: ナビゲーション",
+   "id": 53798
+  },
+  {
+   "label": "Apple AppStore: 购物",
+   "id": 53799
+  },
+  {
+   "label": "Apple AppStore: Sociaal netwerken",
+   "id": 53800
+  },
+  {
+   "label": "Apple AppStore: Libri",
+   "id": 53801
+  },
+  {
+   "label": "Apple AppStore: Educatief",
+   "id": 53802
+  },
+  {
+   "label": "Apple AppStore: Soziale Netze",
+   "id": 53803
+  },
+  {
+   "label": "Apple AppStore: Boeken",
+   "id": 53804
+  },
+  {
+   "label": "Apple AppStore: Книги",
+   "id": 53805
+  },
+  {
+   "label": "Apple AppStore: Salud y forma física",
+   "id": 53806
+  },
+  {
+   "label": "Apple AppStore: ニュース",
+   "id": 53807
+  },
+  {
+   "label": "Apple AppStore: Video",
+   "id": 53808
+  },
+  {
+   "label": "Apple AppStore: Photography",
+   "id": 53809
+  },
+  {
+   "label": "Apple AppStore: Produktivitet",
+   "id": 53810
+  },
+  {
+   "label": "Apple AppStore: Social network",
+   "id": 53811
+  },
+  {
+   "label": "Apple AppStore: Viaggi",
+   "id": 53812
+  },
+  {
+   "label": "Apple AppStore: 健康健美",
+   "id": 53813
+  },
+  {
+   "label": "Apple AppStore: Arts & Photography",
+   "id": 53814
+  },
+  {
+   "label": "Apple AppStore: フード／ドリンク",
+   "id": 53815
+  },
+  {
+   "label": "Apple AppStore: Diensten",
+   "id": 53816
+  },
+  {
+   "label": "Apple AppStore: Foto och video",
+   "id": 53817
+  },
+  {
+   "label": "Apple AppStore: Journaux et magazines",
+   "id": 53818
+  },
+  {
+   "label": "Apple AppStore: Tiempo",
+   "id": 53819
+  },
+  {
+   "label": "Apple AppStore: 音乐",
+   "id": 53820
+  },
+  {
+   "label": "Apple AppStore: Viajes",
+   "id": 53821
+  },
+  {
+   "label": "Apple AppStore: 天气",
+   "id": 53822
+  },
+  {
+   "label": "Apple AppStore: Kataloge",
+   "id": 53823
+  },
+  {
+   "label": "Apple AppStore: Fotografía y video",
+   "id": 53824
+  },
+  {
+   "label": "Apple AppStore: 仕事効率化",
+   "id": 53825
+  },
+  {
+   "label": "Apple AppStore: Catalogi",
+   "id": 53826
+  },
+  {
+   "label": "Apple AppStore: Resor",
+   "id": 53827
+  },
+  {
+   "label": "Apple AppStore: ファイナンス",
+   "id": 53828
+  },
+  {
+   "label": "Apple AppStore: Travel & Regional",
+   "id": 53829
+  },
+  {
+   "label": "Apple AppStore: Livsstil",
+   "id": 53830
+  },
+  {
+   "label": "Apple AppStore: Утилиты",
+   "id": 53831
+  },
+  {
+   "label": "Apple AppStore: 辞書／辞典／その他",
+   "id": 53832
+  },
+  {
+   "label": "Apple AppStore: Developer Tools",
+   "id": 53833
+  },
+  {
+   "label": "Apple AppStore: Gezin",
+   "id": 53834
+  },
+  {
+   "label": "Apple AppStore: Образование",
+   "id": 53835
+  },
+  {
+   "label": "Apple AppStore: Movies & Music",
+   "id": 53836
+  },
+  {
+   "label": "Apple AppStore: Business & Investing",
+   "id": 53837
+  },
+  {
+   "label": "Apple AppStore: 商品指南",
+   "id": 53838
+  },
+  {
+   "label": "Apple AppStore: Nieuws",
+   "id": 53839
+  },
+  {
+   "label": "Apple AppStore: ショッピング",
+   "id": 53840
+  },
+  {
+   "label": "Apple AppStore: 旅行",
+   "id": 53841
+  },
+  {
+   "label": "Apple AppStore: Производительность",
+   "id": 53842
+  },
+  {
+   "label": "Apple AppStore: Clima",
+   "id": 53843
+  },
+  {
+   "label": "Apple AppStore: Finanza",
+   "id": 53844
+  },
+  {
+   "label": "Apple AppStore: Redes sociales",
+   "id": 53845
+  },
+  {
+   "label": "Apple AppStore: Home & Garden",
+   "id": 53846
+  },
+  {
+   "label": "Apple AppStore: Спорт",
+   "id": 53847
+  },
+  {
+   "label": "Apple AppStore: Развлечения",
+   "id": 53848
+  },
+  {
+   "label": "Apple AppStore: Cataloghi",
+   "id": 53849
+  },
+  {
+   "label": "Apple AppStore: Погода",
+   "id": 53850
+  },
+  {
+   "label": "Apple AppStore: Музыка",
+   "id": 53851
+  },
+  {
+   "label": "Apple AppStore: Foto en video",
+   "id": 53852
+  },
+  {
+   "label": "Apple AppStore: Sports & Leisure",
+   "id": 53853
+  },
+  {
+   "label": "Apple AppStore: Salute e benessere",
+   "id": 53856
+  },
+  {
+   "label": "Apple AppStore: Men's Interest",
+   "id": 53857
+  },
+  {
+   "label": "Apple AppStore: Verktyg",
+   "id": 53858
+  },
+  {
+   "label": "Apple AppStore: Muziek",
+   "id": 53859
+  },
+  {
+   "label": "Apple AppStore: Riviste e giornali",
+   "id": 53860
+  },
+  {
+   "label": "Apple AppStore: Nyheter",
+   "id": 53861
+  },
+  {
+   "label": "Apple AppStore: Navigering",
+   "id": 53862
+  },
+  {
+   "label": "Apple AppStore: Utbildning",
+   "id": 53863
+  },
+  {
+   "label": "Apple AppStore: Medizin",
+   "id": 53864
+  },
+  {
+   "label": "Apple AppStore: Men’s Interest",
+   "id": 53865
+  },
+  {
+   "label": "Apple AppStore: Здоровье и фитнес",
+   "id": 53868
+  },
+  {
+   "label": "Apple AppStore: Financiën",
+   "id": 53869
+  },
+  {
+   "label": "Apple AppStore: 天気",
+   "id": 53870
+  },
+  {
+   "label": "Apple AppStore: Gezondheid en fitness",
+   "id": 53871
+  },
+  {
+   "label": "Apple AppStore: Economía y empresa",
+   "id": 53872
+  },
+  {
+   "label": "Apple AppStore: Productiviteit",
+   "id": 53873
+  },
+  {
+   "label": "Apple AppStore: Riferimento",
+   "id": 53874
+  },
+  {
+   "label": "Apple AppStore: Parenting & Family",
+   "id": 53875
+  },
+  {
+   "label": "Apple AppStore: Health, Mind & Body",
+   "id": 53877
+  },
+  {
+   "label": "Apple AppStore: Финансы",
+   "id": 53878
+  },
+  {
+   "label": "Apple AppStore: メディカル",
+   "id": 53879
+  },
+  {
+   "label": "Apple AppStore: 商务",
+   "id": 53881
+  },
+  {
+   "label": "Apple AppStore: Familie",
+   "id": 53882
+  },
+  {
+   "label": "Apple AppStore: 导航",
+   "id": 53910
+  },
+  {
+   "label": "Apple AppStore: Woorden",
+   "id": 53911
+  },
+  {
+   "label": "Apple AppStore: Women's Interest",
+   "id": 53912
+  },
+  {
+   "label": "Apple AppStore: Stratégie",
+   "id": 53913
+  },
+  {
+   "label": "Apple AppStore: Näringsliv",
+   "id": 53914
+  },
+  {
+   "label": "Apple AppStore: Rollenspel",
+   "id": 53915
+  },
+  {
+   "label": "Apple AppStore: Hälsa och motion",
+   "id": 53916
+  },
+  {
+   "label": "Apple AppStore: Навигация",
+   "id": 53918
+  },
+  {
+   "label": "Apple AppStore: Böcker",
+   "id": 53919
+  },
+  {
+   "label": "Apple AppStore: Professional & Trade",
+   "id": 53920
+  },
+  {
+   "label": "Apple AppStore: 社交",
+   "id": 53921
+  },
+  {
+   "label": "Apple AppStore: Crafts & Hobbies",
+   "id": 53922
+  },
+  {
+   "label": "Apple AppStore: Automotive",
+   "id": 53923
+  },
+  {
+   "label": "Apple AppStore: Economia",
+   "id": 53924
+  },
+  {
+   "label": "Apple AppStore: Meteorologia",
+   "id": 53925
+  },
+  {
+   "label": "Apple AppStore: Racen",
+   "id": 53926
+  },
+  {
+   "label": "Apple AppStore: Referens",
+   "id": 53927
+  },
+  {
+   "label": "Apple AppStore: Фото и видео",
+   "id": 53928
+  },
+  {
+   "label": "Apple AppStore: Bord",
+   "id": 53929
+  },
+  {
+   "label": "Apple AppStore: Naslagwerken",
+   "id": 53930
+  },
+  {
+   "label": "Apple AppStore: 医疗",
+   "id": 53933
+  },
+  {
+   "label": "Apple AppStore: Покупки",
+   "id": 53934
+  },
+  {
+   "label": "Apple AppStore: Casse-tête",
+   "id": 53935
+  },
+  {
+   "label": "Apple AppStore: Body, Mind & Spirit",
+   "id": 53952
+  },
+  {
+   "label": "Apple AppStore: Каталоги",
+   "id": 53953
+  },
+  {
+   "label": "Apple AppStore: Avontuur",
+   "id": 53954
+  },
+  {
+   "label": "Apple AppStore: Actie",
+   "id": 53955
+  },
+  {
+   "label": "Apple AppStore: Medicin",
+   "id": 53956
+  },
+  {
+   "label": "Windows Store: Game",
+   "id": 54126
+  },
+  {
+   "label": "Windows Store: Card & board",
+   "id": 54127
+  },
+  {
+   "label": "Windows Store: App",
+   "id": 54128
+  },
+  {
+   "label": "Windows Store: App",
+   "id": 54129
+  },
+  {
+   "label": "Windows Store: App",
+   "id": 54130
+  },
+  {
+   "label": "Windows Store: App",
+   "id": 54131
+  },
+  {
+   "label": "Windows Store: Puzzle & trivia",
+   "id": 54132
+  },
+  {
+   "label": "Windows Store: Sports",
+   "id": 54133
+  },
+  {
+   "label": "Windows Store: Photo & video",
+   "id": 54134
+  },
+  {
+   "label": "Windows Store: Photo & video",
+   "id": 54135
+  },
+  {
+   "label": "Windows Store: Entertainment",
+   "id": 54136
+  },
+  {
+   "label": "Windows Store: Music",
+   "id": 54137
+  },
+  {
+   "label": "Windows Store: Entertainment",
+   "id": 54138
+  },
+  {
+   "label": "Windows Store: Education",
+   "id": 54139
+  },
+  {
+   "label": "Windows Store: Racing & flying",
+   "id": 54140
+  },
+  {
+   "label": "Windows Store: Social",
+   "id": 54141
+  },
+  {
+   "label": "Windows Store: Family & kids",
+   "id": 54142
+  },
+  {
+   "label": "Windows Store: News & weather",
+   "id": 54143
+  },
+  {
+   "label": "Windows Store: Action & adventure",
+   "id": 54144
+  },
+  {
+   "label": "Windows Store: Productivity",
+   "id": 54145
+  },
+  {
+   "label": "Windows Store: Shopping",
+   "id": 54146
+  },
+  {
+   "label": "Windows Store: Utilities & tools",
+   "id": 54147
+  },
+  {
+   "label": "Windows Store: Educational",
+   "id": 54148
+  },
+  {
+   "label": "Windows Store: Kids & family",
+   "id": 54149
+  },
+  {
+   "label": "Windows Store: Special interest",
+   "id": 54150
+  },
+  {
+   "label": "Windows Store: Casino",
+   "id": 54151
+  },
+  {
+   "label": "Windows Store: Business",
+   "id": 54152
+  },
+  {
+   "label": "Windows Store: Lifestyle",
+   "id": 54153
+  },
+  {
+   "label": "Windows Store: Personal Finance",
+   "id": 54154
+  },
+  {
+   "label": "Windows Store: Personalization",
+   "id": 54155
+  },
+  {
+   "label": "Windows Store: Health & fitness",
+   "id": 54156
+  },
+  {
+   "label": "Windows Store: Government & politics",
+   "id": 54157
+  },
+  {
+   "label": "Windows Store: Strategy",
+   "id": 54158
+  },
+  {
+   "label": "Windows Store: Data & analytics",
+   "id": 54159
+  },
+  {
+   "label": "Windows Store: Food & dining",
+   "id": 54160
+  },
+  {
+   "label": "Windows Store: Shooter",
+   "id": 54161
+  },
+  {
+   "label": "Windows Store: Backup & manage",
+   "id": 54162
+  },
+  {
+   "label": "Windows Store: Role playing",
+   "id": 54163
+  },
+  {
+   "label": "Windows Store: E-reader",
+   "id": 54164
+  },
+  {
+   "label": "Windows Store: Word",
+   "id": 54165
+  },
+  {
+   "label": "Windows Store: Simulation",
+   "id": 54166
+  },
+  {
+   "label": "Windows Store: Platformer",
+   "id": 54167
+  },
+  {
+   "label": "Windows Store: Books & reference",
+   "id": 54168
+  },
+  {
+   "label": "Windows Store: News",
+   "id": 54169
+  },
+  {
+   "label": "Windows Store: Language",
+   "id": 54170
+  },
+  {
+   "label": "Windows Store: Fiction",
+   "id": 54171
+  },
+  {
+   "label": "Windows Store: Inventory & logistics",
+   "id": 54172
+  },
+  {
+   "label": "Windows Store: Banking & investments",
+   "id": 54173
+  },
+  {
+   "label": "Windows Store: Navigation & maps",
+   "id": 54174
+  },
+  {
+   "label": "Windows Store: Travel",
+   "id": 54175
+  },
+  {
+   "label": "Windows Store: Accounting & finance",
+   "id": 54176
+  },
+  {
+   "label": "Windows Store: Medical",
+   "id": 54177
+  },
+  {
+   "label": "Windows Store: Time & expenses",
+   "id": 54178
+  },
+  {
+   "label": "Windows Store: Reference",
+   "id": 54179
+  },
+  {
+   "label": "Windows Store: Multimedia design",
+   "id": 54180
+  },
+  {
+   "label": "Windows Store: Music production",
+   "id": 54181
+  },
+  {
+   "label": "Windows Store: City Guides",
+   "id": 54182
+  },
+  {
+   "label": "Windows Store: Security",
+   "id": 54183
+  },
+  {
+   "label": "Windows Store: Style & fashion",
+   "id": 54184
+  },
+  {
+   "label": "Windows Store: Networking",
+   "id": 54185
+  },
+  {
+   "label": "Windows Store: Study aids",
+   "id": 54186
+  },
+  {
+   "label": "Windows Store: Fighting",
+   "id": 54187
+  },
+  {
+   "label": "Windows Store: Automotive",
+   "id": 54188
+  },
+  {
+   "label": "Windows Store: Early learning",
+   "id": 54189
+  },
+  {
+   "label": "Windows Store: Personal Security",
+   "id": 54190
+  },
+  {
+   "label": "Windows Store: Wallpaper & lock screens",
+   "id": 54191
+  },
+  {
+   "label": "Windows Store: Design tools",
+   "id": 54192
+  },
+  {
+   "label": "Windows Store: Weather",
+   "id": 54193
+  },
+  {
+   "label": "Windows Store: Instructional tools",
+   "id": 54194
+  },
+  {
+   "label": "Windows Store: Hotels",
+   "id": 54195
+  },
+  {
+   "label": "Windows Store: CRM",
+   "id": 54196
+  },
+  {
+   "label": "Windows Store: Developer tools",
+   "id": 54197
+  },
+  {
+   "label": "Windows Store: File managers",
+   "id": 54198
+  },
+  {
+   "label": "Windows Store: Nonfiction",
+   "id": 54199
+  },
+  {
+   "label": "Windows Store: Photo & video production",
+   "id": 54200
+  },
+  {
+   "label": "Windows Store: Sales & marketing",
+   "id": 54201
+  },
+  {
+   "label": "Windows Store: Relationships",
+   "id": 54202
+  },
+  {
+   "label": "Windows Store: Utilities",
+   "id": 54203
+  },
+  {
+   "label": "Windows Store: Illustration & graphic design",
+   "id": 54204
+  },
+  {
+   "label": "Windows Store: Collaboration",
+   "id": 54205
+  },
+  {
+   "label": "Windows Store: Budgeting & taxes",
+   "id": 54206
+  },
+  {
+   "label": "Apple AppStore: 音乐游戏",
+   "id": 54268
+  },
+  {
+   "label": "Apple AppStore: Бизнес",
+   "id": 54269
+  },
+  {
+   "label": "Apple AppStore: Simulatie",
+   "id": 54270
+  },
+  {
+   "label": "Apple AppStore: Mat och dryck",
+   "id": 54271
+  },
+  {
+   "label": "Apple AppStore: 体育游戏",
+   "id": 54272
+  },
+  {
+   "label": "Apple AppStore: Dobbelstenen",
+   "id": 54274
+  },
+  {
+   "label": "Apple AppStore: Kaart",
+   "id": 54275
+  },
+  {
+   "label": "Apple AppStore: 美食佳饮",
+   "id": 54276
+  },
+  {
+   "label": "Apple AppStore: Путешествия",
+   "id": 54277
+  },
+  {
+   "label": "Google PlayStore: Music",
+   "id": 54279
+  },
+  {
+   "label": "Google PlayStore: Events",
+   "id": 54381
+  },
+  {
+   "label": "Apple AppStore: Science",
+   "id": 54409
+  },
+  {
+   "label": "Apple AppStore: Electronics & Audio",
+   "id": 54453
+  },
+  {
+   "label": "Apple AppStore: Gaming",
+   "id": 54454
+  },
+  {
+   "label": "Apple AppStore: Pets",
+   "id": 54455
+  },
+  {
+   "label": "Apple AppStore: Outdoors & Nature",
+   "id": 54456
+  },
+  {
+   "label": "Apple AppStore: Literary Magazines & Journals",
+   "id": 54463
+  },
+  {
+   "label": "Windows Store: Classics",
+   "id": 61501
+  },
+  {
+   "label": "Apple AppStore: 音樂",
+   "id": 61570
+  },
+  {
+   "label": "Apple AppStore: Animals & Nature",
+   "id": 61572
+  },
+  {
+   "label": "Apple AppStore: 工具程式",
+   "id": 61573
+  },
+  {
+   "label": "Apple AppStore: 遊戲",
+   "id": 61621
+  },
+  {
+   "label": "Windows Store: Legal & HR",
+   "id": 61650
+  },
+  {
+   "label": "Apple AppStore: Comics & Cartoons",
+   "id": 61697
+  },
+  {
+   "label": "Apple AppStore: Het weer",
+   "id": 61790
+  },
+  {
+   "label": "Apple AppStore: 娛樂",
+   "id": 61791
+  },
+  {
+   "label": "Apple AppStore: 美食佳飲",
+   "id": 61896
+  },
+  {
+   "label": "Windows Store: Other",
+   "id": 61903
+  },
+  {
+   "label": "Apple AppStore: 導航",
+   "id": 61905
+  },
+  {
+   "label": "Apple AppStore: 生活風格",
+   "id": 61968
+  },
+  {
+   "label": "Windows Store: Multi-player Online Battle Arena",
+   "id": 62548
+  },
+  {
+   "label": "Apple AppStore: Navigatie",
+   "id": 63715
+  },
+  {
+   "label": "Windows Store: Home & garden",
+   "id": 64106
+  },
+  {
+   "label": "Windows Store: Hobbies & toys",
+   "id": 64107
+  },
+  {
+   "label": "Windows Store: Ringtones & sounds",
+   "id": 64108
+  },
+  {
+   "label": "Windows Store: Project management",
+   "id": 64110
+  },
+  {
+   "label": "Windows Store: Themes",
+   "id": 64111
+  },
+  {
+   "label": "Windows Store: DYI",
+   "id": 64112
+  },
+  {
+   "label": "Windows Store: Sports & activities",
+   "id": 64113
+  },
+  {
+   "label": "Windows Store: PC Protection",
+   "id": 64114
+  },
+  {
+   "label": "Windows Store: File management",
+   "id": 64115
+  },
+  {
+   "label": "Windows Store: Development kits",
+   "id": 64116
+  },
+  {
+   "label": "Windows Store: Reference & training",
+   "id": 64121
+  },
+  {
+   "label": "Windows Store: Remote desktop",
+   "id": 64122
+  },
+  {
+   "label": "Google PlayStore: GAME_ACTION",
+   "id": 64238
+  },
+  {
+   "label": "Google PlayStore: HEALTH_AND_FITNESS",
+   "id": 64239
+  },
+  {
+   "label": "Google PlayStore: MUSIC_AND_AUDIO",
+   "id": 64240
+  },
+  {
+   "label": "Google PlayStore: GAME_ARCADE",
+   "id": 64241
+  },
+  {
+   "label": "Google PlayStore: GAME_EDUCATIONAL",
+   "id": 64242
+  },
+  {
+   "label": "Google PlayStore: GAME_RACING",
+   "id": 64243
+  },
+  {
+   "label": "Google PlayStore: GAME_SIMULATION",
+   "id": 64244
+  },
+  {
+   "label": "Google PlayStore: GAME_WORD",
+   "id": 64245
+  },
+  {
+   "label": "Google PlayStore: GAME_CASUAL",
+   "id": 64246
+  },
+  {
+   "label": "Google PlayStore: GAME_SPORTS",
+   "id": 64247
+  },
+  {
+   "label": "Google PlayStore: GAME_CARD",
+   "id": 64248
+  },
+  {
+   "label": "Google PlayStore: BOOKS_AND_REFERENCE",
+   "id": 64249
+  },
+  {
+   "label": "Google PlayStore: GAME_PUZZLE",
+   "id": 64250
+  },
+  {
+   "label": "Google PlayStore: GAME_ROLE_PLAYING",
+   "id": 64251
+  },
+  {
+   "label": "Google PlayStore: NEWS_AND_MAGAZINES",
+   "id": 64252
+  },
+  {
+   "label": "Google PlayStore: FOOD_AND_DRINK",
+   "id": 64253
+  },
+  {
+   "label": "Google PlayStore: GAME_TRIVIA",
+   "id": 64254
+  },
+  {
+   "label": "Google PlayStore: VIDEO_PLAYERS",
+   "id": 64255
+  },
+  {
+   "label": "Google PlayStore: GAME_ADVENTURE",
+   "id": 64256
+  },
+  {
+   "label": "Apple AppStore: Zakelijk",
+   "id": 64584
+  },
+  {
+   "label": "Google PlayStore: GAME_CASINO",
+   "id": 64678
+  },
+  {
+   "label": "Google PlayStore: GAME_MUSIC",
+   "id": 64679
+  },
+  {
+   "label": "Google PlayStore: MAPS_AND_NAVIGATION",
+   "id": 64680
+  },
+  {
+   "label": "Google PlayStore: GAME_BOARD",
+   "id": 64681
+  },
+  {
+   "label": "Google PlayStore: TRAVEL_AND_LOCAL",
+   "id": 64682
+  },
+  {
+   "label": "Google PlayStore: GAME_STRATEGY",
+   "id": 64683
+  },
+  {
+   "label": "Google PlayStore: ART_AND_DESIGN",
+   "id": 64684
+  },
+  {
+   "label": "Google PlayStore: LIBRARIES_AND_DEMO",
+   "id": 64685
+  },
+  {
+   "label": "Google PlayStore: HOUSE_AND_HOME",
+   "id": 64715
+  },
+  {
+   "label": "Google PlayStore: AUTO_AND_VEHICLES",
+   "id": 64718
+  },
+  {
+   "label": "Apple AppStore",
+   "id": 65042
+  },
+  {
+   "label": "Apple AppStore: 新聞",
+   "id": 65281
+  },
+  {
+   "label": "Apple AppStore: 財經",
+   "id": 65288
+  },
+  {
+   "label": "Apple AppStore: 書籍",
+   "id": 65314
+  },
+  {
+   "label": "Google PlayStore: TRAVEL",
+   "id": 65376
+  }
+ ]
+}

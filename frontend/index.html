@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" type="image/svg+xml" href="/icons/deal-onboarding-favicon.svg" />
+  <title>Deal Onboarding</title>
+  <!-- Prevent flash of wrong theme -->
+  <script>
+    (function () {
+      var root = document.documentElement;
+      var key = 'flag-theme-preference';
+      var stored;
+      try { stored = localStorage.getItem(key); } catch (e) {}
+      var sys = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      root.setAttribute('data-theme', stored === 'light' || stored === 'dark' ? stored : sys);
+    })();
+  </script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>

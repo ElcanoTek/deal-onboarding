@@ -1,0 +1,68 @@
+{
+ "as_of": "2026-09-02",
+ "source": "synthetic placeholder \u2014 regenerate from your own publisher export with scripts/gen-publisher-catalog.mjs and commit",
+ "slices": {
+  "index": [
+   {
+    "id": "100001",
+    "name": "Example News Network"
+   },
+   {
+    "id": "100002",
+    "name": "Example Sports Media"
+   },
+   {
+    "id": "100003",
+    "name": "Example Recipes Co"
+   }
+  ],
+  "openx": [
+   {
+    "id": "200000001",
+    "name": "Example News Network"
+   },
+   {
+    "id": "200000002",
+    "name": "Example Lifestyle Group"
+   },
+   {
+    "id": "200000003",
+    "name": "Example Weather Pages"
+   }
+  ],
+  "pubmatic": [
+   {
+    "id": "300001",
+    "name": "Example News Network"
+   },
+   {
+    "id": "300002",
+    "name": "Example Gaming Hub"
+   },
+   {
+    "id": "300003",
+    "name": "Example Finance Daily"
+   }
+  ],
+  "magnite_ctv": [
+   {
+    "id": "400001",
+    "name": "Example Streaming TV"
+   },
+   {
+    "id": "400002",
+    "name": "Example Live Sports"
+   }
+  ],
+  "magnite_dvplus": [
+   {
+    "id": "500001",
+    "name": "Example News Network"
+   },
+   {
+    "id": "500002",
+    "name": "Example Mobile Games"
+   }
+  ]
+ }
+}

@@ -1,0 +1,1548 @@
+{
+ "ssp": "indexexchange",
+ "key": "iabContentCategory",
+ "taxonomy": "IAB-flavored content-category names (IX targeting key 1066, account-discovered)",
+ "pulledAt": "2026-07-14",
+ "values": [
+  {
+   "label": "Arts & Entertainment",
+   "id": 2125786
+  },
+  {
+   "label": "Books & Literature",
+   "id": 2127750
+  },
+  {
+   "label": "Celebrity Fan/Gossip",
+   "id": 2127751
+  },
+  {
+   "label": "Fine Art",
+   "id": 2137578
+  },
+  {
+   "label": "Humor",
+   "id": 2137579
+  },
+  {
+   "label": "Movies",
+   "id": 2137580
+  },
+  {
+   "label": "Music",
+   "id": 2137581
+  },
+  {
+   "label": "Television",
+   "id": 2137582
+  },
+  {
+   "label": "Automotive",
+   "id": 2137583
+  },
+  {
+   "label": "Auto Parts",
+   "id": 2137584
+  },
+  {
+   "label": "Auto Repair",
+   "id": 2137585
+  },
+  {
+   "label": "Buying/Selling Cars",
+   "id": 2137586
+  },
+  {
+   "label": "Car Culture",
+   "id": 2137587
+  },
+  {
+   "label": "Certified Pre-Owned",
+   "id": 2137588
+  },
+  {
+   "label": "Convertible",
+   "id": 2137589
+  },
+  {
+   "label": "Coupe",
+   "id": 2137590
+  },
+  {
+   "label": "Crossover",
+   "id": 2137591
+  },
+  {
+   "label": "Diesel",
+   "id": 2137592
+  },
+  {
+   "label": "Electric Vehicle",
+   "id": 2137593
+  },
+  {
+   "label": "Hatchback",
+   "id": 2137594
+  },
+  {
+   "label": "Hybrid",
+   "id": 2137595
+  },
+  {
+   "label": "Luxury",
+   "id": 2137596
+  },
+  {
+   "label": "MiniVan",
+   "id": 2137597
+  },
+  {
+   "label": "Mororcycles",
+   "id": 2137598
+  },
+  {
+   "label": "Off-Road Vehicles",
+   "id": 2137599
+  },
+  {
+   "label": "Performance Vehicles",
+   "id": 2137600
+  },
+  {
+   "label": "Pickup",
+   "id": 2137601
+  },
+  {
+   "label": "Road-Side Assistance",
+   "id": 2137602
+  },
+  {
+   "label": "Sedan",
+   "id": 2137603
+  },
+  {
+   "label": "Trucks & Accessories",
+   "id": 2137604
+  },
+  {
+   "label": "Vintage Cars",
+   "id": 2137605
+  },
+  {
+   "label": "Wagon",
+   "id": 2137606
+  },
+  {
+   "label": "Business",
+   "id": 2137607
+  },
+  {
+   "label": "Advertising",
+   "id": 2137608
+  },
+  {
+   "label": "Agriculture",
+   "id": 2137609
+  },
+  {
+   "label": "Biotech/Biomedical",
+   "id": 2137610
+  },
+  {
+   "label": "Business Software",
+   "id": 2137611
+  },
+  {
+   "label": "Construction",
+   "id": 2137612
+  },
+  {
+   "label": "Forestry",
+   "id": 2137613
+  },
+  {
+   "label": "Government",
+   "id": 2137614
+  },
+  {
+   "label": "Green Solutions",
+   "id": 2137615
+  },
+  {
+   "label": "Human Resources",
+   "id": 2137616
+  },
+  {
+   "label": "Logistics",
+   "id": 2137617
+  },
+  {
+   "label": "Marketing",
+   "id": 2137618
+  },
+  {
+   "label": "Metals",
+   "id": 2137619
+  },
+  {
+   "label": "Careers",
+   "id": 2137620
+  },
+  {
+   "label": "Career Planning",
+   "id": 2137621
+  },
+  {
+   "label": "College",
+   "id": 2137622
+  },
+  {
+   "label": "Financial Aid",
+   "id": 2137623
+  },
+  {
+   "label": "Job Fairs",
+   "id": 2137624
+  },
+  {
+   "label": "Job Search",
+   "id": 2137625
+  },
+  {
+   "label": "Resume Writing/Advice",
+   "id": 2137626
+  },
+  {
+   "label": "Nursing",
+   "id": 2137627
+  },
+  {
+   "label": "Scholarships",
+   "id": 2137628
+  },
+  {
+   "label": "Telecommuting",
+   "id": 2137629
+  },
+  {
+   "label": "U.S. Military",
+   "id": 2137630
+  },
+  {
+   "label": "Career Advice",
+   "id": 2137631
+  },
+  {
+   "label": "Education",
+   "id": 2137632
+  },
+  {
+   "label": "41832 Education",
+   "id": 2137633
+  },
+  {
+   "label": "Adult Education",
+   "id": 2137634
+  },
+  {
+   "label": "Art History",
+   "id": 2137635
+  },
+  {
+   "label": "Colledge Administration",
+   "id": 2137636
+  },
+  {
+   "label": "College Life",
+   "id": 2137637
+  },
+  {
+   "label": "Distance Learning",
+   "id": 2137638
+  },
+  {
+   "label": "English as a 2nd Language",
+   "id": 2137639
+  },
+  {
+   "label": "Language Learning",
+   "id": 2137640
+  },
+  {
+   "label": "Graduate School",
+   "id": 2137641
+  },
+  {
+   "label": "Homeschooling",
+   "id": 2137642
+  },
+  {
+   "label": "Homework/Study Tips",
+   "id": 2137643
+  },
+  {
+   "label": "K-6 Educators",
+   "id": 2137644
+  },
+  {
+   "label": "Private School",
+   "id": 2137645
+  },
+  {
+   "label": "Special Education",
+   "id": 2137646
+  },
+  {
+   "label": "Studying Business",
+   "id": 2137647
+  },
+  {
+   "label": "Family & Parenting",
+   "id": 2137648
+  },
+  {
+   "label": "Adoption",
+   "id": 2137649
+  },
+  {
+   "label": "Babies & Toddlers",
+   "id": 2137650
+  },
+  {
+   "label": "Daycare/Pre School",
+   "id": 2137651
+  },
+  {
+   "label": "Family Internet",
+   "id": 2137652
+  },
+  {
+   "label": "Parenting - K-6 Kids",
+   "id": 2137653
+  },
+  {
+   "label": "Parenting teens",
+   "id": 2137654
+  },
+  {
+   "label": "Pregnancy",
+   "id": 2137655
+  },
+  {
+   "label": "Special Needs Kids",
+   "id": 2137656
+  },
+  {
+   "label": "Eldercare",
+   "id": 2137657
+  },
+  {
+   "label": "Health & Fitness",
+   "id": 2137658
+  },
+  {
+   "label": "Exercise",
+   "id": 2137659
+  },
+  {
+   "label": "A.D.D.",
+   "id": 2137660
+  },
+  {
+   "label": "AIDS/HIV",
+   "id": 2137661
+  },
+  {
+   "label": "Allergies",
+   "id": 2137662
+  },
+  {
+   "label": "Alternative Medicine",
+   "id": 2137663
+  },
+  {
+   "label": "Arthritis",
+   "id": 2137664
+  },
+  {
+   "label": "Asthma",
+   "id": 2137665
+  },
+  {
+   "label": "Autism/PDD",
+   "id": 2137666
+  },
+  {
+   "label": "Bipolar Disorder",
+   "id": 2137667
+  },
+  {
+   "label": "Brain Tumor",
+   "id": 2137668
+  },
+  {
+   "label": "Cancer",
+   "id": 2137669
+  },
+  {
+   "label": "Cholesterol",
+   "id": 2137670
+  },
+  {
+   "label": "Chronic Fatigue Syndrome",
+   "id": 2137671
+  },
+  {
+   "label": "Chronic Pain",
+   "id": 2137672
+  },
+  {
+   "label": "Cold & Flu",
+   "id": 2137673
+  },
+  {
+   "label": "Deafness",
+   "id": 2137674
+  },
+  {
+   "label": "Dental Care",
+   "id": 2137675
+  },
+  {
+   "label": "Depression",
+   "id": 2137676
+  },
+  {
+   "label": "Dermatology",
+   "id": 2137677
+  },
+  {
+   "label": "Diabetes",
+   "id": 2137678
+  },
+  {
+   "label": "Epilepsy",
+   "id": 2137679
+  },
+  {
+   "label": "GERD/Acid Reflux",
+   "id": 2137680
+  },
+  {
+   "label": "Headaches/Migraines",
+   "id": 2137681
+  },
+  {
+   "label": "Heart Disease",
+   "id": 2137682
+  },
+  {
+   "label": "Herbs for Health",
+   "id": 2137683
+  },
+  {
+   "label": "Holistic Healing",
+   "id": 2137684
+  },
+  {
+   "label": "IBS/Crohn's Disease",
+   "id": 2137685
+  },
+  {
+   "label": "Incest/Abuse Support",
+   "id": 2137686
+  },
+  {
+   "label": "Incontinence",
+   "id": 2137687
+  },
+  {
+   "label": "Infertility",
+   "id": 2137688
+  },
+  {
+   "label": "Men's Health",
+   "id": 2137689
+  },
+  {
+   "label": "Nutrition",
+   "id": 2137690
+  },
+  {
+   "label": "Orthopedics",
+   "id": 2137691
+  },
+  {
+   "label": "Panic/Anxiety Disorders",
+   "id": 2137692
+  },
+  {
+   "label": "Pediatrics",
+   "id": 2137693
+  },
+  {
+   "label": "Physical Therapy",
+   "id": 2137694
+  },
+  {
+   "label": "Psychology/Psychiatry",
+   "id": 2137695
+  },
+  {
+   "label": "Senor Health",
+   "id": 2137696
+  },
+  {
+   "label": "Sexuality",
+   "id": 2137697
+  },
+  {
+   "label": "Sleep Disorders",
+   "id": 2137698
+  },
+  {
+   "label": "Smoking Cessation",
+   "id": 2137699
+  },
+  {
+   "label": "Substance Abuse",
+   "id": 2137700
+  },
+  {
+   "label": "Thyroid Disease",
+   "id": 2137701
+  },
+  {
+   "label": "Weight Loss",
+   "id": 2137702
+  },
+  {
+   "label": "Women's Health",
+   "id": 2137703
+  },
+  {
+   "label": "Food & Drink",
+   "id": 2137704
+  },
+  {
+   "label": "American Cuisine",
+   "id": 2137705
+  },
+  {
+   "label": "Barbecues & Grilling",
+   "id": 2137706
+  },
+  {
+   "label": "Cajun/Creole",
+   "id": 2137707
+  },
+  {
+   "label": "Chinese Cuisine",
+   "id": 2137708
+  },
+  {
+   "label": "Cocktails/Beer",
+   "id": 2137709
+  },
+  {
+   "label": "Coffee/Tea",
+   "id": 2137710
+  },
+  {
+   "label": "Cuisine-Specific",
+   "id": 2137711
+  },
+  {
+   "label": "Desserts & Baking",
+   "id": 2137712
+  },
+  {
+   "label": "Dining Out",
+   "id": 2137713
+  },
+  {
+   "label": "Food Allergies",
+   "id": 2137714
+  },
+  {
+   "label": "French Cuisine",
+   "id": 2137715
+  },
+  {
+   "label": "Health/Lowfat Cooking",
+   "id": 2137716
+  },
+  {
+   "label": "Italian Cuisine",
+   "id": 2137717
+  },
+  {
+   "label": "Japanese Cuisine",
+   "id": 2137718
+  },
+  {
+   "label": "Mexican Cuisine",
+   "id": 2137719
+  },
+  {
+   "label": "Vegan",
+   "id": 2137720
+  },
+  {
+   "label": "Vegetarian",
+   "id": 2137721
+  },
+  {
+   "label": "Wine",
+   "id": 2137722
+  },
+  {
+   "label": "Hobbies & Interests",
+   "id": 2137723
+  },
+  {
+   "label": "Art/Technology",
+   "id": 2137724
+  },
+  {
+   "label": "Arts & Crafts",
+   "id": 2137725
+  },
+  {
+   "label": "Beadwork",
+   "id": 2137726
+  },
+  {
+   "label": "Birdwatching",
+   "id": 2137727
+  },
+  {
+   "label": "Board Games/Puzzles",
+   "id": 2137728
+  },
+  {
+   "label": "Candle & Soap Making",
+   "id": 2137729
+  },
+  {
+   "label": "Card Games",
+   "id": 2137730
+  },
+  {
+   "label": "Chess",
+   "id": 2137731
+  },
+  {
+   "label": "Cigars",
+   "id": 2137732
+  },
+  {
+   "label": "Collecting",
+   "id": 2137733
+  },
+  {
+   "label": "Comic Books",
+   "id": 2137734
+  },
+  {
+   "label": "Drawing/Sketching",
+   "id": 2137735
+  },
+  {
+   "label": "Freelance Writing",
+   "id": 2137736
+  },
+  {
+   "label": "Genealogy",
+   "id": 2137737
+  },
+  {
+   "label": "Getting Published",
+   "id": 2137738
+  },
+  {
+   "label": "Guitar",
+   "id": 2137739
+  },
+  {
+   "label": "Home Recording",
+   "id": 2137740
+  },
+  {
+   "label": "Investors & Patents",
+   "id": 2137741
+  },
+  {
+   "label": "Jewelry Making",
+   "id": 2137742
+  },
+  {
+   "label": "Magic & Illusion",
+   "id": 2137743
+  },
+  {
+   "label": "Needlework",
+   "id": 2137744
+  },
+  {
+   "label": "Painting",
+   "id": 2137745
+  },
+  {
+   "label": "Photography",
+   "id": 2137746
+  },
+  {
+   "label": "Radio",
+   "id": 2137747
+  },
+  {
+   "label": "Roleplaying Games",
+   "id": 2137748
+  },
+  {
+   "label": "Sci-Fi & Fantasy",
+   "id": 2137749
+  },
+  {
+   "label": "Scrapbooking",
+   "id": 2137750
+  },
+  {
+   "label": "Screenwriting",
+   "id": 2137751
+  },
+  {
+   "label": "Stamps & Coins",
+   "id": 2137752
+  },
+  {
+   "label": "Video & Computer Games",
+   "id": 2137753
+  },
+  {
+   "label": "Woodworking",
+   "id": 2137754
+  },
+  {
+   "label": "Home & Garden",
+   "id": 2137755
+  },
+  {
+   "label": "Appliances",
+   "id": 2137756
+  },
+  {
+   "label": "Entertaining",
+   "id": 2137757
+  },
+  {
+   "label": "Environmental Safety",
+   "id": 2137758
+  },
+  {
+   "label": "Gardening",
+   "id": 2137759
+  },
+  {
+   "label": "Home Repair",
+   "id": 2137760
+  },
+  {
+   "label": "Home Theater",
+   "id": 2137761
+  },
+  {
+   "label": "Interior Decorating",
+   "id": 2137762
+  },
+  {
+   "label": "Landscaping",
+   "id": 2137763
+  },
+  {
+   "label": "Remodeling & Construction",
+   "id": 2137764
+  },
+  {
+   "label": "Law, Gov't & Politics",
+   "id": 2137765
+  },
+  {
+   "label": "Immigration",
+   "id": 2137766
+  },
+  {
+   "label": "Legal Issues",
+   "id": 2137767
+  },
+  {
+   "label": "U.S. Government Resources",
+   "id": 2137768
+  },
+  {
+   "label": "Politics",
+   "id": 2137769
+  },
+  {
+   "label": "Commentary",
+   "id": 2137770
+  },
+  {
+   "label": "News",
+   "id": 2137771
+  },
+  {
+   "label": "International News",
+   "id": 2137772
+  },
+  {
+   "label": "National News",
+   "id": 2137773
+  },
+  {
+   "label": "Local News",
+   "id": 2137774
+  },
+  {
+   "label": "Personal Finance",
+   "id": 2137775
+  },
+  {
+   "label": "Beginning Investing",
+   "id": 2137776
+  },
+  {
+   "label": "Credit/Debt & Loans",
+   "id": 2137777
+  },
+  {
+   "label": "Financial News",
+   "id": 2137778
+  },
+  {
+   "label": "Financial Planning",
+   "id": 2137779
+  },
+  {
+   "label": "Hedge Fund",
+   "id": 2137780
+  },
+  {
+   "label": "Insurance",
+   "id": 2137781
+  },
+  {
+   "label": "Investing",
+   "id": 2137782
+  },
+  {
+   "label": "Mutual Funds",
+   "id": 2137783
+  },
+  {
+   "label": "Options",
+   "id": 2137784
+  },
+  {
+   "label": "Retirement Planning",
+   "id": 2137785
+  },
+  {
+   "label": "Stocks",
+   "id": 2137786
+  },
+  {
+   "label": "Tax Planning",
+   "id": 2137787
+  },
+  {
+   "label": "Society",
+   "id": 2137788
+  },
+  {
+   "label": "Dating",
+   "id": 2137789
+  },
+  {
+   "label": "Divorce Support",
+   "id": 2137790
+  },
+  {
+   "label": "Gay Life",
+   "id": 2137791
+  },
+  {
+   "label": "Marriage",
+   "id": 2137792
+  },
+  {
+   "label": "Senior Living",
+   "id": 2137793
+  },
+  {
+   "label": "Teens",
+   "id": 2137794
+  },
+  {
+   "label": "Weddings",
+   "id": 2137795
+  },
+  {
+   "label": "Ethnic Specific",
+   "id": 2137796
+  },
+  {
+   "label": "Science",
+   "id": 2137797
+  },
+  {
+   "label": "Astrology",
+   "id": 2137798
+  },
+  {
+   "label": "Biology",
+   "id": 2137799
+  },
+  {
+   "label": "Chemistry",
+   "id": 2137800
+  },
+  {
+   "label": "Geology",
+   "id": 2137801
+  },
+  {
+   "label": "Paranormal Phenomena",
+   "id": 2137802
+  },
+  {
+   "label": "Physics",
+   "id": 2137803
+  },
+  {
+   "label": "Space/Astronomy",
+   "id": 2137804
+  },
+  {
+   "label": "Geography",
+   "id": 2137805
+  },
+  {
+   "label": "Botany",
+   "id": 2137806
+  },
+  {
+   "label": "Weather",
+   "id": 2137807
+  },
+  {
+   "label": "Pets",
+   "id": 2137808
+  },
+  {
+   "label": "Aquariums",
+   "id": 2137809
+  },
+  {
+   "label": "Birds",
+   "id": 2137810
+  },
+  {
+   "label": "Cats",
+   "id": 2137811
+  },
+  {
+   "label": "Dogs",
+   "id": 2137812
+  },
+  {
+   "label": "Large Animals",
+   "id": 2137813
+  },
+  {
+   "label": "Reptiles",
+   "id": 2137814
+  },
+  {
+   "label": "Veterinary Medicine",
+   "id": 2137815
+  },
+  {
+   "label": "Sports",
+   "id": 2137816
+  },
+  {
+   "label": "Auto Racing",
+   "id": 2137817
+  },
+  {
+   "label": "Baseball",
+   "id": 2137818
+  },
+  {
+   "label": "Bicycling",
+   "id": 2137819
+  },
+  {
+   "label": "Bodybuilding",
+   "id": 2137820
+  },
+  {
+   "label": "Boxing",
+   "id": 2137821
+  },
+  {
+   "label": "Canoeing/Kayaking",
+   "id": 2137822
+  },
+  {
+   "label": "Cheerleading",
+   "id": 2137823
+  },
+  {
+   "label": "Climbing",
+   "id": 2137824
+  },
+  {
+   "label": "Cricket",
+   "id": 2137825
+  },
+  {
+   "label": "Figure Skating",
+   "id": 2137826
+  },
+  {
+   "label": "Fly Fishing",
+   "id": 2137827
+  },
+  {
+   "label": "Football",
+   "id": 2137828
+  },
+  {
+   "label": "Freshwater Fishing",
+   "id": 2137829
+  },
+  {
+   "label": "Game & Fish",
+   "id": 2137830
+  },
+  {
+   "label": "Golf",
+   "id": 2137831
+  },
+  {
+   "label": "Horse Racing",
+   "id": 2137832
+  },
+  {
+   "label": "Horses",
+   "id": 2137833
+  },
+  {
+   "label": "Hunting/Shooting",
+   "id": 2137834
+  },
+  {
+   "label": "Inline Skating",
+   "id": 2137835
+  },
+  {
+   "label": "Martial Arts",
+   "id": 2137836
+  },
+  {
+   "label": "Mountain Biking",
+   "id": 2137837
+  },
+  {
+   "label": "NASCAR Racing",
+   "id": 2137838
+  },
+  {
+   "label": "Olympics",
+   "id": 2137839
+  },
+  {
+   "label": "Paintball",
+   "id": 2137840
+  },
+  {
+   "label": "Power & Motorcycles",
+   "id": 2137841
+  },
+  {
+   "label": "Pro Basketball",
+   "id": 2137842
+  },
+  {
+   "label": "Pro Ice Hockey",
+   "id": 2137843
+  },
+  {
+   "label": "Rodeo",
+   "id": 2137844
+  },
+  {
+   "label": "Rugby",
+   "id": 2137845
+  },
+  {
+   "label": "Running/Jogging",
+   "id": 2137846
+  },
+  {
+   "label": "Sailing",
+   "id": 2137847
+  },
+  {
+   "label": "Saltwater Fishing",
+   "id": 2137848
+  },
+  {
+   "label": "Scuba Diving",
+   "id": 2137849
+  },
+  {
+   "label": "Skateboarding",
+   "id": 2137850
+  },
+  {
+   "label": "Skiing",
+   "id": 2137851
+  },
+  {
+   "label": "Snowboarding",
+   "id": 2137852
+  },
+  {
+   "label": "Surfing/Bodyboarding",
+   "id": 2137853
+  },
+  {
+   "label": "Swimming",
+   "id": 2137854
+  },
+  {
+   "label": "Table Tennis/Ping-Pong",
+   "id": 2137855
+  },
+  {
+   "label": "Tennis",
+   "id": 2137856
+  },
+  {
+   "label": "Volleyball",
+   "id": 2137857
+  },
+  {
+   "label": "Walking",
+   "id": 2137858
+  },
+  {
+   "label": "Waterski/Wakeboard",
+   "id": 2137859
+  },
+  {
+   "label": "World Soccer",
+   "id": 2137860
+  },
+  {
+   "label": "Style & Fashion",
+   "id": 2137861
+  },
+  {
+   "label": "Beauty",
+   "id": 2137862
+  },
+  {
+   "label": "Body Art",
+   "id": 2137863
+  },
+  {
+   "label": "Fashion",
+   "id": 2137864
+  },
+  {
+   "label": "Jewelry",
+   "id": 2137865
+  },
+  {
+   "label": "Clothing",
+   "id": 2137866
+  },
+  {
+   "label": "Accessories",
+   "id": 2137867
+  },
+  {
+   "label": "Technology & Computing",
+   "id": 2137868
+  },
+  {
+   "label": "3-D Graphics",
+   "id": 2137869
+  },
+  {
+   "label": "Animation",
+   "id": 2137870
+  },
+  {
+   "label": "Antivirus Software",
+   "id": 2137871
+  },
+  {
+   "label": "C/C++",
+   "id": 2137872
+  },
+  {
+   "label": "Cameras & Camcorders",
+   "id": 2137873
+  },
+  {
+   "label": "Cell Phones",
+   "id": 2137874
+  },
+  {
+   "label": "Computer Certification",
+   "id": 2137875
+  },
+  {
+   "label": "Computer Networking",
+   "id": 2137876
+  },
+  {
+   "label": "Computer Peripherals",
+   "id": 2137877
+  },
+  {
+   "label": "Computer Reviews",
+   "id": 2137878
+  },
+  {
+   "label": "Data Centers",
+   "id": 2137879
+  },
+  {
+   "label": "Databases",
+   "id": 2137880
+  },
+  {
+   "label": "Desktop Publishing",
+   "id": 2137881
+  },
+  {
+   "label": "Desktop Video",
+   "id": 2137882
+  },
+  {
+   "label": "Email",
+   "id": 2137883
+  },
+  {
+   "label": "Graphics Software",
+   "id": 2137884
+  },
+  {
+   "label": "Home Video/DVD",
+   "id": 2137885
+  },
+  {
+   "label": "Internet Technology",
+   "id": 2137886
+  },
+  {
+   "label": "Java",
+   "id": 2137887
+  },
+  {
+   "label": "JavaScript",
+   "id": 2137888
+  },
+  {
+   "label": "Mac Support",
+   "id": 2137889
+  },
+  {
+   "label": "MP3/MIDI",
+   "id": 2137890
+  },
+  {
+   "label": "Net Conferencing",
+   "id": 2137891
+  },
+  {
+   "label": "Net for Beginners",
+   "id": 2137892
+  },
+  {
+   "label": "Network Security",
+   "id": 2137893
+  },
+  {
+   "label": "Palmtops/PDAs",
+   "id": 2137894
+  },
+  {
+   "label": "PC Support",
+   "id": 2137895
+  },
+  {
+   "label": "Portable",
+   "id": 2137896
+  },
+  {
+   "label": "Entertainment",
+   "id": 2137897
+  },
+  {
+   "label": "Shareware/Freeware",
+   "id": 2137898
+  },
+  {
+   "label": "Unix",
+   "id": 2137899
+  },
+  {
+   "label": "Visual Basic",
+   "id": 2137900
+  },
+  {
+   "label": "Web Clip Art",
+   "id": 2137901
+  },
+  {
+   "label": "Web Design/HTML",
+   "id": 2137902
+  },
+  {
+   "label": "Web Search",
+   "id": 2137903
+  },
+  {
+   "label": "Windows",
+   "id": 2137904
+  },
+  {
+   "label": "Travel",
+   "id": 2137905
+  },
+  {
+   "label": "Adventure Travel",
+   "id": 2137906
+  },
+  {
+   "label": "Africa",
+   "id": 2137907
+  },
+  {
+   "label": "Air Travel",
+   "id": 2137908
+  },
+  {
+   "label": "Australia & New Zealand",
+   "id": 2137909
+  },
+  {
+   "label": "Bed & Breakfasts",
+   "id": 2137910
+  },
+  {
+   "label": "Budget Travel",
+   "id": 2137911
+  },
+  {
+   "label": "Business Travel",
+   "id": 2137912
+  },
+  {
+   "label": "By US Locale",
+   "id": 2137913
+  },
+  {
+   "label": "Camping",
+   "id": 2137914
+  },
+  {
+   "label": "Canada",
+   "id": 2137915
+  },
+  {
+   "label": "Caribbean",
+   "id": 2137916
+  },
+  {
+   "label": "Cruises",
+   "id": 2137917
+  },
+  {
+   "label": "Eastern Europe",
+   "id": 2137918
+  },
+  {
+   "label": "Europe",
+   "id": 2137919
+  },
+  {
+   "label": "France",
+   "id": 2137920
+  },
+  {
+   "label": "Greece",
+   "id": 2137921
+  },
+  {
+   "label": "Honeymoons/Getaways",
+   "id": 2137922
+  },
+  {
+   "label": "Hotels",
+   "id": 2137923
+  },
+  {
+   "label": "Italy",
+   "id": 2137924
+  },
+  {
+   "label": "Japan",
+   "id": 2137925
+  },
+  {
+   "label": "Mexico & Central America",
+   "id": 2137926
+  },
+  {
+   "label": "National Parks",
+   "id": 2137927
+  },
+  {
+   "label": "South America",
+   "id": 2137928
+  },
+  {
+   "label": "Spas",
+   "id": 2137929
+  },
+  {
+   "label": "Theme Parks",
+   "id": 2137930
+  },
+  {
+   "label": "Traveling with Kids",
+   "id": 2137931
+  },
+  {
+   "label": "United Kingdom",
+   "id": 2137932
+  },
+  {
+   "label": "Real Estate",
+   "id": 2137933
+  },
+  {
+   "label": "Apartments",
+   "id": 2137934
+  },
+  {
+   "label": "Architects",
+   "id": 2137935
+  },
+  {
+   "label": "Buying/Selling Homes",
+   "id": 2137936
+  },
+  {
+   "label": "Shopping",
+   "id": 2137937
+  },
+  {
+   "label": "Contests & Freebies",
+   "id": 2137938
+  },
+  {
+   "label": "Couponing",
+   "id": 2137939
+  },
+  {
+   "label": "Comparison",
+   "id": 2137940
+  },
+  {
+   "label": "Engines",
+   "id": 2137941
+  },
+  {
+   "label": "Religion & Spirituality",
+   "id": 2137942
+  },
+  {
+   "label": "Alternative Religions",
+   "id": 2137943
+  },
+  {
+   "label": "Atheism/Agnosticism",
+   "id": 2137944
+  },
+  {
+   "label": "Buddhism",
+   "id": 2137945
+  },
+  {
+   "label": "Catholicism",
+   "id": 2137946
+  },
+  {
+   "label": "Christianity",
+   "id": 2137947
+  },
+  {
+   "label": "Hinduism",
+   "id": 2137948
+  },
+  {
+   "label": "Islam",
+   "id": 2137949
+  },
+  {
+   "label": "Judaism",
+   "id": 2137950
+  },
+  {
+   "label": "Latter-Day Saints",
+   "id": 2137951
+  },
+  {
+   "label": "Pagan/Wiccan",
+   "id": 2137952
+  },
+  {
+   "label": "Uncategorized",
+   "id": 2137953
+  },
+  {
+   "label": "Non-Standard Content",
+   "id": 2137954
+  },
+  {
+   "label": "Unmoderated UGC",
+   "id": 2137955
+  },
+  {
+   "label": "Extreme Graphic/Explicit Violence",
+   "id": 2137956
+  },
+  {
+   "label": "Under Construction",
+   "id": 2137960
+  },
+  {
+   "label": "Incentivized",
+   "id": 2137961
+  },
+  {
+   "label": "Illegal Content",
+   "id": 2137962
+  }
+ ]
+}

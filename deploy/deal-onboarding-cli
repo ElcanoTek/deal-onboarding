@@ -1,0 +1,350 @@
+#!/usr/bin/env bash
+# /usr/local/bin/deal-onboarding — operator entry point for a Deal Onboarding host.
+#
+# Thin dispatcher that forwards to:
+#   - deal-onboarding-admin for `deal-onboarding user ...` (provisioning)
+#   - systemctl for `deal-onboarding start|stop|restart|status|logs`
+#
+# Installed by scripts/bootstrap.sh. This file is source, not the final path.
+
+set -euo pipefail
+
+APP_DIR="${APP_DIR:-/opt/deal-onboarding}"
+APP_USER="${APP_USER:-deal-onboarding}"
+ADMIN_BIN="$APP_DIR/bin/deal-onboarding-admin"
+ENV_FILE="$APP_DIR/.env"
+
+# Colors (only when stdout is a tty).
+if [[ -t 1 && "${TERM:-}" != "dumb" ]]; then
+  c_reset=$'\033[0m' c_dim=$'\033[2m' c_bold=$'\033[1m'
+  c_cyan=$'\033[0;36m' c_red=$'\033[0;31m' c_green=$'\033[0;32m' c_yellow=$'\033[0;33m'
+else
+  c_reset='' c_dim='' c_bold='' c_cyan='' c_red='' c_green='' c_yellow=''
+fi
+
+# shellcheck source=../scripts/lib/envfile.sh
+if [[ -f "$APP_DIR/scripts/lib/envfile.sh" ]]; then
+  . "$APP_DIR/scripts/lib/envfile.sh"
+else
+  # Older install without the helpers — just enough to keep `deal-onboarding env
+  # show` working until the operator runs `sudo deal-onboarding update`.
+  env_show_redacted() {
+    awk '
+      /^[[:space:]]*#/ { next } /^[[:space:]]*$/ { next }
+      { eq = index($0, "="); if (eq == 0) { print; next }
+        key = substr($0, 1, eq - 1); sub(/^[[:space:]]+/, "", key)
+        if (key ~ /TOKEN|KEY|SECRET|PASSWORD|PASSWD/) printf "%s=[REDACTED]\n", key; else print }
+    ' "$1"
+  }
+fi
+
+# env_cmd SUBCMD ARGS... — dispatcher for `deal-onboarding env ...`
+env_cmd() {
+  local sub="${1:-show}"
+  shift || true
+  case "$sub" in
+    show|"")        _env_show ;;
+    edit)           _env_edit ;;
+    check)          _env_check ;;
+    -h|--help|help) _env_help ;;
+    *)
+      echo "unknown env subcommand: $sub" >&2
+      _env_help
+      exit 1
+      ;;
+  esac
+}
+
+_env_help() {
+  cat <<EOF
+deal-onboarding env — inspect + edit deal-onboarding environment variables
+
+SUBCOMMANDS
+  deal-onboarding env show   Print $ENV_FILE (secrets redacted)
+  deal-onboarding env edit   Open $ENV_FILE in an editor of your choice
+                      (nano, vim, or helix — offered to dnf install helix if
+                      missing; helix's binary is 'hx')
+  deal-onboarding env check  Verify $ENV_FILE exists, is readable by the service
+                      service user, parses cleanly, and tallies the keys it
+                      defines. Run this BEFORE 'deal-onboarding restart' if a prior
+                      edit might have changed perms or syntax.
+
+NOTES
+  • $ENV_FILE is read by deal-onboarding.service via systemd's EnvironmentFile=, so
+    'deal-onboarding restart' after editing for changes to take effect.
+  • See $APP_DIR/.env.example for the catalog of supported variables.
+EOF
+}
+
+_env_show() {
+  if [[ -f "$ENV_FILE" ]]; then
+    printf '%s# %s%s\n' "$c_bold" "$ENV_FILE" "$c_reset"
+    env_show_redacted "$ENV_FILE"
+  else
+    printf '%s# %s (not present — create one with `sudo deal-onboarding env edit`)%s\n' "$c_dim" "$ENV_FILE" "$c_reset"
+  fi
+}
+
+# Interactive menu: pick nano, vim, or helix. Helix's binary is `hx`
+# and isn't installed on a default Fedora box, so offer to `dnf install`
+# it on selection. Same install-on-demand path works for nano and vim
+# if someone's on a stripped image.
+_env_edit() {
+  [[ $EUID -eq 0 ]] || { echo "run as root: sudo deal-onboarding env edit" >&2; exit 1; }
+
+  # Pick the service user to own the resulting file. We need this for both
+  # the create-on-first-edit case and the post-save chown below — without
+  # it, the editor (running as root) leaves $ENV_FILE owned by root with
+  # 0600 perms, and `deal-onboarding user ...` (which sources .env before dropping
+  # to the service user) then can't read it. Whoever provisions the box
+  # should set APP_USER; we default to "deal-onboarding".
+  local app_user="${APP_USER:-deal-onboarding}"
+
+  if [[ ! -f "$ENV_FILE" ]]; then
+    install -o "$app_user" -g "$app_user" -m 0600 /dev/null "$ENV_FILE"
+  fi
+
+  local -a names=(nano vim helix)
+  local -a bins=(nano vim hx)
+  local -a pkgs=(nano vim helix)
+
+  echo "Pick an editor for $ENV_FILE:"
+  local i default=""
+  for i in 0 1 2; do
+    if command -v "${bins[i]}" >/dev/null 2>&1; then
+      printf '  %d) %s\n' "$((i+1))" "${names[i]}"
+      [[ -z "$default" ]] && default=$((i+1))
+    else
+      printf '  %d) %s %s(not installed — will dnf install on select)%s\n' \
+        "$((i+1))" "${names[i]}" "$c_dim" "$c_reset"
+    fi
+  done
+  [[ -n "$default" ]] || default=1
+
+  printf '%s?%s Choice [%d]: ' "$c_cyan" "$c_reset" "$default" >&2
+  local choice
+  read -r choice
+  choice="${choice:-$default}"
+
+  local idx
+  case "$choice" in
+    1|nano)     idx=0 ;;
+    2|vim)      idx=1 ;;
+    3|helix|hx) idx=2 ;;
+    *) echo "invalid choice: $choice" >&2; exit 1 ;;
+  esac
+
+  local bin="${bins[idx]}" pkg="${pkgs[idx]}" name="${names[idx]}"
+  if ! command -v "$bin" >/dev/null 2>&1; then
+    printf '%s?%s %s is not installed. Run %sdnf install -y %s%s now? %s(Y/n)%s ' \
+      "$c_cyan" "$c_reset" "$name" "$c_bold" "$pkg" "$c_reset" "$c_dim" "$c_reset" >&2
+    local answer
+    read -r answer
+    if [[ "${answer,,}" == "n" || "${answer,,}" == "no" ]]; then
+      echo "cancelled" >&2; exit 1
+    fi
+    dnf install -y "$pkg" >/dev/null || { echo "dnf install $pkg failed" >&2; exit 1; }
+    echo "✓ $name installed"
+  fi
+
+  "$bin" "$ENV_FILE"
+  # Some editors (vim with backup, helix with atomic write) replace the
+  # file by rename — the new file inherits the editor's uid (root since
+  # we're elevated) instead of $ENV_FILE's prior owner. chown +chmod
+  # unconditionally so the result always has the right shape:
+  # owned by the service user, readable only by them.
+  chown "$app_user:$app_user" "$ENV_FILE"
+  chmod 0600 "$ENV_FILE"
+  echo "✓ $ENV_FILE saved (run 'sudo deal-onboarding env check' to validate, then 'sudo deal-onboarding restart')"
+}
+
+# _env_check validates that $ENV_FILE exists, is readable by the service
+# user (the same identity deal-onboarding.service runs under), and parses cleanly.
+# Tallies the keys it defines so the operator can confirm a recent edit
+# didn't introduce a typo.
+_env_check() {
+  local app_user="${APP_USER:-deal-onboarding}"
+  local fail=0
+  local warn=0
+
+  printf '%schecking %s%s\n' "$c_bold" "$ENV_FILE" "$c_reset"
+
+  # ── 1. existence ──
+  if [[ ! -e "$ENV_FILE" ]]; then
+    printf '  %s✗%s file does not exist (run %ssudo deal-onboarding env edit%s to create one)\n' \
+      "$c_red" "$c_reset" "$c_bold" "$c_reset"
+    return 1
+  fi
+  if [[ ! -f "$ENV_FILE" ]]; then
+    printf '  %s✗%s exists but is not a regular file\n' "$c_red" "$c_reset"
+    return 1
+  fi
+  printf '  %s✓%s exists\n' "$c_green" "$c_reset"
+
+  # ── 2. ownership + perms ──
+  local owner mode
+  owner="$(stat -c '%U:%G' "$ENV_FILE" 2>/dev/null || echo unknown)"
+  mode="$(stat -c '%a' "$ENV_FILE" 2>/dev/null || echo "")"
+  if [[ "$owner" == "$app_user:$app_user" ]]; then
+    printf '  %s✓%s owned by %s\n' "$c_green" "$c_reset" "$owner"
+  else
+    printf '  %s✗%s owned by %s (expected %s:%s — %s sources .env before dropping to the service user and cannot read root-owned files)\n' \
+      "$c_red" "$c_reset" "$owner" "$app_user" "$app_user" "deal-onboarding user"
+    printf '       fix: %ssudo chown %s:%s %s%s\n' "$c_dim" "$app_user" "$app_user" "$ENV_FILE" "$c_reset"
+    fail=1
+  fi
+  if [[ -z "$mode" ]]; then
+    printf '  %s!%s could not stat mode\n' "$c_yellow" "$c_reset"
+    warn=1
+  elif [[ "$mode" == "600" || "$mode" == "640" || "$mode" == "400" ]]; then
+    printf '  %s✓%s mode %s (deal-onboarding user can read)\n' "$c_green" "$c_reset" "$mode"
+  else
+    printf '  %s!%s mode %s (expected 600 — secrets in this file)\n' "$c_yellow" "$c_reset" "$mode"
+    warn=1
+  fi
+
+  # ── 3. readable by the service user ──
+  if [[ "$EUID" -eq 0 ]]; then
+    if sudo -u "$app_user" -H test -r "$ENV_FILE" 2>/dev/null; then
+      printf '  %s✓%s readable by %s\n' "$c_green" "$c_reset" "$app_user"
+    else
+      printf '  %s✗%s %s cannot read %s — `deal-onboarding user ...` will fail with "permission denied"\n' \
+        "$c_red" "$c_reset" "$app_user" "$ENV_FILE"
+      fail=1
+    fi
+  else
+    printf '  %s!%s skipping service-user read check (re-run as root for full validation)\n' \
+      "$c_yellow" "$c_reset"
+    warn=1
+  fi
+
+  # ── 4. parse + key tally ──
+  # Format: KEY=VALUE per line, optional surrounding quotes, # for
+  # comments. systemd's EnvironmentFile parser silently skips lines that
+  # aren't KEY=VALUE, so we don't fail on them — but DO flag malformed
+  # lines that have nothing parseable.
+  local total=0 keys=0 comments=0 blank=0 bad=0
+  local -a bad_lines=()
+  local lineno=0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    lineno=$((lineno + 1))
+    total=$((total + 1))
+    # trim leading/trailing whitespace
+    local trimmed="${line#"${line%%[![:space:]]*}"}"
+    trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
+    if [[ -z "$trimmed" ]]; then
+      blank=$((blank + 1))
+    elif [[ "$trimmed" =~ ^# ]]; then
+      comments=$((comments + 1))
+    elif [[ "$trimmed" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; then
+      keys=$((keys + 1))
+    else
+      bad=$((bad + 1))
+      if [[ "${#bad_lines[@]}" -lt 5 ]]; then
+        bad_lines+=("$lineno: $trimmed")
+      fi
+    fi
+  done <"$ENV_FILE"
+
+  printf '  %s✓%s parsed %d lines: %d keys, %d comments, %d blank\n' \
+    "$c_green" "$c_reset" "$total" "$keys" "$comments" "$blank"
+  if [[ "$bad" -gt 0 ]]; then
+    # systemd's EnvironmentFile loader is forgiving — it silently skips
+    # lines that don't look like KEY=VALUE. Surface them as a warning so
+    # operators notice unintended garbage, but don't fail the check
+    # since the service will start fine regardless.
+    printf '  %s!%s %d line(s) without a KEY= prefix (systemd will skip them):\n' \
+      "$c_yellow" "$c_reset" "$bad"
+    local b
+    for b in "${bad_lines[@]}"; do
+      printf '       line %s\n' "$b"
+    done
+    warn=1
+  fi
+
+  echo
+  if [[ "$fail" -ne 0 ]]; then
+    printf '%s✗ %s has problems the service will trip on.%s\n' "$c_red" "$ENV_FILE" "$c_reset"
+    return 1
+  fi
+  if [[ "$warn" -ne 0 ]]; then
+    printf '%s! %s looks usable but has warnings.%s\n' "$c_yellow" "$ENV_FILE" "$c_reset"
+    return 0
+  fi
+  printf '%s✓ %s is good — the service should start cleanly.%s\n' "$c_green" "$ENV_FILE" "$c_reset"
+}
+
+cmd="${1:-}"
+shift || true
+
+case "$cmd" in
+  user)
+    # shellcheck disable=SC1090
+    source "$APP_DIR/.env"
+    export DEAL_ONBOARDING_USER_STORE
+    # deal-onboarding-admin rewrites users.json on every change, and the rewritten
+    # file is owned by whoever ran it. Run it as the service user so the
+    # store stays readable by deal-onboarding.service — run as root it would end up
+    # root:root 0600 and every login would 500 with "membership check
+    # failed". (deal-onboarding-admin also re-chowns to the data dir's owner as a
+    # second line of defense when it does run as root.)
+    exec sudo -u "$APP_USER" env DEAL_ONBOARDING_USER_STORE="$DEAL_ONBOARDING_USER_STORE" "$ADMIN_BIN" user "$@"
+    ;;
+  update)
+    exec sudo bash "$APP_DIR/scripts/update.sh" "$@"
+    ;;
+  start)
+    exec sudo systemctl start deal-onboarding.service
+    ;;
+  stop)
+    exec sudo systemctl stop deal-onboarding.service
+    ;;
+  restart)
+    exec sudo systemctl restart deal-onboarding.service
+    ;;
+  status)
+    exec sudo systemctl status deal-onboarding.service
+    ;;
+  logs)
+    exec sudo journalctl -f -u deal-onboarding -u caddy
+    ;;
+  env)
+    # Dispatch `deal-onboarding env [show|edit|check|help]`. Bare `deal-onboarding env`
+    # prints .env with secrets redacted.
+    env_cmd "$@"
+    ;;
+  help|-h|--help|"")
+    cat <<'EOF'
+deal-onboarding - Deal Onboarding operator CLI
+
+USER MANAGEMENT
+  deal-onboarding user add <email> [--password X]   provision a user
+  deal-onboarding user del <email>                  remove a user
+  deal-onboarding user list                         list provisioned users
+  deal-onboarding user passwd <email>               rotate a user's password
+
+UPDATES
+  deal-onboarding update                            git pull + rebuild + restart
+
+CONFIG
+  deal-onboarding env [show]                        print .env (secrets redacted)
+  deal-onboarding env edit                          open .env in nano, vim, or helix
+                                             (helix is 'hx'; offered via dnf
+                                             if missing)
+  deal-onboarding env check                         verify .env exists, is readable
+                                             by the service user, and parses
+                                             cleanly (run before 'deal-onboarding
+                                             restart' if a recent edit might
+                                             have changed perms or syntax)
+
+SERVICE CONTROL
+  deal-onboarding start | stop | restart            control deal-onboarding.service
+  deal-onboarding status                            show service status
+  deal-onboarding logs                              tail service + caddy logs
+EOF
+    ;;
+  *)
+    echo "unknown command: $cmd" >&2
+    exit 1
+    ;;
+esac

@@ -1,0 +1,16 @@
+Deal Onboarding
+Copyright (c) 2026 ElcanoTek, Inc.
+
+This software is licensed under the Business Source License 1.1 (see LICENSE).
+On the Change Date stated in LICENSE (2028-09-02) it converts to the MIT
+License. Licensing enquiries: licensing@elcanotek.com.
+
+Bundled third-party assets, each under its own licence, which travels with
+the files:
+
+  Nebula Sans        SIL Open Font License 1.1   frontend/src/styles/fonts/nebula-sans/OFL.txt
+  Hack               MIT License                 frontend/src/styles/fonts/hack/LICENSE.md
+  Flag design tokens ElcanoTek/flag (vendored)   frontend/src/styles/design-tokens.css
+
+Go and npm dependencies are governed by their own licences as declared in
+go.mod / go.sum and frontend/package.json / package-lock.json.

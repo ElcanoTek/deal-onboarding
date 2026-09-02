@@ -1,0 +1,86 @@
+name: Runner contracts
+
+# Guards the Deal Onboarding <-> engine create contract (cutlass-contract.json)
+# and the Deal Onboarding <-> fleet task-API contract (fleet-contract.json).
+#
+# The engine and bundle repositories are yours to name: this workflow runs on
+# workflow_dispatch (and an optional nightly schedule) with the checkout
+# coordinates passed as inputs, and reads an optional ENGINE_READ_TOKEN secret
+# for private repositories. On pull requests only the repo-local golden suites
+# run (see ci.yml) — a Deal Onboarding change that diverges from the pinned
+# fixture fails there without any external checkout.
+on:
+  workflow_dispatch:
+    inputs:
+      cutlass_repo:
+        description: "owner/repo of the Cutlass-compatible engine checkout"
+        required: true
+        default: "your-org/cutlass"
+      cutlass_ref:
+        description: "git ref of the engine to check against"
+        required: true
+        default: "main"
+      fleet_repo:
+        description: "owner/repo of the fleet task-runner checkout"
+        required: true
+        default: "your-org/fleet"
+      fleet_ref:
+        description: "git ref of fleet to check against"
+        required: true
+        default: "main"
+      bundle_repo:
+        description: "optional owner/repo of the runner bundle (MCP catalog + personas); blank to skip"
+        required: false
+        default: ""
+
+jobs:
+  cutlass-contract:
+    name: Contract fixture vs engine + golden suites
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ inputs.cutlass_repo }}
+          ref: ${{ inputs.cutlass_ref }}
+          token: ${{ secrets.ENGINE_READ_TOKEN || github.token }}
+          path: engine-src
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      # Engine half: every fact in cutlass-contract.json must match the engine sources.
+      - run: node scripts/check-cutlass-contract.mjs engine-src
+      # Local half: the golden suite asserts the prompt generators emit exactly
+      # what the (now verified) fixture says the engine accepts.
+      - run: npm ci
+        working-directory: frontend
+      - run: npx vitest run src/lib/contractGolden.test.ts
+        working-directory: frontend
+
+  fleet-contract:
+    name: Fleet contract fixture vs fleet (+ optional bundle catalog)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/checkout@v7
+        with:
+          repository: ${{ inputs.fleet_repo }}
+          ref: ${{ inputs.fleet_ref }}
+          token: ${{ secrets.ENGINE_READ_TOKEN || github.token }}
+          path: fleet-src
+      - uses: actions/checkout@v7
+        if: inputs.bundle_repo != ''
+        id: bundle
+        continue-on-error: true
+        with:
+          repository: ${{ inputs.bundle_repo }}
+          token: ${{ secrets.ENGINE_READ_TOKEN || github.token }}
+          path: bundle-src
+      - if: inputs.bundle_repo != '' && steps.bundle.outcome != 'success'
+        run: echo "::warning title=Bundle catalog not checked::bundle checkout unavailable — the MCP server names + persona facts are asserted, not verified this run."
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: node scripts/check-fleet-contract.mjs fleet-src ${{ steps.bundle.outcome == 'success' && 'bundle-src' || '' }}

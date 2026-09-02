@@ -1,0 +1,8 @@
+{
+  "id": "example-premium-ctv",
+  "name": "Example Premium CTV Apps",
+  "description": "Synthetic placeholder — shows the picker also works for the app-bundle dropzone (visible only when a deal has CTV / In-App inventory). Replace at deploy time; see lists/README.md.",
+  "kind": "allow",
+  "scope": "app_bundle",
+  "file": "example-premium-ctv.csv"
+}

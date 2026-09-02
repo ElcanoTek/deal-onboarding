@@ -1,0 +1,743 @@
+{
+  "meta": {
+    "verifiedAgainst": "<engine checkout> — re-verify with scripts/check-cutlass-contract.mjs against your runner engine",
+    "verifiedOn": "2026-09-02",
+    "description": "Machine-readable contract between Deal Onboarding and the deal-booking engine (Cutlass MCP tool surface) for CREATE batches. This file is the single source of truth: the frontend contract suite (contractGolden.test.ts) asserts the prompt emission against it, and scripts/check-cutlass-contract.mjs diffs every fact in it against an engine checkout. Facts carrying a note with \"asserted-not-extracted\" cannot be mechanically verified; the checker lists them as documented residuals instead of silently skipping them."
+  },
+  "toolNaming": {
+    "barePattern": "mcp_{server}_{tool}",
+    "note": "asserted-not-extracted: agent-harness tool naming. The {server} and {tool} halves ARE extracted (mcp/<server>.py file + its @mcp.tool function names); only the composition rule is asserted."
+  },
+  "ssps": {
+    "Index Exchange": {
+      "server": "indexexchange_mcp",
+      "sourceFile": "mcp/indexexchange_mcp.py",
+      "createTool": "ix_execute_deal_from_prompt_inputs",
+      "failClosedCodes": [
+        "ix_account_required",
+        "ix_margin_required"
+      ],
+      "geo": {
+        "createArgs": [
+          "geo_countries",
+          "dma_codes"
+        ],
+        "mergeTool": "ix_merge_deal_geo",
+        "usEmission": "geo_countries: [\"United States\"]",
+        "note": "Country FULL NAMES (COUNTRY_NAMES map); the MCP alias table resolves 'United States' to the account catalog token 'USA'. zips+dmas merge into dma_codes (both live on the ZipCode key).",
+        "usDefault": "Operator geo policy (frontend/src/lib/geoPolicy.ts): a deal with no geo INCLUDES is seeded country=US at write time, so every create prompt carries this SSP's geo arg. geoExclude entries do NOT suppress the seed; deals whose SSP (or exclusion shape) is outside the rules.go geo-exclude emission matrix fail the audit closed (geo_exclude_unsupported, #219/#244). The MCPs stay pass-through - no server-side geo default (asserted-not-extracted: Deal Onboarding-side policy)."
+      },
+      "geoExclude": {
+        "emitted": false,
+        "wireSupport": false,
+        "note": "CREATE-side only: the IX create wire is include-only (geo_countries + dma_codes, no region key, no exclusion arg), so Deal Onboarding fails a create-time geo exclusion closed via geo_exclude_unsupported (#219/#244) with a loud builder NOT-SUPPORTED marker, and the geoExcludeEmittingSSPs allowlist in internal/validation/rules.go stays without this SSP. Region is keyed regionCode (targetingKeyID 1067) on every account - live-checked across every configured seat; the old \"State\" alias matched nothing, so region targeting reached the wire for the first time in cutlass#891. NONE_OF on regionCode is not yet live-canaried."
+      },
+      "segmentsExclude": {
+        "createArg": "excluded_segment_names",
+        "note": "Create-time audience segment EXCLUSIONS -> IX NONE_OF segment targeting. Deal Onboarding ALWAYS emits the field (empty [] when none) so trader-entered excludes ride every IX create."
+      },
+      "viewability": {
+        "createArg": "viewability_threshold",
+        "note": "Integer 0-100 -> IX Viewability key 8."
+      },
+      "language": {
+        "supported": false,
+        "note": "CREATE-side only: the IX create wire carries no language field (#226), so Deal Onboarding still emits the NOT-SUPPORTED marker and qa_language warns. The UPDATE path CAN set it: ix_merge_deal_language targets the contentLanguage key (targetingKeyID 257, 21 values, English -> \"en\"), matched exactly with no substring fallback, merge_mode defaulting to replace because \"set language to English\" is an end state. Added in cutlass#891."
+      },
+      "adDuration": {
+        "createArg": "max_ad_durations",
+        "mergeTool": "ix_merge_deal_ad_durations",
+        "failClosedCodes": [
+          "ix_ad_duration_invalid",
+          "ix_ad_duration_key_unresolved",
+          "ix_ad_duration_value_unresolved"
+        ],
+        "note": "Allowed-LIST of MAX-duration buckets (seconds -> OpenRTB video.maxduration, ANY_OF). Key + value tokens are account-discovered at runtime; an unmappable duration fails the whole create."
+      },
+      "iabExclude": {
+        "createArg": "excluded_iab_categories",
+        "note": "Create-time IAB/content-genre EXCLUSIONS -> NONE_OF on the deal's selected key (contentGenre key 11 or iabContentCategory key 1066 - cutlass#831). Values are exact catalog names for THAT key (Deal Onboarding pre-translates through IX_IAB_TO_CONTENT_GENRE / IX_IAB_TO_IAB_CONTENT_CATEGORY + the checked-in 1066 fixture) or verbatim trader-typed genre strings; includes+excludes always land on ONE key (never mixed) and the MCP resolves them exact-match only (cutlass#714), failing the whole create on an unresolvable name."
+      },
+      "iabCategories": {
+        "createArg": "iab_categories",
+        "exactMatchMarker": "exact-match only (no fuzzy contains-match, cutlass#714)",
+        "note": "IX targeting key 11 contentGenre is a TV-GENRE taxonomy (94 live values, fixture pulled 2026-07-14 from a live account), NOT IAB; since cutlass#831 the MCP ALSO resolves against the account-discovered key 1066 iabContentCategory (385 IAB-flavored names) - contentGenre first, then iabContentCategory, all-or-nothing per key, NEVER mixed on one deal. Deal Onboarding selects ONE key per deal (ixSelectIabKey) and translates IAB names through the curated catalog-verified IX_IAB_TO_CONTENT_GENRE / IX_IAB_TO_IAB_CONTENT_CATEGORY maps + the checked-in fixtures (unmapped names emit NOT-SUPPORTED comments, never tokens); the MCP resolves each key exact-match only for BOTH includes and excludes - the bidirectional contains-match that silently mis-mapped 'Consumer Banking' to the generic 'Consumer' TV genre is disabled (exactMatchMarker pins the source literal)."
+      }
+    },
+    "OpenX": {
+      "server": "openx_mcp",
+      "sourceFile": "mcp/openx_mcp.py",
+      "createTool": "ox_execute_deal_from_prompt_inputs",
+      "failClosedCodes": [
+        "ox_fee_required",
+        "ox_no_valid_domains",
+        "ox_create_ambiguous_transport",
+        "ox_private_auction_unsupported"
+      ],
+      "pmpDealType": {
+        "note": "cutlass#766: PRIVATE_AUCTION (pmp_deal_type 2) is NOT creatable via the OpenX API - dealCreate's backend validation requires open_auction_access, a field absent from the GraphQL create schema, so every type-2 attempt dies with an opaque INTERNAL_SERVER_ERROR (proven live 2026-07-11; every observed live deal was type 3). Cutlass fails closed on create, prepare, AND update with ox_private_auction_unsupported (extracted via failClosedCodes above) and never coerces 2 -> 3. Deal Onboarding side (asserted-not-extracted, pinned by dealPromptYaml.test.ts + rules_test.go): PRIVATE_AUCTION is not offered in the UI, the ox_pmp_type audit rule hard-blocks it, and buildOpenXPrompt emits a line-anchored # BLOCKED marker (MOC gate 422s) instead of the field. Creatable types: PREFERRED_DEAL (3, the default) and PROGRAMMATIC_GUARANTEED (1)."
+      },
+      "targetingChannel": {
+        "alwaysEmitted": true,
+        "channelMap": {
+          "Display": "DISPLAY",
+          "OLV (Online Video)": "OLV",
+          "CTV": "CTV",
+          "OTT": "OTT",
+          "Native": "NATIVE"
+        },
+        "failClosedCodes": [
+          "ox_video_channel_unresolved",
+          "ox_unknown_channel"
+        ],
+        "note": "cutlass#726 / #229: the OpenX MCP builds package.targeting.rendering_context (Format / distribution / devices) from targeting.channel and used to default every channel-less brief to DISPLAY (Format=BANNER) — OLV/CTV/OTT deals silently created as banner. Deal Onboarding emits targeting.channel on ALL OpenX deals via channelMap (alwaysEmitted is a Deal Onboarding-side fact, asserted-not-extracted, pinned by contractGolden.test.ts). NATIVE joined the channel enum 2026-08-21 (ad_placement NATIVE is a live enum value — optionsByPath probe): the old fold of Native into DISPLAY relied on the string rendering_context hint to carry the format, but channel-wins in the MCP booked every OpenX Native deal as BANNER. Cutlass-side fail-closed backstops (codes extracted): a video STRING rendering_context without a channel blocks with ox_video_channel_unresolved (a 'native' string now resolves to the NATIVE channel instead), and a channel outside DISPLAY/OLV/CTV/OTT/NATIVE (e.g. the unmapped Audio label, which falls through verbatim) blocks with ox_unknown_channel — never a guessed Format. The string rendering_context line stays emitted for old-MCP back-compat; MCPs from 2026-08-21 upgrade the legacy DISPLAY+native-hint combo to NATIVE."
+      },
+      "geo": {
+        "createArgs": [
+          "targeting"
+        ],
+        "sourceMarker": "geographic",
+        "mergeTool": "ox_merge_deal_geo",
+        "usEmission": "geographic: [\"United States\"]",
+        "failClosedCodes": [
+          "unresolved_country",
+          "ambiguous_geo_token",
+          "subnational_geo_requires_country",
+          "country_roster_unavailable"
+        ],
+        "note": "Geo rides INSIDE the targeting dict as targeting.geographic - geo_countries/geo_states keys are silently ignored by the OpenX MCP. Subnational geo is emitted STRUCTURED as {includes:{state:'SK',country:'CA'}} (2-letter codes; the country scopes state-id resolution) - cutlass#724: a flat token like SK is ambiguous between Saskatchewan and Slovakia and the MCP fails closed on it. Country-only deals keep the flat country-NAME list; the MCP validates every country token (ids AND full names) against the live 249-row country option set (optionsByPath deal.package.targeting.geographic.country) and fails closed when the roster is unavailable - no shape-only acceptance.",
+        "usDefault": "Operator geo policy (frontend/src/lib/geoPolicy.ts): a deal with no geo INCLUDES is seeded country=US at write time, so every create prompt carries this SSP's geo arg. geoExclude entries do NOT suppress the seed; deals whose SSP (or exclusion shape) is outside the rules.go geo-exclude emission matrix fail the audit closed (geo_exclude_unsupported, #219/#244). The MCPs stay pass-through - no server-side geo default (asserted-not-extracted: Deal Onboarding-side policy)."
+      },
+      "geoExclude": {
+        "emitted": true,
+        "wireSupport": true,
+        "sourceMarkers": [
+          "excludes"
+        ],
+        "note": "#244: Deal Onboarding emits targeting.geographic.excludes — single-country state exclusions as {state, country-hint} and country exclusions (when no state exclusion occupies the branch) as country NAMES; the MCP normalizes + country-resolves the excludes branch symmetrically with includes. Un-emittable shapes (ZIP/DMA excludes, mixed-country or unclassifiable exclude states, country+state excludes together) emit a loud NOT-SUPPORTED marker and the geo_exclude_unsupported audit rule blocks them. Live paused-canary read-back remains the #244 acceptance gate before external release."
+      },
+      "segmentsExclude": {
+        "supported": false,
+        "blockerCode": "ox_audience_exclude_unsupported",
+        "failClosedCodes": [
+          "ox_audience_exclude_unsupported"
+        ],
+        "note": "OpenX audience targeting is an include-only {op, val} object with NO excludes branch (live-introspected schema). #226 F2: ox_audience_exclude_unsupported is a HARD BLOCKER (ready_to_create=False), NOT a soft flag that created the deal WITHOUT the exclusion (a create-without silently SERVES the excluded audience). Deal Onboarding never emits the exclude VALUES (they'd hard-fail the MCP) — it emits audience_segments_exclude: [] for recognition + a loud NOT-SUPPORTED marker, and the segment_exclude_unsupported audit rule blocks the (deal, SSP) upstream."
+      },
+      "viewability": {
+        "createArg": "viewability_threshold",
+        "note": "0.0-1.0 fraction."
+      },
+      "language": {
+        "sourceMarkers": [
+          "languages",
+          "deal.package.targeting.technographic.language"
+        ],
+        "failClosedCodes": [
+          "unresolved_language"
+        ],
+        "note": "#226: targeting.languages (inside the create targeting dict - not a def param) -> targeting.technographic.language, resolved via optionsByPath; unresolved values fail closed (unresolved_language). One of the only two SSPs with a create-time language wire."
+      },
+      "adDuration": {
+        "createArgs": [
+          "adunit_max_duration_start",
+          "adunit_max_duration_end"
+        ],
+        "updateTool": "ox_update_deal_ad_duration",
+        "failClosedCodes": [
+          "ox_duration_requires_video_channel"
+        ],
+        "requiresTargetingChannel": [
+          "CTV",
+          "OLV",
+          "OTT"
+        ],
+        "note": "Inclusive range (integer seconds) over the ad unit's declared max ad duration -> package.targeting.video.adunit_max_duration_range. End-only defaults start=0 with a warning. Create args are only honored when targeting.channel is one of requiresTargetingChannel (_OX_AD_DURATION_CHANNELS) - the gate NEVER infers the channel from rendering_context or device_type, so the prompt MUST emit channel inside the targeting block whenever adunit_max_duration_* args are present."
+      },
+      "fee": {
+        "acceptedPartnerKeys": [
+          "partner",
+          "partner_name_or_id",
+          "partner_id"
+        ],
+        "canonicalPartnerKey": "partner_name_or_id",
+        "rejectedPartnerKey": "partner_name",
+        "revenueMethodEnum": [
+          "CPM",
+          "PoM"
+        ],
+        "noDefaultFee": true,
+        "grossShareUnit": {
+          "unit": "percent-0-100",
+          "explicitUnitKey": "gross_share_percent",
+          "legacyKey": "gross_share",
+          "wireScale": "0-1 fraction",
+          "subOneLegacyFailsClosed": true,
+          "failClosedCodes": [
+            "invalid_fee_percentage"
+          ],
+          "note": "Pinned UNIT CONTRACT (cutlass#743.7 / #234.3): both fee keys are PERCENT 0-100 at the tool boundary; the OpenX Decimal wire is a 0-1 fraction, so accepted values divide by 100 exactly once (_serialize_gross_share_percent). The retired heuristic passed sub-1 inputs through as ALREADY-fraction values - a trader-meant 0.5% silently shipped as a 50% share (100x fee inflation on the money path). Now: legacy gross_share in (0,1) fails closed as unit-ambiguous (invalid_fee_percentage blocker at prepare; ValueError pre-mutation on create/update); the explicit-unit gross_share_percent carries sub-1% shares (0.5 -> wire \"0.005\"). Deal Onboarding emits gross_share_percent on every PoM fee block."
+        }
+      }
+    },
+    "PubMatic": {
+      "server": "pubmatic_mcp",
+      "sourceFile": "mcp/pubmatic_mcp.py",
+      "createTool": "pm_execute_deal_from_prompt_inputs",
+      "geo": {
+        "createArgs": [
+          "geo_countries",
+          "geo_states"
+        ],
+        "mergeTool": "pm_merge_deal_geo",
+        "usEmission": "geo_countries: [US]",
+        "note": "ISO-2 codes; MCP resolves numeric geo ids via /v1/common/geo (countryCode eq US - PubMatic-taxonomy id 232, a DIFFERENT id space from Xandr where 232 is US Minor Outlying Islands).",
+        "usDefault": "Operator geo policy (frontend/src/lib/geoPolicy.ts): a deal with no geo INCLUDES is seeded country=US at write time, so every create prompt carries this SSP's geo arg. geoExclude entries do NOT suppress the seed; deals whose SSP (or exclusion shape) is outside the rules.go geo-exclude emission matrix fail the audit closed (geo_exclude_unsupported, #219/#244). The MCPs stay pass-through - no server-side geo default (asserted-not-extracted: Deal Onboarding-side policy)."
+      },
+      "geoExclude": {
+        "emitted": true,
+        "wireSupport": true,
+        "createArgs": [
+          "geo_countries_exclude",
+          "geo_states_exclude"
+        ],
+        "sourceMarkers": [
+          "excludeGeos"
+        ],
+        "failClosedCodes": [
+          "pm_geo_exclude_unresolved",
+          "pm_geo_conflict"
+        ],
+        "note": "#244: create-time geo_countries_exclude / geo_states_exclude resolve through the same geo lookup as the includes and land on targeting excludeGeos (the pm_merge_deal_geo direction='exclude' wire field). Fail-closed: an unresolved exclusion blocks (pm_geo_exclude_unresolved), an include/exclude id overlap blocks (pm_geo_conflict). ZIP/DMA exclusions have no PubMatic path — loud marker + geo_exclude_unsupported audit block. Live paused-canary read-back remains the #244 acceptance gate before external release."
+      },
+      "segmentsExclude": {
+        "createArg": "excluded_segment_names",
+        "sourceMarkers": [
+          "excludeAudienceSegments"
+        ],
+        "failClosedCodes": [
+          "pm_exclude_audience_unresolved",
+          "pm_segment_conflict"
+        ],
+        "note": "#226: create-time excluded_segment_names -> targeting excludeAudienceSegments ([{id}] - the pm_merge_deal_segments direction='exclude' wire shape). Fail-closed: unresolved exclusions block (pm_exclude_audience_unresolved), include/exclude overlaps block (pm_segment_conflict)."
+      },
+      "viewability": {
+        "createArg": "viewability_threshold",
+        "sourceMarkers": [
+          "minViewabilityValue"
+        ],
+        "note": "Integer deciles 10-90 -> targeting minViewabilityValue."
+      },
+      "language": {
+        "supported": false,
+        "note": "asserted-not-extracted (verified by absence): PubMatic has NO language wire anywhere in the create/merge surface (#226). The legacy qa_pm_language 'Language targeting is set' PASS was a false green - Deal Onboarding now emits the NOT-SUPPORTED marker and the SSP-aware qa_language item warns."
+      },
+      "adDuration": {
+        "supported": false,
+        "note": "Vendor has no deal-level ad-duration API (curated-deal object + immutable targeting object carry no duration field; verified vs the archived full MBC video-targeting field list, 2026-07-08). Deal Onboarding emits the NOT-SUPPORTED comment + a NOT APPLIED final-summary line; the checker verifies the MCP source has no duration surface."
+      },
+      "adFormat": {
+        "Banner": 3,
+        "Video": 13,
+        "Native": 12,
+        "allowedIds": [
+          3,
+          12,
+          13
+        ],
+        "failClosedCodes": [
+          "invalid_ad_formats"
+        ],
+        "qualityFlags": [
+          "pm_native_ad_format",
+          "pm_ad_format_readback_mismatch"
+        ],
+        "note": "Per PubMatic's own catalog (authenticated GET /v1/common/adType, 2026-08-03): 3 Banner/Rich Media, 12 Native, 13 Video; Audio (14) is uiEnabled=0 and stays fail-closed. Supersedes cutlass#754 ('Native has no id' - the catalog endpoint works with a valid token) and cutlass#727's 12->13 'legacy Video alias' rewrite, which cutlass PR #862 REMOVED - 12 was never Video, and the rewrite would silently book a Native deal as Video (the old 'Native (13)' label booked live VIDEO deals the same way). Deal Onboarding offers Banner/Video/Native; the persisted-form 'Video (12)' label still aliases to 13 (those forms MEANT video). Native deals raise pm_native_ad_format, and Cutlass asserts the create/update verification read-back ids against what was submitted (pm_ad_format_readback_mismatch) - the live safety net for the first Native create."
+      },
+      "channelAdFormat": {
+        "display": "Display",
+        "olv": "Video",
+        "ctv": "Video",
+        "ott": "Video",
+        "native": "Native"
+      },
+      "iabCategories": {
+        "createArg": "iab_categories",
+        "resolver": "_resolve_iab_categories",
+        "note": "#233.4 (mirrors IX #714): the live /v1/common/iabCategories taxonomy (392 QAG entries, 2026-07-09 audit probe) resolves 20/26 IAB_OPTIONS names by exact-normalized match; Deal Onboarding canonicalizes the misses through PUBMATIC_IAB_NAME_CANONICAL ('Law, Gov & Politics' -> \"Law, Gov't & Politics\" apostrophe variant; 'Careers & Employment' -> 'Careers' QAG tier-1) and emits a loud NOT-SUPPORTED marker for the 4 names with no same-specificity live entry (Auto/Home/Life Insurance, Consumer Banking) instead of a doomed token - the MCP resolver is exact-match fail-closed and an unresolvable name kills the WHOLE create. contractGolden.test.ts pins full IAB_OPTIONS coverage across VERIFIED + CANONICAL + NOT_SUPPORTED (Deal Onboarding-side fact, asserted-not-extracted except the resolver name)."
+      },
+      "iabExclude": {
+        "createArg": "exclude_iab_categories",
+        "note": "Create-time IAB category exclusions -> PubMatic excludeIabCategories (cutlass feat/create-time-iab-excludes). Names or codes, resolved server-side. This fact drifts against cutlass@dev until that branch merges - land the cutlass side first. Only IX + PubMatic take create-time excludes; the other five SSPs surface exclusions as trader-UI follow-ups (Deal Onboarding-side, asserted by contractGolden.test.ts) and carry no iabExclude block."
+      },
+      "owner": {
+        "envVar": "PUBMATIC_OWNER_ID",
+        "defaultOwnerTypeId": 7,
+        "allowedOwnerTypeIds": [
+          5,
+          7
+        ],
+        "omittedOwnerSentinel": 0,
+        "note": "Owner lives ONLY in the Cutlass variant env (PUBMATIC_OWNER_ID, no built-in default). Deal Onboarding emits the falsy sentinel 0 for logged_in_owner_id (the MCP resolves it to the configured owner) and the role only (type 7 = Buyer). A literal owner id must never appear in a prompt - it comes from the engine env."
+      }
+    },
+    "Xandr": {
+      "server": "xandr_mcp",
+      "sourceFile": "mcp/xandr_mcp.py",
+      "createTool": "xandr_execute_deal_from_prompt_inputs",
+      "failClosedCodes": [
+        "xandr_margin_required"
+      ],
+      "marginArg": "margin_percent",
+      "dates": {
+        "timezone": "UTC",
+        "sourceMarker": "interpreted as UTC by the Deal Service",
+        "note": "cutlass#744.8: Deal Service naive datetimes ('YYYY-MM-DD HH:MM:SS') are stored/interpreted as UTC - live-verified against 100-deal read-backs (UI-picked midnight-ET starts read back 04:00:00/05:00:00); the protocol's old 'local time' claim was wrong and is corrected in deal-creation-xandr.yaml + the update tool docstring (sourceMarker pins the corrected docstring). Deal Onboarding emits the intended ET-calendar-day start as its UTC instant (businessMidnightUtc - midnight America/New_York) and OMITS start_date for a today-start (the MCP defaults to now = immediate), so a deal never goes live the prior evening ET."
+      },
+      "buyer": {
+        "createArg": "buyer",
+        "numericEscapeHatchMarker": "numeric input bypasses lookup entirely",
+        "failClosedCodes": [
+          "buyer_unresolved",
+          "buyer_ambiguous",
+          "buyer_lookup_failed"
+        ],
+        "houseBuyerMembers": {
+          "The Trade Desk": 1088,
+          "Yahoo DSP": 2975
+        },
+        "note": "#231 / cutlass#734. Deal Onboarding emits NUMERIC buyer member ids from XANDR_BUYER_CANONICAL where a house buyer member exists (houseBuyerMembers is asserted-not-extracted: live-probed via GET /platform-member primary_type=buyer, 2026-07-09 audit); numeric skips the MCP's name resolution (numericEscapeHatchMarker pins the docstring). DV360/Amazon have NO house buyer member - those deals route by the trader's NUMERIC seat id. Anything else emits the name; the MCP resolves it via /platform-member and fails loud on ambiguity (never fuzzy-guessed over the ~16k-row directory)."
+      },
+      "geo": {
+        "createArgs": [
+          "geo_countries",
+          "geo_states"
+        ],
+        "mergeTool": "merge_xandr_deal_targeting",
+        "usEmission": "geo_countries: [US]",
+        "note": "ISO-2 codes; MCP resolves via GET /country?code_like= onto the PROFILE as country_targets [{id:233,name:'United States'}] + country_action=include. 233, never 232 (US Minor Outlying Islands - silently resolves 0 regions).",
+        "usDefault": "Operator geo policy (frontend/src/lib/geoPolicy.ts): a deal with no geo INCLUDES is seeded country=US at write time, so every create prompt carries this SSP's geo arg. geoExclude entries do NOT suppress the seed; deals whose SSP (or exclusion shape) is outside the rules.go geo-exclude emission matrix fail the audit closed (geo_exclude_unsupported, #219/#244). The MCPs stay pass-through - no server-side geo default (asserted-not-extracted: Deal Onboarding-side policy)."
+      },
+      "environment": {
+        "createArgs": [
+          "supply_types"
+        ],
+        "supplyTypes": [
+          "web",
+          "mobile_web",
+          "mobile_app"
+        ],
+        "sourceMarker": "profile[\"supply_type_targets\"] = list(supply_types)",
+        "emission": "supply_types: [mobile_app] | [web, mobile_web]",
+        "note": "Inventory Type. Curate DOES carry an environment axis, contrary to the pre-2026-08-31 assumption that had Deal Onboarding drop it with a NOT-SUPPORTED marker. It rides the PROFILE as supply_type_targets + supply_type_action='include', alongside device_type_targets. Wire values are live-verified against 36 of 100 profiles on the account (2026-08-31): the canonical AppNexus docs say 'mobile_browser', the wire says 'mobile_web' - trust the wire. Deal Onboarding emits In-App -> [mobile_app], Web Only -> [web, mobile_web], and NOTHING for All (an absent restriction is already the widest). An unrecognized value is dropped MCP-side with xandr_unresolved_supply_type rather than narrowing the deal on a guess."
+      },
+      "geoExclude": {
+        "emitted": true,
+        "wireSupport": true,
+        "createArgs": [
+          "geo_countries_exclude",
+          "geo_states_exclude"
+        ],
+        "sourceMarkers": [
+          "country_action",
+          "region_action"
+        ],
+        "failClosedCodes": [
+          "xandr_geo_country_conflict",
+          "xandr_geo_region_conflict",
+          "xandr_geo_exclude_unresolved"
+        ],
+        "note": "#244: create-time geo_countries_exclude / geo_states_exclude set the profile's country_action / region_action siblings to 'exclude' — the same fields the merge tool drives. One action per dimension: an include+exclude mix on the same dimension fails closed BEFORE any network call (xandr_geo_country_conflict / xandr_geo_region_conflict); the canonical compose (include country, exclude region) works. Unresolved exclusions abort the create (xandr_geo_exclude_unresolved) — never partial-dropped. Deal Onboarding emits an exclusion only when its dimension carries no includes; ZIP/DMA excludes have no Xandr path (loud marker + audit block). Live paused-canary read-back remains the #244 acceptance gate before external release."
+      },
+      "segmentsExclude": {
+        "createArg": "excluded_segment_names",
+        "failClosedCodes": [
+          "xandr_segment_exclude_unresolved",
+          "xandr_segment_conflict"
+        ],
+        "note": "#226: create-time excluded_segment_names -> segment_targets elements with action='exclude' (the merge tool's element shape). Fail-closed: unresolved exclusions abort before the deal POST (xandr_segment_exclude_unresolved); include/exclude overlaps abort (xandr_segment_conflict)."
+      },
+      "viewability": {
+        "supported": false,
+        "note": "asserted-not-extracted (verified by absence): no viewability field anywhere on the Xandr create wire - deal, profile, or curated line item (#226). Deal Onboarding emits the NOT-SUPPORTED marker; qa_viewability warns instead of the old false-green PASS."
+      },
+      "language": {
+        "supported": false,
+        "note": "asserted-not-extracted (verified by absence): no create-time language wire (#226) - NOT-SUPPORTED marker + qa_language warn."
+      },
+      "adDuration": {
+        "createArg": "deal_creative_duration",
+        "updateTool": "xandr_set_deal_video_duration",
+        "semanticsMarker": "ONE-SIDED MINIMUM-ALLOWED",
+        "failClosedCodes": [
+          "xandr_duration_non_video"
+        ],
+        "note": "Single scalar, integer seconds, LOWER bound only (targets slots allowing >= N seconds) riding the deal line-item's profile.video_targets. Cannot cap length upward - Deal Onboarding maps allowed lists to min(list) with a loud comment and reports max-only caps as NOT APPLIED."
+      },
+      "lists": {
+        "supported": false,
+        "dealListMergeTool": "xandr_merge_deal_lists",
+        "prohibitedMarker": "publisher_targets are platform-prohibited",
+        "note": "No list-FILE ingestion path (#220): profile deal-list targeting (xandr_merge_deal_lists) takes PRE-EXISTING Curate deal-list names/ids only, and raw publisher_targets are platform-prohibited on Curate profiles. Deal Onboarding emits a loud '# LIST NOT APPLIED' comment + a Required-final-summary disclosure line instead of any file arg; the deal card and qa_list_ssp_support surface the same. supported:false itself is asserted-not-extracted (verified by absence — no @mcp.tool in xandr_mcp.py ingests a values_file into domain/app-bundle targeting)."
+      }
+    },
+    "Media.net": {
+      "server": "medianet_mcp",
+      "sourceFile": "mcp/medianet_mcp.py",
+      "createTool": "mn_execute_deal_from_prompt_inputs",
+      "domainsMergeTool": "medianet_merge_deal_publisher_domains",
+      "advertiserWhitelistTool": "medianet_merge_deal_domains",
+      "whitelistedSeats": {
+        "shape": "[{demand_partner, seat_ids[]}]",
+        "rejectedKey": "seat_id",
+        "mergeTool": "medianet_merge_deal_publishers",
+        "sourceMarkers": [
+          "'seat_id' is not a Media.net field",
+          "_validate_whitelisted_seats"
+        ],
+        "note": "#234.4: the Select v9.4 whitelisted_seats surface is a list of PER-DEMAND-PARTNER seat groups {'demand_partner': <name>, 'seat_ids': [<id>, ...]} (Guide p.20/p.25-26). A flat 'seat_id' field does not exist - the retired merge helper keyed identity on it, making per-partner merges impossible and duplicate partner entries possible. Identity is now demand_partner (case/space-normalized); 'add' unions seat_ids per partner; entries carrying the phantom seat_id key FAIL CLOSED at create (mn_whitelisted_seats_invalid) and at the merge tool. Deal Onboarding does NOT emit whitelisted_seats - Media.net seat-level buyer scoping stays NOT-SUPPORTED (write acceptance vendor-unverified, cutlass#755); deals route at DSP level via demand_partners."
+      },
+      "domainsMerge": {
+        "tool": "medianet_merge_deal_publisher_domains",
+        "args": [
+          "deal_id",
+          "deal_ids",
+          "domains",
+          "values_file",
+          "values_sha256",
+          "expected_count",
+          "is_excluded",
+          "merge_mode"
+        ],
+        "note": "Publisher-domain INVENTORY targeting: deal-body object publisher_domains {values, is_excluded} (Select API Guide v9.4 p.26). advertiserWhitelistTool (medianet_merge_deal_domains) writes ONLY the flat advertiser whitelist whitelisted_domains and hard-fails on target:/is_excluded: args - it is never a substitute for inventory targeting. App-bundle lists are UNSUPPORTED on Media.net (app_categories are category ids, not bundles) and must emit unsupported_targeting_op."
+      },
+      "adFormat": {
+        "Banner": 0,
+        "Native": 1,
+        "Video": 2
+      },
+      "channelAdFormat": {
+        "display": "Banner",
+        "olv": "Video",
+        "ctv": "Video",
+        "ott": "Video"
+      },
+      "failClosedCodes": [
+        "medianet_margin_required"
+      ],
+      "geo": {
+        "createArgs": [
+          "geo"
+        ],
+        "mergeTool": "medianet_merge_deal_geo",
+        "usEmission": "geo: [US]",
+        "note": "ISO-2 codes; MCP resolves each to {geo_type:'country',id:'US',is_excluded:false}. The real v9 field is 'geo' - legacy 'geos' string lists are a documented trap with no transform.",
+        "usDefault": "Operator geo policy (frontend/src/lib/geoPolicy.ts): a deal with no geo INCLUDES is seeded country=US at write time, so every create prompt carries this SSP's geo arg. geoExclude entries do NOT suppress the seed; deals whose SSP (or exclusion shape) is outside the rules.go geo-exclude emission matrix fail the audit closed (geo_exclude_unsupported, #219/#244). The MCPs stay pass-through - no server-side geo default (asserted-not-extracted: Deal Onboarding-side policy)."
+      },
+      "geoExclude": {
+        "emitted": false,
+        "wireSupport": "unverified",
+        "sourceMarkers": [
+          "is_excluded"
+        ],
+        "note": "The MCP passes structured {geo_type, id, is_excluded} geo entries through, but live v9 API acceptance of is_excluded:true on geo is vendor-unverified (Media.net is the standing vendor-unverified SSP). NOT emitted by Deal Onboarding — the builder emits a loud NOT-SUPPORTED marker and the geo_exclude_unsupported audit rule blocks the batch (#219/#244 fail-closed)."
+      },
+      "segmentsExclude": {
+        "supported": false,
+        "note": "asserted-not-extracted (verified by absence of an exclude direction): all four Media.net segment groups (first_party/experian_custom/experian_syndicated/contextual) are include-only on create AND merge - the Select API has no audience-exclusion surface (#226). NOT-SUPPORTED marker + qa_segment_excludes warn."
+      },
+      "viewability": {
+        "createArg": "viewability_min",
+        "note": "Fraction 0-1 deal-body viewability floor."
+      },
+      "language": {
+        "createArg": "device_languages",
+        "note": "#226: device_languages resolved against the device-languages entity catalog (unresolved values raise the dynamic <kind>_unresolved blocker - fail-closed). One of the only two SSPs with a create-time language wire."
+      },
+      "adDuration": {
+        "createArgs": [
+          "video_min",
+          "video_max"
+        ],
+        "updateArgs": [
+          "video_min",
+          "video_max"
+        ],
+        "semanticsMarker": "semantics UNVERIFIED",
+        "note": "Deal-body video:{min,max} - PRESUMED ad-duration bounds in integer seconds; the Select API guide is partner-gated so units/direction are unverified. Every Deal Onboarding emission carries the UNVERIFIED warning comment."
+      }
+    },
+    "TripleLift": {
+      "server": "triplelift_mcp",
+      "sourceFile": "mcp/triplelift_mcp.py",
+      "createTool": "tl_create_deal",
+      "listTools": [
+        "tl_list_buyers",
+        "tl_list_countries",
+        "tl_list_regions",
+        "tl_list_segments"
+      ],
+      "failClosedCodes": [
+        "tl_fee_required",
+        "tl_create_ambiguous_transport"
+      ],
+      "geo": {
+        "createArgs": [],
+        "sourceMarker": "country_ids",
+        "mergeTool": "tl_merge_deal_geo",
+        "usEmission": "country_ids: [<numeric ids from Step 1b>]",
+        "note": "No flat geo param - the prompt instructs Step 1b (tl_list_countries) to resolve names to member-scoped INTEGER ids, then passes payload.country_ids. Load-bearing: tl_create_deal hard-requires a targetingExpression, so the US default keeps geo-less+segment-less TL deals creatable.",
+        "usDefault": "Operator geo policy (frontend/src/lib/geoPolicy.ts): a deal with no geo INCLUDES is seeded country=US at write time, so every create prompt carries this SSP's geo arg. geoExclude entries do NOT suppress the seed; deals whose SSP (or exclusion shape) is outside the rules.go geo-exclude emission matrix fail the audit closed (geo_exclude_unsupported, #219/#244). The MCPs stay pass-through - no server-side geo default (asserted-not-extracted: Deal Onboarding-side policy)."
+      },
+      "subnationalGeo": {
+        "regionListTool": "tl_list_regions",
+        "createPayloadKeys": [
+          "region_ids",
+          "postal_codes"
+        ],
+        "bindings": [
+          "EB_SUPPLY_GEO_REGION_ID",
+          "EB_SUPPLY_GEO_CANONICAL_POSTAL_CODE"
+        ],
+        "statesEmitted": true,
+        "statesEmission": "region_ids: [<numeric REGION ids from Step 1",
+        "zipsEmitted": false,
+        "dmasEmitted": false,
+        "note": "cutlass#732: tl_create_deal folds the region_ids/postal_codes payload keys into targetingExpression (EB_SUPPLY_GEO_REGION_ID integralTargets / EB_SUPPLY_GEO_CANONICAL_POSTAL_CODE stringTargets — both leaves live-read-proven on deals 85567/85579); tl_list_regions resolves state/province names to ids. Deal Onboarding emits region_ids for r.states (resolve-first, fail-loud on an unresolvable state). zipsEmitted:false is the fail-closed interim: postal WRITE acceptance is vendor-unconfirmed until the live create canary runs, so the TL prompt emits a NOT-SUPPORTED manual-step block for ZIPs instead of the key (flip zipsEmitted + the builder together after the canary). dmasEmitted:false is permanent-until-vendor: no DMA binding exists. statesEmitted/zipsEmitted/dmasEmitted are Deal Onboarding-side facts (asserted-not-extracted), pinned by contractGolden.test.ts."
+      },
+      "geoExclude": {
+        "emitted": false,
+        "wireSupport": "unverified",
+        "sourceMarkers": [
+          "\"excluded\": False"
+        ],
+        "note": "targetingExpression nodes carry an 'excluded' bool (the sourceMarker literal), but _build_targeting_expression never sets it on EB_SUPPLY_GEO_COUNTRY_ID nodes and whether the TL engine honors excluded:true on supply-geo nodes is vendor-unconfirmed. NOT emitted by Deal Onboarding — the builder emits a loud NOT-SUPPORTED marker and the geo_exclude_unsupported audit rule blocks the batch (#219/#244 fail-closed indefinitely)."
+      },
+      "segmentsExclude": {
+        "supported": false,
+        "escalation": "cutlass#757",
+        "note": "The targetingExpression format carries an excluded bool, but whether the TL engine honors excluded:true on EB_SUPPLY_1P_SEGMENT_ID audience leaves is vendor-unconfirmed (cutlass#757) - ambiguous capability = NOT SUPPORTED: loud marker, never an unverified exclude leaf (#226)."
+      },
+      "viewability": {
+        "supported": false,
+        "note": "asserted-not-extracted (verified by absence): tl_create_deal and the targetingExpression bindings carry no viewability field (#226) - NOT-SUPPORTED marker + qa_viewability warn."
+      },
+      "language": {
+        "supported": false,
+        "note": "asserted-not-extracted (verified by absence): no create-time language wire (#226) - NOT-SUPPORTED marker + qa_language warn."
+      },
+      "iabCategories": {
+        "supported": false,
+        "escalation": "cutlass#757",
+        "note": "VENDOR-GATED (#226 item C): tl_create_deal has no IAB path - the brandAndCreativeControls iabCategoryTargeting scaffold ships EMPTY and TripleLift publishes no IAB item-ID discovery endpoint (cutlass#757 ask #4). Deal Onboarding emits the loud NOT-SUPPORTED marker; qa_contextual warns so TL IAB can never report configured."
+      },
+      "adDuration": {
+        "supported": false,
+        "knownNonTargetingMentions": [
+          "CREATIVE_DURATION"
+        ],
+        "note": "Vendor has no deal-level ad-duration mechanism (live-probed 2026-07-08 on a live member: legacyTargeting duration fields are read-only null projections; every duration-shaped targetingExpression binding candidate rejected VALIDATION_ERROR). Deal Onboarding emits the NOT-SUPPORTED comment + a NOT APPLIED final-summary line; the checker verifies the MCP source has no duration surface. Re-verified 2026-08-21: cutlass eb669850 added CREATIVE_DURATION to the advertiserReport reporting columns - a report dimension (creative length), not a create/update targeting surface; pinned in knownNonTargetingMentions so the absence check scrubs it and any NEW duration mention still drifts."
+      },
+      "requiredFields": [
+        "memberId",
+        "name",
+        "active",
+        "primaryGoalId",
+        "secondaryGoal",
+        "budget",
+        "dealPriceType",
+        "dealPriceValue",
+        "startDate",
+        "endDate",
+        "commercializedFormats",
+        "dsp",
+        "channel",
+        "isPublisher",
+        "creativeTags",
+        "dspFormatWorkflow",
+        "targetingExpression",
+        "dealTypeId"
+      ],
+      "curationFeePercentType": "FEE_MODEL_TYPE_PERCENT",
+      "lists": {
+        "postCreateMergeTool": "tl_merge_deal_supply_domains",
+        "mergeArgs": [
+          "deal_id",
+          "deal_ids",
+          "domains",
+          "values_file",
+          "values_sha256",
+          "expected_count",
+          "merge_mode",
+          "action"
+        ],
+        "dimension": "targetingExpression EB_SUPPLY_DOMAIN_ID leaf (supply-domain/site inventory; bare-domain stringTargets, excluded:true = blocklist) — NOT advertiser/adomain brand-safety",
+        "dimensionMarker": "EB_SUPPLY_DOMAIN_ID",
+        "advertiserDomainMergeTool": "tl_merge_deal_domains",
+        "advertiserDimensionMarker": "advertiserDomainTargeting",
+        "supplyDomainsSupported": true,
+        "note": "#220/cutlass#731: tl_create_deal takes no list file, so Deal Onboarding instructs a POST-CREATE tl_merge_deal_supply_domains merge for domain lists — the SUPPLY-domain (site/inventory) targetingExpression leaf a site list actually means. tl_merge_deal_domains remains the separate ADVERTISER-domain (adomain brand-safety) control (advertiserDimensionMarker pins its docstring) and is never a substitute. App-bundle lists have no TripleLift dimension at all and emit LIST NOT APPLIED. supplyDomainsSupported:true is asserted-not-extracted with one open residual: the EB_SUPPLY_DOMAIN_ID encoding is live-read-proven (on live deals) and the tool ships, but WRITE acceptance of the binding awaits the one live canary PATCH on a paused deal (cutlass#731 release gate; if rejected, cutlass flips the protocol domains row to unsupported and this repoints back)."
+      }
+    },
+    "Magnite": {
+      "server": "magnite_mcp",
+      "sourceFile": "mcp/magnite_mcp.py",
+      "createTool": "magnite_execute_deal_from_prompt_inputs",
+      "publishersMergeTool": "magnite_merge_publishers",
+      "buyer": {
+        "createArgIsList": true,
+        "listMarker": "for buyer_ref in buyer_refs:",
+        "requiredMarker": "buyers is required (at least one buyer per DSP)",
+        "failClosedCodes": [
+          "buyer_unresolved",
+          "buyer_lookup_failed"
+        ],
+        "note": "ClearLine takes dsps[i].buyers as a LIST and resolves each ref independently against that DSP's full (paginated) buyer catalog, so ONE deal can be pinned to many buyer seats. Deal Onboarding splits a comma-separated Seat ID into one entry per seat (splitSeatIds, frontend/src/lib/seatPolicy.ts) and the seat_multi audit rule confines a multi-seat value to Magnite-only batches, since every other SSP carries a single seat token and would ship the comma list verbatim. listMarker pins the per-ref resolution loop: were buyers ever narrowed to a scalar, the multi-seat wire would silently book only the first buyer. ANY unresolved ref blocks the whole create (buyer_unresolved) - no deal books with a partial buyer list."
+      },
+      "failClosedCodes": [
+        "magnite_margin_required"
+      ],
+      "geo": {
+        "createArgs": [
+          "geo_countries_include",
+          "geo_regions_include"
+        ],
+        "mergeTool": "magnite_merge_geo",
+        "usEmission": "geo_countries_include: [US]",
+        "note": "ISO-2 codes resolved per source against metadata/countries (SpringServe values ARE ISO codes; DV+ values are numeric with plain-name labels). State/province targeting rides geo_regions_include, resolved against metadata/regions — those tokens ALSO differ by source (Quebec is CA-QC on SpringServe, 1412 on DV+) so they are always catalog-resolved, never hardcoded. geography.country and geography.region are INDEPENDENT components that each carry a single Include XOR Exclude type; they compose on one deal. metroArea/city/postalCode remain unwired.",
+        "usDefault": "Operator geo policy (frontend/src/lib/geoPolicy.ts): a deal with no geo INCLUDES is seeded country=US at write time, so every create prompt carries this SSP's geo arg. geoExclude entries do NOT suppress the seed; deals whose SSP (or exclusion shape) is outside the rules.go geo-exclude emission matrix fail the audit closed (geo_exclude_unsupported, #219/#244). The MCPs stay pass-through - no server-side geo default (asserted-not-extracted: Deal Onboarding-side policy)."
+      },
+      "geoExclude": {
+        "emitted": true,
+        "wireSupport": true,
+        "createArg": "geo_countries_exclude",
+        "createArgs": [
+          "geo_countries_exclude",
+          "geo_regions_exclude"
+        ],
+        "failClosedCodes": [
+          "geo_country_conflict",
+          "geo_region_conflict"
+        ],
+        "note": "#244: country and region are INDEPENDENT geography components, each carrying a single Include XOR Exclude type. Deal Onboarding emits geo_countries_exclude only when the deal has no country includes, and geo_regions_exclude only when it has no state includes (geo_country_conflict / geo_region_conflict blockers); an exclusion alongside a same-component include emits a loud NOT-SUPPORTED marker and geo_exclude_unsupported blocks it. ACROSS components they compose: a country include plus a region exclude (\"target Canada, exclude Quebec\") is one valid payload. Region Exclude is LIVE-VERIFIED — 2026-08-28 canary on MGNI-MD-449-34286 (Outcomes CA, DV+ marketplace 449) wrote geography.region type Exclude via the DMG PUT and read it back with every sibling component byte-identical. ZIP/DMA exclusions still have no Magnite exclude surface — loud marker + audit block."
+      },
+      "segmentsExclude": {
+        "createArg": "audience_segments_block",
+        "note": "SpringServe (Streaming: CTV + OTT) ONLY - DV+ has no audience API until Magnite v3.0 (audience_segments_unsupported_on_dvplus), so DV+ exclusions ride the manual post-create comment and qa_segment_excludes warns (#226)."
+      },
+      "viewability": {
+        "supported": false,
+        "dvPlusManual": true,
+        "note": "No viewability create arg on the Magnite MCP. DV+ deals get the raw-targeting viewability MANUAL comment (min deciles 0-90); SpringServe (Streaming: CTV + OTT) has NO verified viewability surface - the builder emits the NOT-SUPPORTED marker (the pre-fix CTV path emitted NOTHING while qa_viewability reported PASS; #226)."
+      },
+      "language": {
+        "supported": false,
+        "note": "CREATE-side only: there is no language arg on the ClearLine create wire (#226), so the builder still emits the NOT-SUPPORTED marker and qa_language warns. Do NOT read that as \"Magnite cannot target language\": the UPDATE path can, via magnite_merge_language -> targeting.device.language (languages_include/languages_exclude, single Include XOR Exclude type, merge_mode defaults to replace). That component is absent from Magnite's own published spec (OpenAPI v1.12.0 documents targeting.platform with device/os/brand/browser and no language; the PDF guide never mentions it) but IS on the live wire - LIVE-VERIFIED 2026-08-28 on MGNI-MD-449-34286: the tool wrote device.language Include [en] and geography (Canada Include + Quebec Exclude) plus domainList survived byte-identical. Values resolve against a pinned ISO 639-1 set because Magnite publishes no language metadata endpoint. Exclude direction is supported by the tool but NOT yet live-canaried."
+      },
+      "iabCategories": {
+        "supported": false,
+        "note": "asserted-not-extracted (verified by absence): the ClearLine Curation Demand Management API has no content-category/IAB surface (zero iab/content-category references in the Magnite MCP) - Deal Onboarding emits the loud NOT-SUPPORTED marker; qa_contextual warns (#226)."
+      },
+      "adDuration": {
+        "createArgs": [
+          "ad_duration_min",
+          "ad_duration_max"
+        ],
+        "mergeTool": "magnite_merge_video_duration",
+        "maxRequiresMin": true,
+        "failClosedCodes": [
+          "ad_duration_invalid"
+        ],
+        "qualityFlags": [
+          "magnite_ad_duration_exact_length"
+        ],
+        "note": "targeting.video.adDuration {min:int, max:int|null}, integer seconds, contiguous range, BOTH sources (SpringServe CTV + DV+). max without min fails closed - the MCP documents ad_duration_min=1 as the 'up to N seconds' convention, which Deal Onboarding emits for max-only briefs. Range-mapping a discrete list widens it (surfaced by a prompt comment)."
+      },
+      "revShareArg": "rev_share_value",
+      "revShareScale": "percent",
+      "priceTypes": [
+        "CPM",
+        "Market Rate",
+        "Market Rate with Minimum"
+      ],
+      "allPublishersSentinel": "ALL",
+      "mrwm": {
+        "springServeBlockerCode": "price_type_unsupported_on_springserve",
+        "minimumWireField": "minimumCpm",
+        "minimumMissingBlockerCode": "mrwm_minimum_missing",
+        "note": "'Market Rate with Minimum' is DV+-only: SpringServe (Streaming: CTV + OTT) creates block at cutlass prepare, so buildMagnitePrompt downgrades Streaming deals to Market Rate (#228). On DV+ the floor ships as the TOP-LEVEL curatorPricing.minimumCpm (cutlass#718) and MRwM without a floor blocks (mrwm_minimum_missing) - Deal Onboarding always emits a floor with MRwM."
+      }
+    }
+  },
+  "sharedTools": {
+    "dealSheet": {
+      "server": "deal_sheet",
+      "sourceFile": "mcp/deal_sheet_server.py",
+      "buildTool": "build_deal_sheet",
+      "validateBriefTool": "validate_brief"
+    },
+    "sendgrid": {
+      "server": "sendgrid",
+      "sourceFile": "mcp/sendgrid_server.py",
+      "sendTool": "send_email"
+    }
+  },
+  "createProtocol": {
+    "protocolFile": "protocols/multi-deal-creation.yaml",
+    "primarySheetTool": "mcp_deal_sheet_build_deal_sheet",
+    "primaryEmailTool": "mcp_sendgrid_send_email",
+    "finalStep": {
+      "tool": "build_deal_sheet",
+      "args": [
+        "deals",
+        "client_name",
+        "theme",
+        "output_filename",
+        "reporting_email_alias"
+      ],
+      "note": "Every arg buildBatchPrompt's final_step block instructs is a REAL build_deal_sheet parameter (#236.1 — the block used to emit phantom partner:/campaign_id: args the tool never accepted). The campaign_id intent now rides output_filename (campaign-id-prefixed sheet filename). contractGolden.test.ts pins Deal Onboarding's emission to this arg set; check-cutlass-contract.mjs pins each arg against the cutlass tool signature."
+    },
+    "followupStep": {
+      "tool": "send_email",
+      "args": [
+        "to_email",
+        "cc_emails",
+        "subject",
+        "attachments"
+      ]
+    }
+  },
+  "brief": {
+    "schemaFile": "protocols/deal-brief.schema.yaml",
+    "schemaVersion": "1.1",
+    "validatorSourceFile": "mcp/deal_sheet_server.py",
+    "validateBriefRequiredFields": [
+      "ssp",
+      "channel",
+      "deal_name",
+      "recommended_bid"
+    ],
+    "schemaRequiredDealFields": [
+      "ssp",
+      "channel",
+      "deal_name",
+      "recommended_bid",
+      "floor"
+    ],
+    "adDurationField": "ad_duration",
+    "adDurationProps": [
+      "allowed_durations",
+      "min_seconds",
+      "max_seconds"
+    ],
+    "sspKeys": [
+      "openx",
+      "indexexchange",
+      "pubmatic",
+      "xandr",
+      "triplelift",
+      "medianet",
+      "magnite"
+    ]
+  }
+}

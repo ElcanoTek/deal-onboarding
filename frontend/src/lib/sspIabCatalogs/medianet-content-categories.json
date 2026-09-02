@@ -1,0 +1,1576 @@
+{
+ "ssp": "medianet",
+ "key": "content-categories",
+ "taxonomy": "IAB Content Taxonomy 1.x (id = IAB code)",
+ "pulledAt": "2026-07-14",
+ "values": [
+  {
+   "label": "Arts & Entertainment",
+   "id": "IAB1"
+  },
+  {
+   "label": "Books & Literature",
+   "id": "IAB1-1"
+  },
+  {
+   "label": "Celebrity Fan/Gossip",
+   "id": "IAB1-2"
+  },
+  {
+   "label": "Fine Art",
+   "id": "IAB1-3"
+  },
+  {
+   "label": "Humor",
+   "id": "IAB1-4"
+  },
+  {
+   "label": "Movies",
+   "id": "IAB1-5"
+  },
+  {
+   "label": "Music",
+   "id": "IAB1-6"
+  },
+  {
+   "label": "Television",
+   "id": "IAB1-7"
+  },
+  {
+   "label": "Home & Garden",
+   "id": "IAB10"
+  },
+  {
+   "label": "Appliances",
+   "id": "IAB10-1"
+  },
+  {
+   "label": "Entertaining",
+   "id": "IAB10-2"
+  },
+  {
+   "label": "Environmental Safety",
+   "id": "IAB10-3"
+  },
+  {
+   "label": "Gardening",
+   "id": "IAB10-4"
+  },
+  {
+   "label": "Home Repair",
+   "id": "IAB10-5"
+  },
+  {
+   "label": "Home Theater",
+   "id": "IAB10-6"
+  },
+  {
+   "label": "Interior Decorating",
+   "id": "IAB10-7"
+  },
+  {
+   "label": "Landscaping",
+   "id": "IAB10-8"
+  },
+  {
+   "label": "Remodeling & Construction",
+   "id": "IAB10-9"
+  },
+  {
+   "label": "\"Law, Gov't & Politics\"",
+   "id": "IAB11"
+  },
+  {
+   "label": "Immigration",
+   "id": "IAB11-1"
+  },
+  {
+   "label": "Legal Issues",
+   "id": "IAB11-2"
+  },
+  {
+   "label": "U.S. Government Resources",
+   "id": "IAB11-3"
+  },
+  {
+   "label": "Politics",
+   "id": "IAB11-4"
+  },
+  {
+   "label": "Commentary",
+   "id": "IAB11-5"
+  },
+  {
+   "label": "News",
+   "id": "IAB12"
+  },
+  {
+   "label": "International News",
+   "id": "IAB12-1"
+  },
+  {
+   "label": "National News",
+   "id": "IAB12-2"
+  },
+  {
+   "label": "Local News",
+   "id": "IAB12-3"
+  },
+  {
+   "label": "Personal Finance",
+   "id": "IAB13"
+  },
+  {
+   "label": "Beginning Investing",
+   "id": "IAB13-1"
+  },
+  {
+   "label": "Retirement Planning",
+   "id": "IAB13-10"
+  },
+  {
+   "label": "Stocks",
+   "id": "IAB13-11"
+  },
+  {
+   "label": "Tax Planning",
+   "id": "IAB13-12"
+  },
+  {
+   "label": "Credit/Debt & Loans",
+   "id": "IAB13-2"
+  },
+  {
+   "label": "Financial News",
+   "id": "IAB13-3"
+  },
+  {
+   "label": "Financial Planning",
+   "id": "IAB13-4"
+  },
+  {
+   "label": "Hedge Fund",
+   "id": "IAB13-5"
+  },
+  {
+   "label": "Insurance",
+   "id": "IAB13-6"
+  },
+  {
+   "label": "Investing",
+   "id": "IAB13-7"
+  },
+  {
+   "label": "Mutual Funds",
+   "id": "IAB13-8"
+  },
+  {
+   "label": "Options",
+   "id": "IAB13-9"
+  },
+  {
+   "label": "Society",
+   "id": "IAB14"
+  },
+  {
+   "label": "Dating",
+   "id": "IAB14-1"
+  },
+  {
+   "label": "Divorce Support",
+   "id": "IAB14-2"
+  },
+  {
+   "label": "Gay Life",
+   "id": "IAB14-3"
+  },
+  {
+   "label": "Marriage",
+   "id": "IAB14-4"
+  },
+  {
+   "label": "Senior Living",
+   "id": "IAB14-5"
+  },
+  {
+   "label": "Teens",
+   "id": "IAB14-6"
+  },
+  {
+   "label": "Weddings",
+   "id": "IAB14-7"
+  },
+  {
+   "label": "Ethnic Specific",
+   "id": "IAB14-8"
+  },
+  {
+   "label": "Science",
+   "id": "IAB15"
+  },
+  {
+   "label": "Astrology",
+   "id": "IAB15-1"
+  },
+  {
+   "label": "Weather",
+   "id": "IAB15-10"
+  },
+  {
+   "label": "Biology",
+   "id": "IAB15-2"
+  },
+  {
+   "label": "Chemistry",
+   "id": "IAB15-3"
+  },
+  {
+   "label": "Geology",
+   "id": "IAB15-4"
+  },
+  {
+   "label": "Paranormal Phenomena",
+   "id": "IAB15-5"
+  },
+  {
+   "label": "Physics",
+   "id": "IAB15-6"
+  },
+  {
+   "label": "Space/Astronomy",
+   "id": "IAB15-7"
+  },
+  {
+   "label": "Geography",
+   "id": "IAB15-8"
+  },
+  {
+   "label": "Botany",
+   "id": "IAB15-9"
+  },
+  {
+   "label": "Pets",
+   "id": "IAB16"
+  },
+  {
+   "label": "Aquariums",
+   "id": "IAB16-1"
+  },
+  {
+   "label": "Birds",
+   "id": "IAB16-2"
+  },
+  {
+   "label": "Cats",
+   "id": "IAB16-3"
+  },
+  {
+   "label": "Dogs",
+   "id": "IAB16-4"
+  },
+  {
+   "label": "Large Animals",
+   "id": "IAB16-5"
+  },
+  {
+   "label": "Reptiles",
+   "id": "IAB16-6"
+  },
+  {
+   "label": "Veterinary Medicine",
+   "id": "IAB16-7"
+  },
+  {
+   "label": "Sports",
+   "id": "IAB17"
+  },
+  {
+   "label": "Auto Racing",
+   "id": "IAB17-1"
+  },
+  {
+   "label": "Figure Skating",
+   "id": "IAB17-10"
+  },
+  {
+   "label": "Fly Fishing",
+   "id": "IAB17-11"
+  },
+  {
+   "label": "Football",
+   "id": "IAB17-12"
+  },
+  {
+   "label": "Freshwater Fishing",
+   "id": "IAB17-13"
+  },
+  {
+   "label": "Game & Fish",
+   "id": "IAB17-14"
+  },
+  {
+   "label": "Golf",
+   "id": "IAB17-15"
+  },
+  {
+   "label": "Horse Racing",
+   "id": "IAB17-16"
+  },
+  {
+   "label": "Horses",
+   "id": "IAB17-17"
+  },
+  {
+   "label": "Hunting/Shooting",
+   "id": "IAB17-18"
+  },
+  {
+   "label": "Inline Skating",
+   "id": "IAB17-19"
+  },
+  {
+   "label": "Baseball",
+   "id": "IAB17-2"
+  },
+  {
+   "label": "Martial Arts",
+   "id": "IAB17-20"
+  },
+  {
+   "label": "Mountain Biking",
+   "id": "IAB17-21"
+  },
+  {
+   "label": "NASCAR Racing",
+   "id": "IAB17-22"
+  },
+  {
+   "label": "Olympics",
+   "id": "IAB17-23"
+  },
+  {
+   "label": "Paintball",
+   "id": "IAB17-24"
+  },
+  {
+   "label": "Power & Motorcycles",
+   "id": "IAB17-25"
+  },
+  {
+   "label": "Pro Basketball",
+   "id": "IAB17-26"
+  },
+  {
+   "label": "Pro Ice Hockey",
+   "id": "IAB17-27"
+  },
+  {
+   "label": "Rodeo",
+   "id": "IAB17-28"
+  },
+  {
+   "label": "Rugby",
+   "id": "IAB17-29"
+  },
+  {
+   "label": "Bicycling",
+   "id": "IAB17-3"
+  },
+  {
+   "label": "Running/Jogging",
+   "id": "IAB17-30"
+  },
+  {
+   "label": "Sailing",
+   "id": "IAB17-31"
+  },
+  {
+   "label": "Saltwater Fishing",
+   "id": "IAB17-32"
+  },
+  {
+   "label": "Scuba Diving",
+   "id": "IAB17-33"
+  },
+  {
+   "label": "Skateboarding",
+   "id": "IAB17-34"
+  },
+  {
+   "label": "Skiing",
+   "id": "IAB17-35"
+  },
+  {
+   "label": "Snowboarding",
+   "id": "IAB17-36"
+  },
+  {
+   "label": "Surfing/Bodyboarding",
+   "id": "IAB17-37"
+  },
+  {
+   "label": "Swimming",
+   "id": "IAB17-38"
+  },
+  {
+   "label": "Table Tennis/Ping-Pong",
+   "id": "IAB17-39"
+  },
+  {
+   "label": "Bodybuilding",
+   "id": "IAB17-4"
+  },
+  {
+   "label": "Tennis",
+   "id": "IAB17-40"
+  },
+  {
+   "label": "Volleyball",
+   "id": "IAB17-41"
+  },
+  {
+   "label": "Walking",
+   "id": "IAB17-42"
+  },
+  {
+   "label": "Waterski/Wakeboard",
+   "id": "IAB17-43"
+  },
+  {
+   "label": "World Soccer",
+   "id": "IAB17-44"
+  },
+  {
+   "label": "Boxing",
+   "id": "IAB17-5"
+  },
+  {
+   "label": "Canoeing/Kayaking",
+   "id": "IAB17-6"
+  },
+  {
+   "label": "Cheerleading",
+   "id": "IAB17-7"
+  },
+  {
+   "label": "Climbing",
+   "id": "IAB17-8"
+  },
+  {
+   "label": "Cricket",
+   "id": "IAB17-9"
+  },
+  {
+   "label": "Style & Fashion",
+   "id": "IAB18"
+  },
+  {
+   "label": "Beauty",
+   "id": "IAB18-1"
+  },
+  {
+   "label": "Body Art",
+   "id": "IAB18-2"
+  },
+  {
+   "label": "Fashion",
+   "id": "IAB18-3"
+  },
+  {
+   "label": "Jewelry",
+   "id": "IAB18-4"
+  },
+  {
+   "label": "Clothing",
+   "id": "IAB18-5"
+  },
+  {
+   "label": "Accessories",
+   "id": "IAB18-6"
+  },
+  {
+   "label": "Technology & Computing",
+   "id": "IAB19"
+  },
+  {
+   "label": "3-D Graphics",
+   "id": "IAB19-1"
+  },
+  {
+   "label": "Computer Reviews",
+   "id": "IAB19-10"
+  },
+  {
+   "label": "Data Centers",
+   "id": "IAB19-11"
+  },
+  {
+   "label": "Databases",
+   "id": "IAB19-12"
+  },
+  {
+   "label": "Desktop Publishing",
+   "id": "IAB19-13"
+  },
+  {
+   "label": "Desktop Video",
+   "id": "IAB19-14"
+  },
+  {
+   "label": "Email",
+   "id": "IAB19-15"
+  },
+  {
+   "label": "Graphics Software",
+   "id": "IAB19-16"
+  },
+  {
+   "label": "Home Video/DVD",
+   "id": "IAB19-17"
+  },
+  {
+   "label": "Internet Technology",
+   "id": "IAB19-18"
+  },
+  {
+   "label": "Java",
+   "id": "IAB19-19"
+  },
+  {
+   "label": "Animation",
+   "id": "IAB19-2"
+  },
+  {
+   "label": "JavaScript",
+   "id": "IAB19-20"
+  },
+  {
+   "label": "Mac Support",
+   "id": "IAB19-21"
+  },
+  {
+   "label": "MP3/MIDI",
+   "id": "IAB19-22"
+  },
+  {
+   "label": "Net Conferencing",
+   "id": "IAB19-23"
+  },
+  {
+   "label": "Net for Beginners",
+   "id": "IAB19-24"
+  },
+  {
+   "label": "Network Security",
+   "id": "IAB19-25"
+  },
+  {
+   "label": "Palmtops/PDAs",
+   "id": "IAB19-26"
+  },
+  {
+   "label": "PC Support",
+   "id": "IAB19-27"
+  },
+  {
+   "label": "Portable",
+   "id": "IAB19-28"
+  },
+  {
+   "label": "Entertainment",
+   "id": "IAB19-29"
+  },
+  {
+   "label": "Antivirus Software",
+   "id": "IAB19-3"
+  },
+  {
+   "label": "Shareware/Freeware",
+   "id": "IAB19-30"
+  },
+  {
+   "label": "Unix",
+   "id": "IAB19-31"
+  },
+  {
+   "label": "Visual Basic",
+   "id": "IAB19-32"
+  },
+  {
+   "label": "Web Clip Art",
+   "id": "IAB19-33"
+  },
+  {
+   "label": "Web Design/HTML",
+   "id": "IAB19-34"
+  },
+  {
+   "label": "Web Search",
+   "id": "IAB19-35"
+  },
+  {
+   "label": "Windows",
+   "id": "IAB19-36"
+  },
+  {
+   "label": "C/C++",
+   "id": "IAB19-4"
+  },
+  {
+   "label": "Cameras & Camcorders",
+   "id": "IAB19-5"
+  },
+  {
+   "label": "Cell Phones",
+   "id": "IAB19-6"
+  },
+  {
+   "label": "Computer Certification",
+   "id": "IAB19-7"
+  },
+  {
+   "label": "Computer Networking",
+   "id": "IAB19-8"
+  },
+  {
+   "label": "Computer Peripherals",
+   "id": "IAB19-9"
+  },
+  {
+   "label": "Automotive",
+   "id": "IAB2"
+  },
+  {
+   "label": "Auto Parts",
+   "id": "IAB2-1"
+  },
+  {
+   "label": "Electric Vehicle",
+   "id": "IAB2-10"
+  },
+  {
+   "label": "Hatchback",
+   "id": "IAB2-11"
+  },
+  {
+   "label": "Hybrid",
+   "id": "IAB2-12"
+  },
+  {
+   "label": "Luxury",
+   "id": "IAB2-13"
+  },
+  {
+   "label": "MiniVan",
+   "id": "IAB2-14"
+  },
+  {
+   "label": "Mororcycles",
+   "id": "IAB2-15"
+  },
+  {
+   "label": "Off-Road Vehicles",
+   "id": "IAB2-16"
+  },
+  {
+   "label": "Performance Vehicles",
+   "id": "IAB2-17"
+  },
+  {
+   "label": "Pickup",
+   "id": "IAB2-18"
+  },
+  {
+   "label": "Road-Side Assistance",
+   "id": "IAB2-19"
+  },
+  {
+   "label": "Auto Repair",
+   "id": "IAB2-2"
+  },
+  {
+   "label": "Sedan",
+   "id": "IAB2-20"
+  },
+  {
+   "label": "Trucks & Accessories",
+   "id": "IAB2-21"
+  },
+  {
+   "label": "Vintage Cars",
+   "id": "IAB2-22"
+  },
+  {
+   "label": "Wagon",
+   "id": "IAB2-23"
+  },
+  {
+   "label": "Buying/Selling Cars",
+   "id": "IAB2-3"
+  },
+  {
+   "label": "Car Culture",
+   "id": "IAB2-4"
+  },
+  {
+   "label": "Certified Pre-Owned",
+   "id": "IAB2-5"
+  },
+  {
+   "label": "Convertible",
+   "id": "IAB2-6"
+  },
+  {
+   "label": "Coupe",
+   "id": "IAB2-7"
+  },
+  {
+   "label": "Crossover",
+   "id": "IAB2-8"
+  },
+  {
+   "label": "Diesel",
+   "id": "IAB2-9"
+  },
+  {
+   "label": "Travel",
+   "id": "IAB20"
+  },
+  {
+   "label": "Adventure Travel",
+   "id": "IAB20-1"
+  },
+  {
+   "label": "Canada",
+   "id": "IAB20-10"
+  },
+  {
+   "label": "Caribbean",
+   "id": "IAB20-11"
+  },
+  {
+   "label": "Cruises",
+   "id": "IAB20-12"
+  },
+  {
+   "label": "Eastern Europe",
+   "id": "IAB20-13"
+  },
+  {
+   "label": "Europe",
+   "id": "IAB20-14"
+  },
+  {
+   "label": "France",
+   "id": "IAB20-15"
+  },
+  {
+   "label": "Greece",
+   "id": "IAB20-16"
+  },
+  {
+   "label": "Honeymoons/Getaways",
+   "id": "IAB20-17"
+  },
+  {
+   "label": "Hotels",
+   "id": "IAB20-18"
+  },
+  {
+   "label": "Italy",
+   "id": "IAB20-19"
+  },
+  {
+   "label": "Africa",
+   "id": "IAB20-2"
+  },
+  {
+   "label": "Japan",
+   "id": "IAB20-20"
+  },
+  {
+   "label": "Mexico & Central America",
+   "id": "IAB20-21"
+  },
+  {
+   "label": "National Parks",
+   "id": "IAB20-22"
+  },
+  {
+   "label": "South America",
+   "id": "IAB20-23"
+  },
+  {
+   "label": "Spas",
+   "id": "IAB20-24"
+  },
+  {
+   "label": "Theme Parks",
+   "id": "IAB20-25"
+  },
+  {
+   "label": "Traveling with Kids",
+   "id": "IAB20-26"
+  },
+  {
+   "label": "United Kingdom",
+   "id": "IAB20-27"
+  },
+  {
+   "label": "Air Travel",
+   "id": "IAB20-3"
+  },
+  {
+   "label": "Australia & New Zealand",
+   "id": "IAB20-4"
+  },
+  {
+   "label": "Bed & Breakfasts",
+   "id": "IAB20-5"
+  },
+  {
+   "label": "Budget Travel",
+   "id": "IAB20-6"
+  },
+  {
+   "label": "Business Travel",
+   "id": "IAB20-7"
+  },
+  {
+   "label": "By US Locale",
+   "id": "IAB20-8"
+  },
+  {
+   "label": "Camping",
+   "id": "IAB20-9"
+  },
+  {
+   "label": "Real Estate",
+   "id": "IAB21"
+  },
+  {
+   "label": "Apartments",
+   "id": "IAB21-1"
+  },
+  {
+   "label": "Architects",
+   "id": "IAB21-2"
+  },
+  {
+   "label": "Buying/Selling Homes",
+   "id": "IAB21-3"
+  },
+  {
+   "label": "Shopping",
+   "id": "IAB22"
+  },
+  {
+   "label": "Contests & Freebies",
+   "id": "IAB22-1"
+  },
+  {
+   "label": "Couponing",
+   "id": "IAB22-2"
+  },
+  {
+   "label": "Comparison",
+   "id": "IAB22-3"
+  },
+  {
+   "label": "Engines",
+   "id": "IAB22-4"
+  },
+  {
+   "label": "Religion & Spirituality",
+   "id": "IAB23"
+  },
+  {
+   "label": "Alternative Religions",
+   "id": "IAB23-1"
+  },
+  {
+   "label": "Pagan/Wiccan",
+   "id": "IAB23-10"
+  },
+  {
+   "label": "Atheism/Agnosticism",
+   "id": "IAB23-2"
+  },
+  {
+   "label": "Buddhism",
+   "id": "IAB23-3"
+  },
+  {
+   "label": "Catholicism",
+   "id": "IAB23-4"
+  },
+  {
+   "label": "Christianity",
+   "id": "IAB23-5"
+  },
+  {
+   "label": "Hinduism",
+   "id": "IAB23-6"
+  },
+  {
+   "label": "Islam",
+   "id": "IAB23-7"
+  },
+  {
+   "label": "Judaism",
+   "id": "IAB23-8"
+  },
+  {
+   "label": "Latter-Day Saints",
+   "id": "IAB23-9"
+  },
+  {
+   "label": "Uncategorized",
+   "id": "IAB24"
+  },
+  {
+   "label": "Non-Standard Content",
+   "id": "IAB25"
+  },
+  {
+   "label": "Unmoderated UGC",
+   "id": "IAB25-1"
+  },
+  {
+   "label": "Extreme Graphic/Explicit Violence",
+   "id": "IAB25-2"
+  },
+  {
+   "label": "Pornography",
+   "id": "IAB25-3"
+  },
+  {
+   "label": "Profane Content",
+   "id": "IAB25-4"
+  },
+  {
+   "label": "Hate Content",
+   "id": "IAB25-5"
+  },
+  {
+   "label": "Under Construction",
+   "id": "IAB25-6"
+  },
+  {
+   "label": "Incentivized",
+   "id": "IAB25-7"
+  },
+  {
+   "label": "Illegal Content",
+   "id": "IAB26"
+  },
+  {
+   "label": "Illegal Content",
+   "id": "IAB26-1"
+  },
+  {
+   "label": "Warez",
+   "id": "IAB26-2"
+  },
+  {
+   "label": "Spyware/Malware",
+   "id": "IAB26-3"
+  },
+  {
+   "label": "Copyright Infringement",
+   "id": "IAB26-4"
+  },
+  {
+   "label": "Business",
+   "id": "IAB3"
+  },
+  {
+   "label": "Advertising",
+   "id": "IAB3-1"
+  },
+  {
+   "label": "Logistics",
+   "id": "IAB3-10"
+  },
+  {
+   "label": "Marketing",
+   "id": "IAB3-11"
+  },
+  {
+   "label": "Metals",
+   "id": "IAB3-12"
+  },
+  {
+   "label": "Agriculture",
+   "id": "IAB3-2"
+  },
+  {
+   "label": "Biotech/Biomedical",
+   "id": "IAB3-3"
+  },
+  {
+   "label": "Business Software",
+   "id": "IAB3-4"
+  },
+  {
+   "label": "Construction",
+   "id": "IAB3-5"
+  },
+  {
+   "label": "Forestry",
+   "id": "IAB3-6"
+  },
+  {
+   "label": "Government",
+   "id": "IAB3-7"
+  },
+  {
+   "label": "Green Solutions",
+   "id": "IAB3-8"
+  },
+  {
+   "label": "Human Resources",
+   "id": "IAB3-9"
+  },
+  {
+   "label": "Careers",
+   "id": "IAB4"
+  },
+  {
+   "label": "Career Planning",
+   "id": "IAB4-1"
+  },
+  {
+   "label": "U.S. Military",
+   "id": "IAB4-10"
+  },
+  {
+   "label": "Career Advice",
+   "id": "IAB4-11"
+  },
+  {
+   "label": "College",
+   "id": "IAB4-2"
+  },
+  {
+   "label": "Financial Aid",
+   "id": "IAB4-3"
+  },
+  {
+   "label": "Job Fairs",
+   "id": "IAB4-4"
+  },
+  {
+   "label": "Job Search",
+   "id": "IAB4-5"
+  },
+  {
+   "label": "Resume Writing/Advice",
+   "id": "IAB4-6"
+  },
+  {
+   "label": "Nursing",
+   "id": "IAB4-7"
+  },
+  {
+   "label": "Scholarships",
+   "id": "IAB4-8"
+  },
+  {
+   "label": "Telecommuting",
+   "id": "IAB4-9"
+  },
+  {
+   "label": "Education",
+   "id": "IAB5"
+  },
+  {
+   "label": "41832 Education",
+   "id": "IAB5-1"
+  },
+  {
+   "label": "Homeschooling",
+   "id": "IAB5-10"
+  },
+  {
+   "label": "Homework/Study Tips",
+   "id": "IAB5-11"
+  },
+  {
+   "label": "K-6 Educators",
+   "id": "IAB5-12"
+  },
+  {
+   "label": "Private School",
+   "id": "IAB5-13"
+  },
+  {
+   "label": "Special Education",
+   "id": "IAB5-14"
+  },
+  {
+   "label": "Studying Business",
+   "id": "IAB5-15"
+  },
+  {
+   "label": "Adult Education",
+   "id": "IAB5-2"
+  },
+  {
+   "label": "Art History",
+   "id": "IAB5-3"
+  },
+  {
+   "label": "Colledge Administration",
+   "id": "IAB5-4"
+  },
+  {
+   "label": "College Life",
+   "id": "IAB5-5"
+  },
+  {
+   "label": "Distance Learning",
+   "id": "IAB5-6"
+  },
+  {
+   "label": "English as a 2nd Language",
+   "id": "IAB5-7"
+  },
+  {
+   "label": "Language Learning",
+   "id": "IAB5-8"
+  },
+  {
+   "label": "Graduate School",
+   "id": "IAB5-9"
+  },
+  {
+   "label": "Family & Parenting",
+   "id": "IAB6"
+  },
+  {
+   "label": "Adoption",
+   "id": "IAB6-1"
+  },
+  {
+   "label": "Babies & Toddlers",
+   "id": "IAB6-2"
+  },
+  {
+   "label": "Daycare/Pre School",
+   "id": "IAB6-3"
+  },
+  {
+   "label": "Family Internet",
+   "id": "IAB6-4"
+  },
+  {
+   "label": "Parenting - K-6 Kids",
+   "id": "IAB6-5"
+  },
+  {
+   "label": "Parenting teens",
+   "id": "IAB6-6"
+  },
+  {
+   "label": "Pregnancy",
+   "id": "IAB6-7"
+  },
+  {
+   "label": "Special Needs Kids",
+   "id": "IAB6-8"
+  },
+  {
+   "label": "Eldercare",
+   "id": "IAB6-9"
+  },
+  {
+   "label": "Health & Fitness",
+   "id": "IAB7"
+  },
+  {
+   "label": "Exercise",
+   "id": "IAB7-1"
+  },
+  {
+   "label": "Brain Tumor",
+   "id": "IAB7-10"
+  },
+  {
+   "label": "Cancer",
+   "id": "IAB7-11"
+  },
+  {
+   "label": "Cholesterol",
+   "id": "IAB7-12"
+  },
+  {
+   "label": "Chronic Fatigue Syndrome",
+   "id": "IAB7-13"
+  },
+  {
+   "label": "Chronic Pain",
+   "id": "IAB7-14"
+  },
+  {
+   "label": "Cold & Flu",
+   "id": "IAB7-15"
+  },
+  {
+   "label": "Deafness",
+   "id": "IAB7-16"
+  },
+  {
+   "label": "Dental Care",
+   "id": "IAB7-17"
+  },
+  {
+   "label": "Depression",
+   "id": "IAB7-18"
+  },
+  {
+   "label": "Dermatology",
+   "id": "IAB7-19"
+  },
+  {
+   "label": "A.D.D.",
+   "id": "IAB7-2"
+  },
+  {
+   "label": "Diabetes",
+   "id": "IAB7-20"
+  },
+  {
+   "label": "Epilepsy",
+   "id": "IAB7-21"
+  },
+  {
+   "label": "GERD/Acid Reflux",
+   "id": "IAB7-22"
+  },
+  {
+   "label": "Headaches/Migraines",
+   "id": "IAB7-23"
+  },
+  {
+   "label": "Heart Disease",
+   "id": "IAB7-24"
+  },
+  {
+   "label": "Herbs for Health",
+   "id": "IAB7-25"
+  },
+  {
+   "label": "Holistic Healing",
+   "id": "IAB7-26"
+  },
+  {
+   "label": "IBS/Crohn's Disease",
+   "id": "IAB7-27"
+  },
+  {
+   "label": "Incest/Abuse Support",
+   "id": "IAB7-28"
+  },
+  {
+   "label": "Incontinence",
+   "id": "IAB7-29"
+  },
+  {
+   "label": "AIDS/HIV",
+   "id": "IAB7-3"
+  },
+  {
+   "label": "Infertility",
+   "id": "IAB7-30"
+  },
+  {
+   "label": "Men's Health",
+   "id": "IAB7-31"
+  },
+  {
+   "label": "Nutrition",
+   "id": "IAB7-32"
+  },
+  {
+   "label": "Orthopedics",
+   "id": "IAB7-33"
+  },
+  {
+   "label": "Panic/Anxiety Disorders",
+   "id": "IAB7-34"
+  },
+  {
+   "label": "Pediatrics",
+   "id": "IAB7-35"
+  },
+  {
+   "label": "Physical Therapy",
+   "id": "IAB7-36"
+  },
+  {
+   "label": "Psychology/Psychiatry",
+   "id": "IAB7-37"
+  },
+  {
+   "label": "Senor Health",
+   "id": "IAB7-38"
+  },
+  {
+   "label": "Sexuality",
+   "id": "IAB7-39"
+  },
+  {
+   "label": "Allergies",
+   "id": "IAB7-4"
+  },
+  {
+   "label": "Sleep Disorders",
+   "id": "IAB7-40"
+  },
+  {
+   "label": "Smoking Cessation",
+   "id": "IAB7-41"
+  },
+  {
+   "label": "Substance Abuse",
+   "id": "IAB7-42"
+  },
+  {
+   "label": "Thyroid Disease",
+   "id": "IAB7-43"
+  },
+  {
+   "label": "Weight Loss",
+   "id": "IAB7-44"
+  },
+  {
+   "label": "Women's Health",
+   "id": "IAB7-45"
+  },
+  {
+   "label": "Alternative Medicine",
+   "id": "IAB7-5"
+  },
+  {
+   "label": "Arthritis",
+   "id": "IAB7-6"
+  },
+  {
+   "label": "Asthma",
+   "id": "IAB7-7"
+  },
+  {
+   "label": "Autism/PDD",
+   "id": "IAB7-8"
+  },
+  {
+   "label": "Bipolar Disorder",
+   "id": "IAB7-9"
+  },
+  {
+   "label": "Food & Drink",
+   "id": "IAB8"
+  },
+  {
+   "label": "American Cuisine",
+   "id": "IAB8-1"
+  },
+  {
+   "label": "Food Allergies",
+   "id": "IAB8-10"
+  },
+  {
+   "label": "French Cuisine",
+   "id": "IAB8-11"
+  },
+  {
+   "label": "Health/Lowfat Cooking",
+   "id": "IAB8-12"
+  },
+  {
+   "label": "Italian Cuisine",
+   "id": "IAB8-13"
+  },
+  {
+   "label": "Japanese Cuisine",
+   "id": "IAB8-14"
+  },
+  {
+   "label": "Mexican Cuisine",
+   "id": "IAB8-15"
+  },
+  {
+   "label": "Vegan",
+   "id": "IAB8-16"
+  },
+  {
+   "label": "Vegetarian",
+   "id": "IAB8-17"
+  },
+  {
+   "label": "Wine",
+   "id": "IAB8-18"
+  },
+  {
+   "label": "Barbecues & Grilling",
+   "id": "IAB8-2"
+  },
+  {
+   "label": "Cajun/Creole",
+   "id": "IAB8-3"
+  },
+  {
+   "label": "Chinese Cuisine",
+   "id": "IAB8-4"
+  },
+  {
+   "label": "Cocktails/Beer",
+   "id": "IAB8-5"
+  },
+  {
+   "label": "Coffee/Tea",
+   "id": "IAB8-6"
+  },
+  {
+   "label": "Cuisine-Specific",
+   "id": "IAB8-7"
+  },
+  {
+   "label": "Desserts & Baking",
+   "id": "IAB8-8"
+  },
+  {
+   "label": "Dining Out",
+   "id": "IAB8-9"
+  },
+  {
+   "label": "Hobbies & Interests",
+   "id": "IAB9"
+  },
+  {
+   "label": "Art/Technology",
+   "id": "IAB9-1"
+  },
+  {
+   "label": "Collecting",
+   "id": "IAB9-10"
+  },
+  {
+   "label": "Comic Books",
+   "id": "IAB9-11"
+  },
+  {
+   "label": "Drawing/Sketching",
+   "id": "IAB9-12"
+  },
+  {
+   "label": "Freelance Writing",
+   "id": "IAB9-13"
+  },
+  {
+   "label": "Genealogy",
+   "id": "IAB9-14"
+  },
+  {
+   "label": "Getting Published",
+   "id": "IAB9-15"
+  },
+  {
+   "label": "Guitar",
+   "id": "IAB9-16"
+  },
+  {
+   "label": "Home Recording",
+   "id": "IAB9-17"
+  },
+  {
+   "label": "Investors & Patents",
+   "id": "IAB9-18"
+  },
+  {
+   "label": "Jewelry Making",
+   "id": "IAB9-19"
+  },
+  {
+   "label": "Arts & Crafts",
+   "id": "IAB9-2"
+  },
+  {
+   "label": "Magic & Illusion",
+   "id": "IAB9-20"
+  },
+  {
+   "label": "Needlework",
+   "id": "IAB9-21"
+  },
+  {
+   "label": "Painting",
+   "id": "IAB9-22"
+  },
+  {
+   "label": "Photography",
+   "id": "IAB9-23"
+  },
+  {
+   "label": "Radio",
+   "id": "IAB9-24"
+  },
+  {
+   "label": "Roleplaying Games",
+   "id": "IAB9-25"
+  },
+  {
+   "label": "Sci-Fi & Fantasy",
+   "id": "IAB9-26"
+  },
+  {
+   "label": "Scrapbooking",
+   "id": "IAB9-27"
+  },
+  {
+   "label": "Screenwriting",
+   "id": "IAB9-28"
+  },
+  {
+   "label": "Stamps & Coins",
+   "id": "IAB9-29"
+  },
+  {
+   "label": "Beadwork",
+   "id": "IAB9-3"
+  },
+  {
+   "label": "Video & Computer Games",
+   "id": "IAB9-30"
+  },
+  {
+   "label": "Woodworking",
+   "id": "IAB9-31"
+  },
+  {
+   "label": "Birdwatching",
+   "id": "IAB9-4"
+  },
+  {
+   "label": "Board Games/Puzzles",
+   "id": "IAB9-5"
+  },
+  {
+   "label": "Candle & Soap Making",
+   "id": "IAB9-6"
+  },
+  {
+   "label": "Card Games",
+   "id": "IAB9-7"
+  },
+  {
+   "label": "Chess",
+   "id": "IAB9-8"
+  },
+  {
+   "label": "Cigars",
+   "id": "IAB9-9"
+  }
+ ]
+}

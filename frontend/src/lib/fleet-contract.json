@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "verifiedAgainst": "<fleet checkout> — re-verify with scripts/check-fleet-contract.mjs against your fleet checkout",
+    "verifiedOn": "2026-09-02",
+    "description": "Machine-readable contract between Deal Onboarding and the fleet task API. Deal Onboarding is the consumer and owns this fixture: scripts/check-fleet-contract.mjs diffs every fact against a fleet checkout (and, optionally, the runner bundle that carries the MCP catalog + personas). Facts noted asserted-not-extracted are listed as documented residuals, never silently skipped."
+  },
+  "api": {
+    "apiVersion": "1",
+    "versionPrefix": "/v1",
+    "apiInfoPath": "/api-info",
+    "createTaskPath": "/v1/tasks",
+    "uploadPath": "/v1/upload",
+    "estimateTaskPath": "/v1/tasks/estimate",
+    "estimateTaskNote": "Deal Onboarding's connection check (GET /api/runner/check -> moc.Client.Check) POSTs here. EstimateTask shares authorizeTaskCreator with CreateTask/CreateTasksBatch (batch.go) so the creation-shaped endpoints cannot drift apart, and is read-only by construction (\"the forecast creates nothing, so this cannot become a weaker path to task creation\") - so it verifies a scoped create_task key without booking anything. Authorization runs BEFORE readJSON, which is why Deal Onboarding treats any non-401/403 (including a 400 on its minimal probe body) as key-accepted. It reuses the TaskCreate wire shape already pinned in taskCreate, so it adds no new request-schema coupling.",
+    "apiInfoUnauthenticated": true,
+    "apiInfoUnauthenticatedNote": "/api-info is served OUTSIDE the auth middleware (fleet internal/httpapi/server.go registers it on the bare mux; internal/apiversion.unversionedForever lists it beside the health probes). Deal Onboarding's connection check relies on this to separate \"host unreachable\" from \"host up, key rejected\" - if fleet ever puts it behind auth, the check must stop reporting an auth failure as unreachable.",
+    "authHeader": "X-API-Key",
+    "createAcceptsScopedCreateKey": true,
+    "uploadAcceptsScopedCreateKey": true,
+    "uploadScopedKeyNote": "fleet#719 SHIPPED (verified 2026-08-31, internal/sched/handlers/upload.go): POST /v1/upload now validates a scoped key against PermissionCreateTask - \"the SAME scoped keys that may create tasks may stage uploads - an external front-door app no longer needs the full-access admin key just to attach a brief.\" A valid-but-under-scoped typed key gets a definitive 403 (#190 semantics). The Deal Onboarding deployment may therefore hold a least-privilege create_task key even for attachment-bearing creates; it no longer needs an admin key.",
+    "unknownFieldsIgnored": true,
+    "unknownFieldsNote": "fleet's readJSON is a plain json.Decoder without DisallowUnknownFields: additive fields Deal Onboarding sends early (serialization_key) are ACCEPTED and silently discarded rather than rejected. Safe for additive-first evolution, but it means a missing feature fails silently — which is exactly why serializationKeyHonored below is pinned.",
+    "estimateTaskGate": "h.authorizeTaskCreator(w, r)"
+  },
+  "taskCreate": {
+    "fleetAcceptedFields": [
+      "prompt",
+      "model",
+      "fallback_model",
+      "mcp_selection",
+      "credential_allowlist",
+      "files",
+      "file_names",
+      "persona"
+    ],
+    "manifestSentFields": [
+      "prompt",
+      "files",
+      "file_names",
+      "model",
+      "fallback_model",
+      "persona",
+      "mcp_selection",
+      "credential_allowlist",
+      "serialization_key"
+    ],
+    "serializationKeyHonored": true,
+    "serializationKeyNote": "fleet#709 SHIPPED (verified 2026-08-31): serialization_key is a real TaskCreate field (internal/sched/models/models.go), persisted on Task, and ENFORCED at claim time - internal/sched/db/claim.go acquireSerializationLockTx + hasActiveTaskWithSerializationKeyTx refuse to claim a task while another task with the same key is active. The <=1-active-task-per-client mutual exclusion (moc#442 parity) therefore holds on the fleet backend, closing the last gap that made fleet weaker than MOC for concurrent batches.",
+    "mcpChoiceFields": [
+      "server",
+      "account"
+    ],
+    "fileNamesPairRule": "file_names must pair 1:1 with files",
+    "duplicateFileNameError": "duplicate logical file name",
+    "duplicateFileNameNote": "fleet 400s a create whose file_names carry duplicates — Deal Onboarding dedupes logical names client-side (uniqueLogicalName, files.ts) and reserves deal_brief.json for the structured brief (#282.2)."
+  },
+  "credentialAllowlist": {
+    "nilInheritsGlobal": true,
+    "emptyDeniesAll": true,
+    "populatedPermitsOnlyListed": true,
+    "denialMarker": "credential_allowlist_denied",
+    "note": "fleet Gate-3 semantics (internal/agentcore/credential_allowlist.go): a POPULATED allowlist permits ONLY the listed (server, account) pairs — every other MCP call returns the denialMarker as a tool-level error at the broker, even after mcp_load_servers. Deal Onboarding therefore puts EVERY pair a run must call on the list: the batch's SSP servers (variant-routed pairs keep their account slug, default-seat pairs are accountless) plus deal_sheet + sendgrid (#279)."
+  },
+  "upload": {
+    "multipartField": "file",
+    "responseFilenameField": "filename"
+  },
+  "taskUrl": {
+    "webUiPathPrefix": "/orchestrator/tasks/",
+    "note": "The trader-facing task view fleet's own notifications link to (internal/runner/notify.go). BaseURL + /tasks/{id} is the auth-gated JSON API route and must never be surfaced to traders (#282.1)."
+  },
+  "persona": {
+    "name": "",
+    "note": "No persona ships with Deal Onboarding. Set RUNNER_PERSONA to a persona your runner bundle defines (personas/<name>.yaml); leave blank to let the runner use its default. When set here, the checker verifies the file exists in the supplied bundle."
+  },
+  "mcpServers": {
+    "sspServers": {
+      "Index Exchange": "indexexchange_mcp",
+      "OpenX": "openx_mcp",
+      "PubMatic": "pubmatic_mcp",
+      "Xandr": "xandr_mcp",
+      "Media.net": "medianet_mcp",
+      "TripleLift": "triplelift_mcp",
+      "Magnite": "magnite_mcp"
+    },
+    "serviceServers": [
+      "deal_sheet",
+      "sendgrid"
+    ],
+    "note": "Server names Deal Onboarding routes deals to. Ground truth is your runner bundle catalog (manifest.yaml under the bundle root, verified when the checkout is supplied); the frontend SSP_SERVER map, the Go sspServerByKey map, and the Go defaultFleetMCPServers roster are all pinned to this table."
+  }
+}

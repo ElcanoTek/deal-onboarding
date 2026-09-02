@@ -1,0 +1,9 @@
+{
+  "_comment": "Xandr (Microsoft Monetize) insertion-order reference catalog for YOUR curator member. Deal Onboarding resolves an insertion_order name -> {id, advertiser_id} from this catalog and injects the numeric id (and advertiser_id) into the generated Xandr deal prompt; an unknown name ships as insertion_order_name for the runner's live GET /insertion-order lookup. The entries below are SYNTHETIC EXAMPLES — replace them with a live pull of your member's insertion orders (each row: id, name, advertiser_id, state).",
+  "member": "example curator member",
+  "source": "replace with a live Xandr /insertion-order pull",
+  "insertion_orders": [
+    { "id": 1000001, "name": "Example – Marketplace Pro", "advertiser_id": 2000001, "state": "active" },
+    { "id": 1000002, "name": "Example – Retired IO", "advertiser_id": 2000001, "state": "inactive" }
+  ]
+}

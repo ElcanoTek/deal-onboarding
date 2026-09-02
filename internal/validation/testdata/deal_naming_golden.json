@@ -1,0 +1,888 @@
+{
+  "comment": "Golden deal-naming cases — the spec is docs/DEAL_NAMING.md. CONSUMED BY BOTH SUITES: internal/validation/deal_naming_golden_test.go (Go) and frontend/src/lib/deal_naming_golden.test.ts (vitest) read this same file, so the two generators can never drift silently. expect.names is asserted by both. Cases run on the default operator config (ORG_NAME=Curator, CAMPAIGN_ID_PREFIX=DEAL, DEFAULT_ATTRIBUTION_CODE=A1). Value slots PRESERVE spaces: all Unicode whitespace normalizes to single ASCII spaces, underscores/punctuation outside [A-Za-z0-9 .-] drop. All advertisers, agencies, and partners here are fictional.",
+  "cases": [
+    {
+      "name": "dataco_index_yahoo_display",
+      "description": "Workbook: DataCo/Index/Yahoo/Soundwave/SNAP row. Spaces inside the segment slot are PRESERVED (2026-08-11) — matches the sheet, which always kept them.",
+      "form": {
+        "dataPartner": "DataCo",
+        "agency": "Soundwave",
+        "brand": "SNAP",
+        "campaignId": "DEAL00174",
+        "attributionCode": "B14",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "Yahoo DSP",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "Index Exchange",
+            "theme": "SNAP proxy users",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "DataCo_Index_Yahoo_Soundwave_SNAP_NA_SNAP proxy users_Display_All_US_DEAL00174_B14"
+        ]
+      }
+    },
+    {
+      "name": "nbsp_tab_brand_parity",
+      "description": "Brand carries an NBSP (\\u00a0) and a tab — both generators must normalize ALL Unicode whitespace to single ASCII spaces and produce IDENTICAL bytes (the Go noSpaces/TS regex divergence 422'd the submit gate).",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme Corp\tX",
+        "campaignId": "DEAL00001",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Digital Consumer",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme Corp X_NA_Digital Consumer_Display_All_US_DEAL00001_A1"
+        ]
+      }
+    },
+    {
+      "name": "underscore_brand_drops_underscore",
+      "description": "Brand \"Wave_Riders\" shipped a 13-slot name that passed QA — underscores are stripped from value slots so slot positions can never corrupt (12 slots, always).",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Wave_Riders",
+        "campaignId": "DEAL00002",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "Magnite",
+            "theme": "Surf",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_Magnite_TTD_Northwind_WaveRiders_NA_Surf_Display_All_US_DEAL00002_A1"
+        ]
+      }
+    },
+    {
+      "name": "mixed_geo_state_wins",
+      "description": "Geo slot: FIRST STATE if any state entry is set, else first country — a country listed before the state must not win (42ae30b regression).",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00003",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Movers",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": [
+              {
+                "id": "g1",
+                "type": "country",
+                "value": "US"
+              },
+              {
+                "id": "g2",
+                "type": "state",
+                "value": "CA"
+              }
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Movers_Display_All_CA_DEAL00003_A1"
+        ]
+      }
+    },
+    {
+      "name": "ix_state_geo_never_claims_untargeted_state",
+      "description": "Index Exchange has no include-state wire, so a state entry never reaches the created deal — the Geo slot must claim the first COUNTRY (never the untargeted state; the pre-fix name was ..._CA_... over a whole-country deal). Contrast mixed_geo_state_wins (OpenX, state wire exists).",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00337",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "Index Exchange",
+            "theme": "Movers",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": [
+              {
+                "id": "g1",
+                "type": "country",
+                "value": "US"
+              },
+              {
+                "id": "g2",
+                "type": "state",
+                "value": "CA"
+              }
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_Index_TTD_Northwind_Acme_NA_Movers_Display_All_US_DEAL00337_A1"
+        ]
+      }
+    },
+    {
+      "name": "zip_dma_never_reach_name",
+      "description": "zip/dma geo entries never land in the Geo slot — the first country (or state) does.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00004",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Movers",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": [
+              {
+                "id": "g1",
+                "type": "zip",
+                "value": "10001 10002"
+              },
+              {
+                "id": "g2",
+                "type": "dma",
+                "value": "501"
+              },
+              {
+                "id": "g3",
+                "type": "country",
+                "value": "ca"
+              }
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Movers_Display_All_CA_DEAL00004_A1"
+        ]
+      }
+    },
+    {
+      "name": "multi_dsp_two_names_slot3",
+      "description": "Multi-DSP expansion (LOCKED): TTD + DV360 yield two deals whose names differ ONLY in slot 3.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00005",
+        "attributionCode": "",
+        "multipleDsps": true,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "111"
+          },
+          {
+            "id": "2",
+            "dsp": "DV360",
+            "seatId": "222"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "Index Exchange",
+            "theme": "Digital Consumer",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_Index_TTD_Northwind_Acme_NA_Digital Consumer_Display_All_US_DEAL00005_A1",
+          "Curator_Index_DV360_Northwind_Acme_NA_Digital Consumer_Display_All_US_DEAL00005_A1"
+        ]
+      }
+    },
+    {
+      "name": "ssp_vocabulary_sweep",
+      "description": "The LOCKED SSP slot vocabulary, one deal per SSP: Index, OpenX, Pubmatic, Magnite, Xandr, Media.net, TripleLift.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00006",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "Index Exchange",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          },
+          {
+            "id": "d2",
+            "ssp": "OpenX",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          },
+          {
+            "id": "d3",
+            "ssp": "PubMatic",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          },
+          {
+            "id": "d4",
+            "ssp": "Magnite",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          },
+          {
+            "id": "d5",
+            "ssp": "Xandr",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          },
+          {
+            "id": "d6",
+            "ssp": "Media.net",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          },
+          {
+            "id": "d7",
+            "ssp": "TripleLift",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_Index_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00006_A1",
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00006_A1",
+          "Curator_Pubmatic_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00006_A1",
+          "Curator_Magnite_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00006_A1",
+          "Curator_Xandr_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00006_A1",
+          "Curator_Media.net_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00006_A1",
+          "Curator_TripleLift_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00006_A1"
+        ]
+      }
+    },
+    {
+      "name": "inventory_vocabulary",
+      "description": "Inventory slot is the workbook vocabulary: In-App -> In-app, Web Only -> Web (never InApp / Web Only).",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00007",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "SegA",
+            "channel": "Display",
+            "inventoryType": "In-App",
+            "geoInclude": []
+          },
+          {
+            "id": "d2",
+            "ssp": "OpenX",
+            "theme": "SegB",
+            "channel": "Display",
+            "inventoryType": "Web Only",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_SegA_Display_In-app_US_DEAL00007_A1",
+          "Curator_OpenX_TTD_Northwind_Acme_NA_SegB_Display_Web_US_DEAL00007_A1"
+        ]
+      }
+    },
+    {
+      "name": "unknown_dsp_sanitized_passthrough",
+      "description": "Unknown DSP names pass through sanitized (the AMZN/YAHOO/MM/ADL/BSW abbreviations are retired; nothing invents a code).",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00008",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "Hypothetical DSP 9",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_Hypothetical DSP 9_Northwind_Acme_NA_Seg_Display_All_US_DEAL00008_A1"
+        ]
+      }
+    },
+    {
+      "name": "attribution_sanitized",
+      "description": "Attribution is a value slot: whitespace normalizes to single spaces (preserved), underscores strip, default A1 stays when empty after sanitization.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00010",
+        "attributionCode": "B 14_",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00010_B 14"
+        ]
+      }
+    },
+    {
+      "name": "override_full_name_verbatim",
+      "description": "A full-name nameOverride rides verbatim — nothing is derived from it, and the form's other slots never leak into it. A short platform id gets no special treatment; only the full canonical name is honored.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00011",
+        "attributionCode": "",
+        "multipleDsps": true,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "111"
+          },
+          {
+            "id": "2",
+            "dsp": "DV360",
+            "seatId": "222"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d0",
+            "ssp": "Index Exchange",
+            "theme": "Hail",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": [],
+            "nameOverride": "PARTNER-IX-Acme Corp-1441462_Index_Amazon_NA_Acme_NA_Hail_Display_All_US_DEAL00011_B14"
+          },
+          {
+            "id": "d2",
+            "ssp": "Index Exchange",
+            "theme": "Snow",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "PARTNER-IX-Acme Corp-1441462_Index_Amazon_NA_Acme_NA_Hail_Display_All_US_DEAL00011_B14",
+          "Curator_Index_TTD_Northwind_Acme_NA_Snow_Display_All_US_DEAL00011_A1",
+          "Curator_Index_DV360_Northwind_Acme_NA_Snow_Display_All_US_DEAL00011_A1"
+        ]
+      }
+    },
+    {
+      "name": "unicode_uppercase_ascii_only",
+      "description": "Geo country uppercasing is ASCII-only: JS toUpperCase() turns ß into SS while Go keeps it — both now map [a-z] only, then the sanitizer strips ß: Großbritannien -> GROBRITANNIEN in BOTH languages.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00012",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": [
+              {
+                "id": "g1",
+                "type": "country",
+                "value": "Großbritannien"
+              }
+            ]
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Seg_Display_All_GROBRITANNIEN_DEAL00012_A1"
+        ]
+      }
+    },
+    {
+      "name": "campaign_trailing_nel_trimmed",
+      "description": "Campaign id with a trailing U+0085 (NEL): Go TrimSpace strips it but JS trim() does not — both now trim the shared union class.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00013",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00013_A1"
+        ]
+      }
+    },
+    {
+      "name": "bom_nel_padded_dsp_resolves",
+      "description": "DSP name padded with a leading BOM (U+FEFF, stripped by JS \\s but not Go TrimSpace) and a trailing NEL (stripped by Go but not JS): the shared vocab-key normalization resolves it to TTD in both languages.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00014",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "﻿The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Seg",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Seg_Display_All_US_DEAL00014_A1"
+        ]
+      }
+    },
+    {
+      "name": "unknown_channel_sanitized_passthrough",
+      "description": "Unknown channel passes through sanitized in the name (the audit flags it via the new channel_code check).",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00015",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "1"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "OpenX",
+            "theme": "Seg",
+            "channel": "Rich Media",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_OpenX_TTD_Northwind_Acme_NA_Seg_Rich Media_All_US_DEAL00015_A1"
+        ]
+      }
+    },
+    {
+      "name": "sheet_only_rows_never_expand",
+      "description": "REGRESSION (PR #184 review): a pre-expansion deal carried as sheetOnly with no nameOverride must yield exactly ONE name on the first active DSP — never a fabricated second-DSP 'already created' name riding the client deal-sheet email.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Northwind",
+        "brand": "Acme",
+        "campaignId": "DEAL00016",
+        "attributionCode": "",
+        "multipleDsps": true,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "The Trade Desk",
+            "seatId": "111"
+          },
+          {
+            "id": "2",
+            "dsp": "DV360",
+            "seatId": "222"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "Index Exchange",
+            "theme": "Live",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": [],
+            "sheetOnly": true
+          },
+          {
+            "id": "d2",
+            "ssp": "Index Exchange",
+            "theme": "New",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_Index_TTD_Northwind_Acme_NA_Live_Display_All_US_DEAL00016_A1",
+          "Curator_Index_TTD_Northwind_Acme_NA_New_Display_All_US_DEAL00016_A1",
+          "Curator_Index_DV360_Northwind_Acme_NA_New_Display_All_US_DEAL00016_A1"
+        ]
+      }
+    },
+    {
+      "name": "adsp_alias_amazon",
+      "description": "Some briefs state the DSP as 'ADSP' (Amazon DSP) — the alias resolves to the Amazon slot code instead of sanitized passthrough.",
+      "form": {
+        "dataPartner": "",
+        "agency": "Amazon Ads",
+        "brand": "Energizer Brands",
+        "campaignId": "DEAL00172",
+        "attributionCode": "",
+        "multipleDsps": false,
+        "dsps": [
+          {
+            "id": "1",
+            "dsp": "ADSP",
+            "seatId": "AMZNQRKZ9ACDAP33"
+          }
+        ],
+        "defaultInventoryType": "All",
+        "defaultGeoInclude": [
+          {
+            "id": "g1",
+            "type": "country",
+            "value": "US"
+          }
+        ],
+        "deals": [
+          {
+            "id": "d1",
+            "ssp": "Index Exchange",
+            "theme": "Power Disruption",
+            "channel": "Display",
+            "inventoryType": "",
+            "geoInclude": []
+          }
+        ]
+      },
+      "expect": {
+        "names": [
+          "Curator_Index_Amazon_Amazon Ads_Energizer Brands_NA_Power Disruption_Display_All_US_DEAL00172_A1"
+        ]
+      }
+    }
+  ]
+}

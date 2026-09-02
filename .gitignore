@@ -1,0 +1,32 @@
+bin/
+frontend/dist/
+# No trailing slash: a slash-suffixed pattern matches directories ONLY, which
+# would let a stray `frontend/node_modules` SYMLINK be committed.
+frontend/node_modules
+frontend/*.tsbuildinfo
+node_modules
+data/
+env/
+# Env files hold production secrets (session HMAC, runner/OpenRouter keys).
+# Ignore .env AND every sibling backup/variant (.env.bak-*, .env.local,
+# .env.prod, …) so a stray `git add -A` can never commit them.
+# .env.example is the one intentionally-tracked, secret-free template.
+.env
+.env.*
+!.env.example
+.DS_Store
+*.local
+.claude/
+# Local operator/debug artifacts that must never be committed.
+server.pid
+server.log
+*.log
+# Built binaries dropped in the repo root by an ad-hoc `go build`.
+/deal-onboarding
+/deal-onboarding-admin
+# Word docs are uploaded at runtime (deal briefs, client PII) — never commit
+# one. Test fixtures are synthesized in-code (internal/docx, internal/handlers).
+*.docx
+# Private, non-redistributable standard lists are deployment inputs, never
+# source — provision them into DATA_DIR/lists (see lists/README.md).
+lists/private-*

@@ -1,0 +1,29 @@
+# Sample Caddyfile for Deal Onboarding. Replace the hostname with yours.
+
+deals.example.com {
+	# SECURITY: the app's stateless CSRF defense compares the request Origin
+	# against X-Forwarded-Host. Caddy sets that header from the real Host on
+	# every proxied request, and because the app is bound to loopback a
+	# client can't reach it directly to forge the header. Keep the app off
+	# the public interface (firewall) — if it's directly reachable, an
+	# attacker can spoof both Origin and X-Forwarded-Host and bypass the
+	# check.
+	reverse_proxy 127.0.0.1:8080 {
+		transport http {
+			read_timeout 5m
+			write_timeout 5m
+		}
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

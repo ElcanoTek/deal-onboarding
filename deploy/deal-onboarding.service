@@ -1,0 +1,22 @@
+[Unit]
+Description=Deal Onboarding
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=deal-onboarding
+Group=deal-onboarding
+WorkingDirectory=/opt/deal-onboarding
+EnvironmentFile=/opt/deal-onboarding/.env
+ExecStart=/opt/deal-onboarding/bin/deal-onboarding
+Restart=on-failure
+RestartSec=2s
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/opt/deal-onboarding/data
+
+[Install]
+WantedBy=multi-user.target

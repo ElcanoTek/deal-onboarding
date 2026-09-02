@@ -1,0 +1,8 @@
+{
+  "id": "example-premium-sites",
+  "name": "Example Premium Sites",
+  "description": "Synthetic placeholder — shows the standard-list picker shape (kind allow, scope domain). Replace with your organization's curated lists at deploy time; see lists/README.md.",
+  "kind": "allow",
+  "scope": "domain",
+  "file": "example-premium-sites.csv"
+}

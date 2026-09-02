@@ -1,0 +1,384 @@
+{
+ "ssp": "indexexchange",
+ "key": "contentGenre",
+ "taxonomy": "IX legacy TV-genre taxonomy (targeting key 11; NOT IAB)",
+ "pulledAt": "2026-07-14",
+ "values": [
+  {
+   "label": "Action",
+   "id": 427
+  },
+  {
+   "label": "Adult",
+   "id": 428
+  },
+  {
+   "label": "Adventure",
+   "id": 429
+  },
+  {
+   "label": "Animals",
+   "id": 430
+  },
+  {
+   "label": "Animation",
+   "id": 431
+  },
+  {
+   "label": "Arts and crafts",
+   "id": 432
+  },
+  {
+   "label": "Audience participation",
+   "id": 433
+  },
+  {
+   "label": "Automotive",
+   "id": 434
+  },
+  {
+   "label": "Awards show",
+   "id": 435
+  },
+  {
+   "label": "Sports - baseball",
+   "id": 436
+  },
+  {
+   "label": "Sports - basketball",
+   "id": 437
+  },
+  {
+   "label": "Biography",
+   "id": 438
+  },
+  {
+   "label": "Sports - boxing",
+   "id": 439
+  },
+  {
+   "label": "Business and financial",
+   "id": 440
+  },
+  {
+   "label": "Comedy",
+   "id": 441
+  },
+  {
+   "label": "Comic book",
+   "id": 442
+  },
+  {
+   "label": "Consumer",
+   "id": 443
+  },
+  {
+   "label": "Cooking",
+   "id": 444
+  },
+  {
+   "label": "Crime",
+   "id": 445
+  },
+  {
+   "label": "Documentary",
+   "id": 446
+  },
+  {
+   "label": "Drama",
+   "id": 447
+  },
+  {
+   "label": "Education",
+   "id": 448
+  },
+  {
+   "label": "Entertainment",
+   "id": 449
+  },
+  {
+   "label": "Fantasy",
+   "id": 450
+  },
+  {
+   "label": "Fashion",
+   "id": 451
+  },
+  {
+   "label": "Sports - field hockey",
+   "id": 452
+  },
+  {
+   "label": "Food",
+   "id": 453
+  },
+  {
+   "label": "Sports - football",
+   "id": 454
+  },
+  {
+   "label": "Foreign",
+   "id": 455
+  },
+  {
+   "label": "Game show",
+   "id": 456
+  },
+  {
+   "label": "Games",
+   "id": 457
+  },
+  {
+   "label": "Sports - golf",
+   "id": 458
+  },
+  {
+   "label": "Health and wellness",
+   "id": 459
+  },
+  {
+   "label": "History",
+   "id": 460
+  },
+  {
+   "label": "Sports - hockey",
+   "id": 461
+  },
+  {
+   "label": "Home and garden",
+   "id": 462
+  },
+  {
+   "label": "Horror",
+   "id": 463
+  },
+  {
+   "label": "Indie (independent cinema)",
+   "id": 464
+  },
+  {
+   "label": "Kids and family",
+   "id": 465
+  },
+  {
+   "label": "Late night",
+   "id": 466
+  },
+  {
+   "label": "Law",
+   "id": 467
+  },
+  {
+   "label": "Lifestyle",
+   "id": 468
+  },
+  {
+   "label": "Magic",
+   "id": 469
+  },
+  {
+   "label": "Medical",
+   "id": 470
+  },
+  {
+   "label": "Mini-series",
+   "id": 471
+  },
+  {
+   "label": "Movie",
+   "id": 472
+  },
+  {
+   "label": "Music",
+   "id": 473
+  },
+  {
+   "label": "Musical",
+   "id": 474
+  },
+  {
+   "label": "Mystery",
+   "id": 475
+  },
+  {
+   "label": "Nature",
+   "id": 476
+  },
+  {
+   "label": "News",
+   "id": 477
+  },
+  {
+   "label": "Other",
+   "id": 478
+  },
+  {
+   "label": "Outdoors",
+   "id": 479
+  },
+  {
+   "label": "Paranormal",
+   "id": 480
+  },
+  {
+   "label": "Politics",
+   "id": 481
+  },
+  {
+   "label": "Reality",
+   "id": 482
+  },
+  {
+   "label": "Religion",
+   "id": 483
+  },
+  {
+   "label": "Romance",
+   "id": 484
+  },
+  {
+   "label": "Romantic comedy",
+   "id": 485
+  },
+  {
+   "label": "Sports - rugby",
+   "id": 486
+  },
+  {
+   "label": "Science",
+   "id": 487
+  },
+  {
+   "label": "Science fiction",
+   "id": 488
+  },
+  {
+   "label": "Shopping",
+   "id": 489
+  },
+  {
+   "label": "Sitcom",
+   "id": 490
+  },
+  {
+   "label": "Soap opera",
+   "id": 491
+  },
+  {
+   "label": "Sports - soccer",
+   "id": 492
+  },
+  {
+   "label": "Sports - softball",
+   "id": 493
+  },
+  {
+   "label": "Sports",
+   "id": 494
+  },
+  {
+   "label": "Sports talk",
+   "id": 495
+  },
+  {
+   "label": "Superhero",
+   "id": 496
+  },
+  {
+   "label": "Talk show",
+   "id": 497
+  },
+  {
+   "label": "Technology",
+   "id": 498
+  },
+  {
+   "label": "Sports - tennis",
+   "id": 499
+  },
+  {
+   "label": "Thriller",
+   "id": 500
+  },
+  {
+   "label": "Travel",
+   "id": 501
+  },
+  {
+   "label": "Unwired",
+   "id": 502
+  },
+  {
+   "label": "Sports - volleyball",
+   "id": 503
+  },
+  {
+   "label": "War",
+   "id": 504
+  },
+  {
+   "label": "Weather",
+   "id": 505
+  },
+  {
+   "label": "Western",
+   "id": 506
+  },
+  {
+   "label": "World",
+   "id": 507
+  },
+  {
+   "label": "Sports - wrestling",
+   "id": 508
+  },
+  {
+   "label": "Holiday",
+   "id": 160351
+  },
+  {
+   "label": "Black Entertainment",
+   "id": 160352
+  },
+  {
+   "label": "Hispanic/Latin",
+   "id": 160353
+  },
+  {
+   "label": "LGBTQ+",
+   "id": 191973
+  },
+  {
+   "label": "Women's Interest",
+   "id": 254457
+  },
+  {
+   "label": "Black History Month",
+   "id": 254458
+  },
+  {
+   "label": "Sports - MMA",
+   "id": 264332
+  },
+  {
+   "label": "Sports - Australian Football",
+   "id": 383038
+  },
+  {
+   "label": "Sports - Olympics",
+   "id": 426173
+  },
+  {
+   "label": "Sports - Motor Sports",
+   "id": 562572
+  },
+  {
+   "label": "Sports - Cricket",
+   "id": 889264
+  },
+  {
+   "label": "Sports - darts",
+   "id": 2086386
+  }
+ ]
+}

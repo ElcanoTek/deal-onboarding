@@ -1,0 +1,3634 @@
+{
+ "ssp": "Magnite",
+ "source": "GET /api/v1/metadata/ad-formats via magnite_list_ad_formats (ClearLine DV+; read-only pull, marketplace-scoped endpoint returning the global format metadata)",
+ "pulledAt": "2026-08-21",
+ "refresh": "re-run the read-only pull against any DV+ marketplace and regenerate this file; see the header of ../magniteAdFormats.ts",
+ "formats": [
+  {
+   "id": 206,
+   "name": "Pre-Roll",
+   "format": "Audio",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 242,
+   "name": "Mid-Roll",
+   "format": "Audio",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 676,
+   "name": "Pre-Roll (Audio Object)",
+   "format": "Audio",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 678,
+   "name": "Mid-Roll (Audio Object)",
+   "format": "Audio",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 706,
+   "name": "Post-Roll (Audio Object)",
+   "format": "Audio",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 1,
+   "name": "Banner",
+   "format": "Display",
+   "width": 468,
+   "height": 60
+  },
+  {
+   "id": 2,
+   "name": "Leaderboard",
+   "format": "Display",
+   "width": 728,
+   "height": 90
+  },
+  {
+   "id": 3,
+   "name": "Half Banner",
+   "format": "Display",
+   "width": 234,
+   "height": 60
+  },
+  {
+   "id": 4,
+   "name": "Micro Bar",
+   "format": "Display",
+   "width": 88,
+   "height": 31
+  },
+  {
+   "id": 5,
+   "name": "Button 1",
+   "format": "Display",
+   "width": 120,
+   "height": 90
+  },
+  {
+   "id": 6,
+   "name": "Button 2",
+   "format": "Display",
+   "width": 120,
+   "height": 60
+  },
+  {
+   "id": 7,
+   "name": "Button",
+   "format": "Display",
+   "width": 125,
+   "height": 125
+  },
+  {
+   "id": 8,
+   "name": "Skyscraper",
+   "format": "Display",
+   "width": 120,
+   "height": 600
+  },
+  {
+   "id": 9,
+   "name": "Wide Skyscraper",
+   "format": "Display",
+   "width": 160,
+   "height": 600
+  },
+  {
+   "id": 10,
+   "name": "Half Page Ad",
+   "format": "Display",
+   "width": 300,
+   "height": 600
+  },
+  {
+   "id": 12,
+   "name": "Vertical Banner",
+   "format": "Display",
+   "width": 120,
+   "height": 240
+  },
+  {
+   "id": 13,
+   "name": "Small Square",
+   "format": "Display",
+   "width": 200,
+   "height": 200
+  },
+  {
+   "id": 14,
+   "name": "Square",
+   "format": "Display",
+   "width": 250,
+   "height": 250
+  },
+  {
+   "id": 15,
+   "name": "Medium Rectangle",
+   "format": "Display",
+   "width": 300,
+   "height": 250
+  },
+  {
+   "id": 16,
+   "name": "Large Rectangle",
+   "format": "Display",
+   "width": 336,
+   "height": 280
+  },
+  {
+   "id": 17,
+   "name": "Vertical Rectangle",
+   "format": "Display",
+   "width": 240,
+   "height": 400
+  },
+  {
+   "id": 18,
+   "name": "Rectangle",
+   "format": "Display",
+   "width": 180,
+   "height": 150
+  },
+  {
+   "id": 19,
+   "name": "3:1 Rectangle",
+   "format": "Display",
+   "width": 300,
+   "height": 100
+  },
+  {
+   "id": 20,
+   "name": "Pop",
+   "format": "Display",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 24,
+   "name": "Vertical Links - 160",
+   "format": "Display",
+   "width": 160,
+   "height": 90
+  },
+  {
+   "id": 25,
+   "name": "Vertical Links - 180",
+   "format": "Display",
+   "width": 180,
+   "height": 90
+  },
+  {
+   "id": 26,
+   "name": "Vertical Links - 200",
+   "format": "Display",
+   "width": 200,
+   "height": 90
+  },
+  {
+   "id": 27,
+   "name": "Horizontal Links - 468",
+   "format": "Display",
+   "width": 468,
+   "height": 15
+  },
+  {
+   "id": 28,
+   "name": "Horizontal Links - 728",
+   "format": "Display",
+   "width": 728,
+   "height": 15
+  },
+  {
+   "id": 29,
+   "name": "Large Half Page Ad",
+   "format": "Display",
+   "width": 300,
+   "height": 850
+  },
+  {
+   "id": 31,
+   "name": "Panorama",
+   "format": "Display",
+   "width": 980,
+   "height": 120
+  },
+  {
+   "id": 32,
+   "name": "Triple Widescreen",
+   "format": "Display",
+   "width": 250,
+   "height": 360
+  },
+  {
+   "id": 33,
+   "name": "Skyscraper - 9:25",
+   "format": "Display",
+   "width": 180,
+   "height": 500
+  },
+  {
+   "id": 35,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 980,
+   "height": 150
+  },
+  {
+   "id": 36,
+   "name": "Custom Vertical - 2:5",
+   "format": "Display",
+   "width": 140,
+   "height": 350
+  },
+  {
+   "id": 37,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 468,
+   "height": 400
+  },
+  {
+   "id": 38,
+   "name": "Top Banner - 31:6",
+   "format": "Display",
+   "width": 930,
+   "height": 180
+  },
+  {
+   "id": 39,
+   "name": "Billboard",
+   "format": "Display",
+   "width": 750,
+   "height": 100
+  },
+  {
+   "id": 40,
+   "name": "Double Billboard",
+   "format": "Display",
+   "width": 750,
+   "height": 200
+  },
+  {
+   "id": 41,
+   "name": "Triple Billboard",
+   "format": "Display",
+   "width": 750,
+   "height": 300
+  },
+  {
+   "id": 42,
+   "name": "Skin",
+   "format": "Display",
+   "width": 2,
+   "height": 4
+  },
+  {
+   "id": 43,
+   "name": "Mobile Banner - 32:5",
+   "format": "Display",
+   "width": 320,
+   "height": 50
+  },
+  {
+   "id": 44,
+   "name": "Mobile Banner - 6:1",
+   "format": "Display",
+   "width": 300,
+   "height": 50
+  },
+  {
+   "id": 45,
+   "name": "Mobile Banner - 32:5",
+   "format": "Display",
+   "width": 480,
+   "height": 75
+  },
+  {
+   "id": 46,
+   "name": "Mobile Banner - 8:1",
+   "format": "Display",
+   "width": 480,
+   "height": 60
+  },
+  {
+   "id": 47,
+   "name": "Mobile Banner",
+   "format": "Display",
+   "width": 240,
+   "height": 37
+  },
+  {
+   "id": 48,
+   "name": "Square - 1:1",
+   "format": "Display",
+   "width": 300,
+   "height": 300
+  },
+  {
+   "id": 49,
+   "name": "Square 336 (deprecated)",
+   "format": "Display",
+   "width": 336,
+   "height": 280
+  },
+  {
+   "id": 50,
+   "name": "Tablet Landscape Banner",
+   "format": "Display",
+   "width": 1024,
+   "height": 90
+  },
+  {
+   "id": 51,
+   "name": "Tablet Portrait Banner",
+   "format": "Display",
+   "width": 768,
+   "height": 90
+  },
+  {
+   "id": 52,
+   "name": "Tablet Full Page (Status Bar)",
+   "format": "Display",
+   "width": 1004,
+   "height": 768
+  },
+  {
+   "id": 53,
+   "name": "Tablet Interstitial Landscape",
+   "format": "Display",
+   "width": 1024,
+   "height": 768
+  },
+  {
+   "id": 54,
+   "name": "Portrait - 2:7",
+   "format": "Display",
+   "width": 300,
+   "height": 1050
+  },
+  {
+   "id": 55,
+   "name": "Pushdown",
+   "format": "Display",
+   "width": 970,
+   "height": 90
+  },
+  {
+   "id": 56,
+   "name": "Super Leaderboard",
+   "format": "Display",
+   "width": 900,
+   "height": 250
+  },
+  {
+   "id": 57,
+   "name": "IAB Billboard",
+   "format": "Display",
+   "width": 970,
+   "height": 250
+  },
+  {
+   "id": 58,
+   "name": "Leaderboard 2",
+   "format": "Display",
+   "width": 1000,
+   "height": 90
+  },
+  {
+   "id": 59,
+   "name": "Mobile Banner 6",
+   "format": "Display",
+   "width": 320,
+   "height": 80
+  },
+  {
+   "id": 60,
+   "name": "Mobile Banner 7",
+   "format": "Display",
+   "width": 320,
+   "height": 150
+  },
+  {
+   "id": 61,
+   "name": "Full Page",
+   "format": "Display",
+   "width": 1000,
+   "height": 1000
+  },
+  {
+   "id": 62,
+   "name": "Leaderboard 3",
+   "format": "Display",
+   "width": 980,
+   "height": 50
+  },
+  {
+   "id": 63,
+   "name": "Leaderboard 4",
+   "format": "Display",
+   "width": 1000,
+   "height": 40
+  },
+  {
+   "id": 64,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 580,
+   "height": 500
+  },
+  {
+   "id": 65,
+   "name": "Medium Splash - 4:3",
+   "format": "Display",
+   "width": 640,
+   "height": 480
+  },
+  {
+   "id": 66,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 930,
+   "height": 600
+  },
+  {
+   "id": 67,
+   "name": "Mobile Interstitial Portrait - 2:3",
+   "format": "Display",
+   "width": 320,
+   "height": 480
+  },
+  {
+   "id": 68,
+   "name": "Custom Horizontal - 9:5",
+   "format": "Display",
+   "width": 1800,
+   "height": 1000
+  },
+  {
+   "id": 69,
+   "name": "Custom Horizontal - 6:5",
+   "format": "Display",
+   "width": 480,
+   "height": 400
+  },
+  {
+   "id": 72,
+   "name": "Square - 1:1",
+   "format": "Display",
+   "width": 320,
+   "height": 320
+  },
+  {
+   "id": 73,
+   "name": "Custom Horizontal - 2:1",
+   "format": "Display",
+   "width": 320,
+   "height": 160
+  },
+  {
+   "id": 74,
+   "name": "Panorama XL",
+   "format": "Display",
+   "width": 1250,
+   "height": 240
+  },
+  {
+   "id": 77,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 265,
+   "height": 600
+  },
+  {
+   "id": 78,
+   "name": "Panorama",
+   "format": "Display",
+   "width": 980,
+   "height": 240
+  },
+  {
+   "id": 79,
+   "name": "Panorama",
+   "format": "Display",
+   "width": 980,
+   "height": 300
+  },
+  {
+   "id": 80,
+   "name": "Panorama",
+   "format": "Display",
+   "width": 980,
+   "height": 400
+  },
+  {
+   "id": 81,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 450,
+   "height": 150
+  },
+  {
+   "id": 82,
+   "name": "Mobile Leaderboard - 4:1",
+   "format": "Display",
+   "width": 300,
+   "height": 75
+  },
+  {
+   "id": 83,
+   "name": "WideSquare - 16:10",
+   "format": "Display",
+   "width": 480,
+   "height": 300
+  },
+  {
+   "id": 85,
+   "name": "Mini Rectangle",
+   "format": "Display",
+   "width": 300,
+   "height": 120
+  },
+  {
+   "id": 86,
+   "name": "SideKick",
+   "format": "Display",
+   "width": 300,
+   "height": 250
+  },
+  {
+   "id": 87,
+   "name": "Slider",
+   "format": "Display",
+   "width": 950,
+   "height": 90
+  },
+  {
+   "id": 88,
+   "name": "FilmStrip",
+   "format": "Display",
+   "width": 300,
+   "height": 600
+  },
+  {
+   "id": 89,
+   "name": "Large Portrait",
+   "format": "Display",
+   "width": 300,
+   "height": 1200
+  },
+  {
+   "id": 90,
+   "name": "Strip",
+   "format": "Display",
+   "width": 548,
+   "height": 150
+  },
+  {
+   "id": 91,
+   "name": "Wallpaper 300x250",
+   "format": "Display",
+   "width": 300,
+   "height": 250
+  },
+  {
+   "id": 92,
+   "name": "Wallpaper 728x90",
+   "format": "Display",
+   "width": 728,
+   "height": 90
+  },
+  {
+   "id": 93,
+   "name": "Wallpaper 160x600",
+   "format": "Display",
+   "width": 160,
+   "height": 600
+  },
+  {
+   "id": 94,
+   "name": "Czech Rectangle",
+   "format": "Display",
+   "width": 970,
+   "height": 310
+  },
+  {
+   "id": 95,
+   "name": "Small Czech Leaderboard",
+   "format": "Display",
+   "width": 970,
+   "height": 100
+  },
+  {
+   "id": 96,
+   "name": "Large Czech Leaderboard",
+   "format": "Display",
+   "width": 970,
+   "height": 210
+  },
+  {
+   "id": 97,
+   "name": "Seznam HP",
+   "format": "Display",
+   "width": 467,
+   "height": 120
+  },
+  {
+   "id": 98,
+   "name": "Russian Leaderboard",
+   "format": "Display",
+   "width": 1000,
+   "height": 120
+  },
+  {
+   "id": 99,
+   "name": "Slider 300x250",
+   "format": "Display",
+   "width": 300,
+   "height": 250
+  },
+  {
+   "id": 100,
+   "name": "Curtain 300x250",
+   "format": "Display",
+   "width": 300,
+   "height": 250
+  },
+  {
+   "id": 101,
+   "name": "Mobile Interstitial Landscape",
+   "format": "Display",
+   "width": 480,
+   "height": 320
+  },
+  {
+   "id": 102,
+   "name": "Tablet Interstitial Portrait",
+   "format": "Display",
+   "width": 768,
+   "height": 1024
+  },
+  {
+   "id": 103,
+   "name": "Nordic Helsida",
+   "format": "Display",
+   "width": 480,
+   "height": 280
+  },
+  {
+   "id": 104,
+   "name": "Nordic Panorama XXL",
+   "format": "Display",
+   "width": 1250,
+   "height": 360
+  },
+  {
+   "id": 105,
+   "name": "Nordic Outsider XXL",
+   "format": "Display",
+   "width": 250,
+   "height": 800
+  },
+  {
+   "id": 106,
+   "name": "Nordic Insider XXL",
+   "format": "Display",
+   "width": 300,
+   "height": 480
+  },
+  {
+   "id": 107,
+   "name": "Nordic Rectangle",
+   "format": "Display",
+   "width": 440,
+   "height": 220
+  },
+  {
+   "id": 108,
+   "name": "Mobile Half Page Ad",
+   "format": "Display",
+   "width": 320,
+   "height": 240
+  },
+  {
+   "id": 109,
+   "name": "Double Banner",
+   "format": "Display",
+   "width": 468,
+   "height": 120
+  },
+  {
+   "id": 110,
+   "name": "Custom Pushdown",
+   "format": "Display",
+   "width": 994,
+   "height": 66
+  },
+  {
+   "id": 111,
+   "name": "Swedish Big Panorama",
+   "format": "Display",
+   "width": 1250,
+   "height": 480
+  },
+  {
+   "id": 112,
+   "name": "Skyline",
+   "format": "Display",
+   "width": 1366,
+   "height": 40
+  },
+  {
+   "id": 113,
+   "name": "Large Leaderboard",
+   "format": "Display",
+   "width": 1000,
+   "height": 300
+  },
+  {
+   "id": 114,
+   "name": "Extended Big Rectangle",
+   "format": "Display",
+   "width": 505,
+   "height": 500
+  },
+  {
+   "id": 115,
+   "name": "Norwegian Surfboard",
+   "format": "Display",
+   "width": 480,
+   "height": 150
+  },
+  {
+   "id": 116,
+   "name": "Billboard",
+   "format": "Display",
+   "width": 950,
+   "height": 250
+  },
+  {
+   "id": 117,
+   "name": "Mobile Double Size Banner",
+   "format": "Display",
+   "width": 320,
+   "height": 100
+  },
+  {
+   "id": 118,
+   "name": "Custom",
+   "format": "Display",
+   "width": 160,
+   "height": 410
+  },
+  {
+   "id": 119,
+   "name": "Giant Skyscraper",
+   "format": "Display",
+   "width": 256,
+   "height": 600
+  },
+  {
+   "id": 120,
+   "name": "Wideboard",
+   "format": "Display",
+   "width": 994,
+   "height": 250
+  },
+  {
+   "id": 121,
+   "name": "Tablet Interstitial Landscape",
+   "format": "Display",
+   "width": 1280,
+   "height": 800
+  },
+  {
+   "id": 122,
+   "name": "Tablet Interstitial Portrait",
+   "format": "Display",
+   "width": 800,
+   "height": 1280
+  },
+  {
+   "id": 123,
+   "name": "Airline Boarding Pass",
+   "format": "Display",
+   "width": 650,
+   "height": 110
+  },
+  {
+   "id": 124,
+   "name": "Mobile Leaderboard XXL",
+   "format": "Display",
+   "width": 640,
+   "height": 150
+  },
+  {
+   "id": 125,
+   "name": "German Billboard",
+   "format": "Display",
+   "width": 800,
+   "height": 250
+  },
+  {
+   "id": 126,
+   "name": "Super Wide Sky",
+   "format": "Display",
+   "width": 200,
+   "height": 600
+  },
+  {
+   "id": 127,
+   "name": "Maxiboard",
+   "format": "Display",
+   "width": 994,
+   "height": 118
+  },
+  {
+   "id": 128,
+   "name": "Custom 960x500",
+   "format": "Display",
+   "width": 960,
+   "height": 500
+  },
+  {
+   "id": 129,
+   "name": "iPhone App",
+   "format": "Display",
+   "width": 320,
+   "height": 120
+  },
+  {
+   "id": 130,
+   "name": "Android App",
+   "format": "Display",
+   "width": 364,
+   "height": 97
+  },
+  {
+   "id": 131,
+   "name": "Android App",
+   "format": "Display",
+   "width": 471,
+   "height": 126
+  },
+  {
+   "id": 132,
+   "name": "Android App",
+   "format": "Display",
+   "width": 513,
+   "height": 137
+  },
+  {
+   "id": 133,
+   "name": "Android App",
+   "format": "Display",
+   "width": 578,
+   "height": 154
+  },
+  {
+   "id": 134,
+   "name": "Android App",
+   "format": "Display",
+   "width": 654,
+   "height": 175
+  },
+  {
+   "id": 135,
+   "name": "Android App",
+   "format": "Display",
+   "width": 696,
+   "height": 186
+  },
+  {
+   "id": 136,
+   "name": "Android App",
+   "format": "Display",
+   "width": 752,
+   "height": 201
+  },
+  {
+   "id": 137,
+   "name": "Android App",
+   "format": "Display",
+   "width": 640,
+   "height": 171
+  },
+  {
+   "id": 138,
+   "name": "Android App",
+   "format": "Display",
+   "width": 740,
+   "height": 198
+  },
+  {
+   "id": 139,
+   "name": "Android App",
+   "format": "Display",
+   "width": 300,
+   "height": 113
+  },
+  {
+   "id": 140,
+   "name": "Android App",
+   "format": "Display",
+   "width": 340,
+   "height": 128
+  },
+  {
+   "id": 141,
+   "name": "Android App",
+   "format": "Display",
+   "width": 380,
+   "height": 143
+  },
+  {
+   "id": 142,
+   "name": "Android App",
+   "format": "Display",
+   "width": 480,
+   "height": 180
+  },
+  {
+   "id": 143,
+   "name": "Android App",
+   "format": "Display",
+   "width": 540,
+   "height": 203
+  },
+  {
+   "id": 144,
+   "name": "Nordic Blackboard",
+   "format": "Display",
+   "width": 980,
+   "height": 600
+  },
+  {
+   "id": 145,
+   "name": "Super Leaderboard",
+   "format": "Display",
+   "width": 980,
+   "height": 150
+  },
+  {
+   "id": 146,
+   "name": "Billboard",
+   "format": "Display",
+   "width": 980,
+   "height": 250
+  },
+  {
+   "id": 147,
+   "name": "Belgian Large Leaderboard",
+   "format": "Display",
+   "width": 840,
+   "height": 150
+  },
+  {
+   "id": 148,
+   "name": "Lightbox",
+   "format": "Display",
+   "width": 720,
+   "height": 480
+  },
+  {
+   "id": 150,
+   "name": "Custom",
+   "format": "Display",
+   "width": 235,
+   "height": 100
+  },
+  {
+   "id": 151,
+   "name": "Custom",
+   "format": "Display",
+   "width": 112,
+   "height": 84
+  },
+  {
+   "id": 152,
+   "name": "German Masthead",
+   "format": "Display",
+   "width": 1000,
+   "height": 250
+  },
+  {
+   "id": 153,
+   "name": "Bavarian Billboard",
+   "format": "Display",
+   "width": 850,
+   "height": 250
+  },
+  {
+   "id": 154,
+   "name": "Custom",
+   "format": "Display",
+   "width": 679,
+   "height": 150
+  },
+  {
+   "id": 155,
+   "name": "Small Pushdown",
+   "format": "Display",
+   "width": 980,
+   "height": 30
+  },
+  {
+   "id": 156,
+   "name": "Mobile Banner 8",
+   "format": "Display",
+   "width": 640,
+   "height": 320
+  },
+  {
+   "id": 158,
+   "name": "Big Leaderboard",
+   "format": "Display",
+   "width": 840,
+   "height": 250
+  },
+  {
+   "id": 159,
+   "name": "Mobile IMU",
+   "format": "Display",
+   "width": 320,
+   "height": 250
+  },
+  {
+   "id": 160,
+   "name": "Adform Expandable Billboard",
+   "format": "Display",
+   "width": 970,
+   "height": 31
+  },
+  {
+   "id": 168,
+   "name": "Rectangle 1 (228x400)",
+   "format": "Display",
+   "width": 228,
+   "height": 400
+  },
+  {
+   "id": 169,
+   "name": "TL1 (120x45)",
+   "format": "Display",
+   "width": 120,
+   "height": 45
+  },
+  {
+   "id": 171,
+   "name": "Vignette (100x100)",
+   "format": "Display",
+   "width": 100,
+   "height": 100
+  },
+  {
+   "id": 172,
+   "name": "Retina asset size (600x500)",
+   "format": "Display",
+   "width": 600,
+   "height": 500
+  },
+  {
+   "id": 173,
+   "name": "Tablet Wide Banner (640x160)",
+   "format": "Display",
+   "width": 640,
+   "height": 160
+  },
+  {
+   "id": 174,
+   "name": "Retina Asset Size 2 (640x100)",
+   "format": "Display",
+   "width": 640,
+   "height": 100
+  },
+  {
+   "id": 175,
+   "name": "Polish Billboard 2 (950x200)",
+   "format": "Display",
+   "width": 950,
+   "height": 200
+  },
+  {
+   "id": 176,
+   "name": "Aurea Strip Ad (640x190)",
+   "format": "Display",
+   "width": 640,
+   "height": 190
+  },
+  {
+   "id": 177,
+   "name": "Widescreen Wallpaper (1920x1200)",
+   "format": "Display",
+   "width": 1920,
+   "height": 1200
+  },
+  {
+   "id": 178,
+   "name": "Rich Media Masthead (970x500)",
+   "format": "Display",
+   "width": 970,
+   "height": 500
+  },
+  {
+   "id": 179,
+   "name": "Big Skyscraper (250x600)",
+   "format": "Display",
+   "width": 250,
+   "height": 600
+  },
+  {
+   "id": 180,
+   "name": "Swiss Mobile Banner (320x64)",
+   "format": "Display",
+   "width": 320,
+   "height": 64
+  },
+  {
+   "id": 181,
+   "name": "Mobile Web Interstitial (640x832)",
+   "format": "Display",
+   "width": 640,
+   "height": 832
+  },
+  {
+   "id": 182,
+   "name": "Billboard GR (940x200)",
+   "format": "Display",
+   "width": 940,
+   "height": 200
+  },
+  {
+   "id": 183,
+   "name": "XL Leaderboard (995x123)",
+   "format": "Display",
+   "width": 955,
+   "height": 123
+  },
+  {
+   "id": 184,
+   "name": "Mobile Interstitial (320x270)",
+   "format": "Display",
+   "width": 320,
+   "height": 270
+  },
+  {
+   "id": 185,
+   "name": "Banner Interstitial",
+   "format": "Display",
+   "width": 800,
+   "height": 600
+  },
+  {
+   "id": 186,
+   "name": "Custom 580 (580x100)",
+   "format": "Display",
+   "width": 580,
+   "height": 100
+  },
+  {
+   "id": 187,
+   "name": "Medium Portrait (260x500)",
+   "format": "Display",
+   "width": 260,
+   "height": 500
+  },
+  {
+   "id": 188,
+   "name": "Extra Wide Billboard (1000x126)",
+   "format": "Display",
+   "width": 1000,
+   "height": 126
+  },
+  {
+   "id": 189,
+   "name": "Wide Billboard (1000x80)",
+   "format": "Display",
+   "width": 1000,
+   "height": 80
+  },
+  {
+   "id": 190,
+   "name": "Square 240 (240x200)",
+   "format": "Display",
+   "width": 240,
+   "height": 200
+  },
+  {
+   "id": 191,
+   "name": "Mobile Banner 9 (360x50)",
+   "format": "Display",
+   "width": 360,
+   "height": 50
+  },
+  {
+   "id": 192,
+   "name": "Leaderboard (728x40)",
+   "format": "Display",
+   "width": 728,
+   "height": 40
+  },
+  {
+   "id": 193,
+   "name": "Pushdown Alternative (970x66)",
+   "format": "Display",
+   "width": 970,
+   "height": 66
+  },
+  {
+   "id": 194,
+   "name": "Custom Pushdown 2 (960x66)",
+   "format": "Display",
+   "width": 960,
+   "height": 66
+  },
+  {
+   "id": 195,
+   "name": "Megabox (600x300)",
+   "format": "Display",
+   "width": 600,
+   "height": 300
+  },
+  {
+   "id": 196,
+   "name": "Danish Article Banner (620x400)",
+   "format": "Display",
+   "width": 620,
+   "height": 400
+  },
+  {
+   "id": 197,
+   "name": "German Billboard 2 (932x270)",
+   "format": "Display",
+   "width": 932,
+   "height": 270
+  },
+  {
+   "id": 198,
+   "name": "Hungarian Roadblock (640x360)",
+   "format": "Display",
+   "width": 640,
+   "height": 360
+  },
+  {
+   "id": 199,
+   "name": "Aurea strip ad 2 (640x200)",
+   "format": "Display",
+   "width": 640,
+   "height": 200
+  },
+  {
+   "id": 200,
+   "name": "(800x235)",
+   "format": "Display",
+   "width": 800,
+   "height": 235
+  },
+  {
+   "id": 208,
+   "name": "Monster Custom Size",
+   "format": "Display",
+   "width": 716,
+   "height": 373
+  },
+  {
+   "id": 209,
+   "name": "Custom Horizontal - 7:2",
+   "format": "Display",
+   "width": 1400,
+   "height": 400
+  },
+  {
+   "id": 210,
+   "name": "Vertical Banner - 9:16",
+   "format": "Display",
+   "width": 1080,
+   "height": 1920
+  },
+  {
+   "id": 211,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 840,
+   "height": 400
+  },
+  {
+   "id": 212,
+   "name": "Prelude (1400x600)",
+   "format": "Display",
+   "width": 1400,
+   "height": 600
+  },
+  {
+   "id": 213,
+   "name": "Athena (1030x590)",
+   "format": "Display",
+   "width": 1030,
+   "height": 590
+  },
+  {
+   "id": 214,
+   "name": "Swedish Mega Board (980x360)",
+   "format": "Display",
+   "width": 980,
+   "height": 360
+  },
+  {
+   "id": 215,
+   "name": "Nordic Interstitial (990x720)",
+   "format": "Display",
+   "width": 990,
+   "height": 720
+  },
+  {
+   "id": 216,
+   "name": "German Layer (400x400)",
+   "format": "Display",
+   "width": 400,
+   "height": 400
+  },
+  {
+   "id": 217,
+   "name": "Carousel (276x130)",
+   "format": "Display",
+   "width": 276,
+   "height": 130
+  },
+  {
+   "id": 218,
+   "name": "Lomu (760x120)",
+   "format": "Display",
+   "width": 760,
+   "height": 120
+  },
+  {
+   "id": 219,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 1920,
+   "height": 1080
+  },
+  {
+   "id": 220,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2304,
+   "height": 1366
+  },
+  {
+   "id": 221,
+   "name": "1x1 Floating",
+   "format": "Display",
+   "width": 1,
+   "height": 1
+  },
+  {
+   "id": 222,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 448,
+   "height": 252
+  },
+  {
+   "id": 223,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 532,
+   "height": 726
+  },
+  {
+   "id": 224,
+   "name": "Custom Vertical - 2:3",
+   "format": "Display",
+   "width": 192,
+   "height": 288
+  },
+  {
+   "id": 225,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 740,
+   "height": 400
+  },
+  {
+   "id": 226,
+   "name": "Custom Horizontal - 16:10",
+   "format": "Display",
+   "width": 448,
+   "height": 280
+  },
+  {
+   "id": 227,
+   "name": "Custom Horizontal - 4:3",
+   "format": "Display",
+   "width": 384,
+   "height": 288
+  },
+  {
+   "id": 228,
+   "name": "Maxiboard (970x150)",
+   "format": "Display",
+   "width": 970,
+   "height": 150
+  },
+  {
+   "id": 229,
+   "name": "Mobile Billboard",
+   "format": "Display",
+   "width": 320,
+   "height": 180
+  },
+  {
+   "id": 230,
+   "name": "Czech Branding",
+   "format": "Display",
+   "width": 2000,
+   "height": 1400
+  },
+  {
+   "id": 231,
+   "name": "Smart billboard",
+   "format": "Display",
+   "width": 694,
+   "height": 250
+  },
+  {
+   "id": 232,
+   "name": "Nordic Netboard",
+   "format": "Display",
+   "width": 580,
+   "height": 400
+  },
+  {
+   "id": 233,
+   "name": "Large Swedish Takeover",
+   "format": "Display",
+   "width": 1440,
+   "height": 900
+  },
+  {
+   "id": 234,
+   "name": "Rubicon Custom (Native via Display)",
+   "format": "Display",
+   "width": 6,
+   "height": 6
+  },
+  {
+   "id": 235,
+   "name": "adMax Leaderboard",
+   "format": "Display",
+   "width": 990,
+   "height": 90
+  },
+  {
+   "id": 237,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 792,
+   "height": 1032
+  },
+  {
+   "id": 238,
+   "name": "Custom Horizontal - 32:9",
+   "format": "Display",
+   "width": 3840,
+   "height": 1080
+  },
+  {
+   "id": 239,
+   "name": "Custom Horizontal - 10:3",
+   "format": "Display",
+   "width": 1920,
+   "height": 576
+  },
+  {
+   "id": 240,
+   "name": "Custom Horizontal - 18:5",
+   "format": "Display",
+   "width": 1224,
+   "height": 340
+  },
+  {
+   "id": 241,
+   "name": "Custom Horizontal - 32:9",
+   "format": "Display",
+   "width": 1280,
+   "height": 360
+  },
+  {
+   "id": 243,
+   "name": "AdTab",
+   "format": "Display",
+   "width": 1190,
+   "height": 330
+  },
+  {
+   "id": 244,
+   "name": "Login Ad",
+   "format": "Display",
+   "width": 1440,
+   "height": 1024
+  },
+  {
+   "id": 245,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1366,
+   "height": 768
+  },
+  {
+   "id": 246,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 1600,
+   "height": 900
+  },
+  {
+   "id": 247,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 768,
+   "height": 1360
+  },
+  {
+   "id": 248,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 1280,
+   "height": 720
+  },
+  {
+   "id": 249,
+   "name": "Custom Horizontal - 29:9",
+   "format": "Display",
+   "width": 3480,
+   "height": 1080
+  },
+  {
+   "id": 250,
+   "name": "Custom Vertical - 1:2",
+   "format": "Display",
+   "width": 288,
+   "height": 576
+  },
+  {
+   "id": 251,
+   "name": "Catch All",
+   "format": "Display",
+   "width": 2,
+   "height": 2
+  },
+  {
+   "id": 252,
+   "name": "Custom Vertical - 9:16",
+   "format": "Display",
+   "width": 900,
+   "height": 1600
+  },
+  {
+   "id": 253,
+   "name": "Custom Vertical - 9:32",
+   "format": "Display",
+   "width": 540,
+   "height": 1920
+  },
+  {
+   "id": 254,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1360,
+   "height": 768
+  },
+  {
+   "id": 255,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 768,
+   "height": 1366
+  },
+  {
+   "id": 256,
+   "name": "Czech Interscroller",
+   "format": "Display",
+   "width": 480,
+   "height": 820
+  },
+  {
+   "id": 257,
+   "name": "Digital Poster",
+   "format": "Display",
+   "width": 400,
+   "height": 600
+  },
+  {
+   "id": 258,
+   "name": "Czech mobile sticky",
+   "format": "Display",
+   "width": 500,
+   "height": 200
+  },
+  {
+   "id": 259,
+   "name": "XL Czech Leaderboard",
+   "format": "Display",
+   "width": 998,
+   "height": 200
+  },
+  {
+   "id": 260,
+   "name": "Hungarian Double Billboard",
+   "format": "Display",
+   "width": 970,
+   "height": 400
+  },
+  {
+   "id": 261,
+   "name": "Hungarian Square",
+   "format": "Display",
+   "width": 480,
+   "height": 480
+  },
+  {
+   "id": 262,
+   "name": "140x260",
+   "format": "Display",
+   "width": 140,
+   "height": 260
+  },
+  {
+   "id": 263,
+   "name": "1272x328",
+   "format": "Display",
+   "width": 1272,
+   "height": 328
+  },
+  {
+   "id": 264,
+   "name": "Skin NL",
+   "format": "Display",
+   "width": 970,
+   "height": 1000
+  },
+  {
+   "id": 266,
+   "name": "Custom Square - 1:1",
+   "format": "Display",
+   "width": 1296,
+   "height": 1296
+  },
+  {
+   "id": 267,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 5900,
+   "height": 3480
+  },
+  {
+   "id": 268,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1296,
+   "height": 468
+  },
+  {
+   "id": 269,
+   "name": "Custom Horizontal - 2:1",
+   "format": "Display",
+   "width": 720,
+   "height": 360
+  },
+  {
+   "id": 270,
+   "name": "Custom Horizontal (1060x610)",
+   "format": "Display",
+   "width": 1060,
+   "height": 610
+  },
+  {
+   "id": 271,
+   "name": "Custom Horizontal (620x366)",
+   "format": "Display",
+   "width": 620,
+   "height": 366
+  },
+  {
+   "id": 272,
+   "name": "Custom Vertical (325x508)",
+   "format": "Display",
+   "width": 325,
+   "height": 508
+  },
+  {
+   "id": 274,
+   "name": "Custom Horizontal (1800x200)",
+   "format": "Display",
+   "width": 1800,
+   "height": 200
+  },
+  {
+   "id": 276,
+   "name": "Custom Horizontal (1800x500)",
+   "format": "Display",
+   "width": 1800,
+   "height": 500
+  },
+  {
+   "id": 278,
+   "name": "Custom Vertical (320x500)",
+   "format": "Display",
+   "width": 320,
+   "height": 500
+  },
+  {
+   "id": 280,
+   "name": "Norwegian Board",
+   "format": "Display",
+   "width": 980,
+   "height": 500
+  },
+  {
+   "id": 282,
+   "name": "Norwegian Portrait",
+   "format": "Display",
+   "width": 320,
+   "height": 400
+  },
+  {
+   "id": 284,
+   "name": "Big Leaderboard",
+   "format": "Display",
+   "width": 960,
+   "height": 150
+  },
+  {
+   "id": 286,
+   "name": "Hero Unit (970x415)",
+   "format": "Display",
+   "width": 970,
+   "height": 415
+  },
+  {
+   "id": 288,
+   "name": "Larger Double Size Banner (640x380)",
+   "format": "Display",
+   "width": 640,
+   "height": 380
+  },
+  {
+   "id": 290,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 240,
+   "height": 80
+  },
+  {
+   "id": 292,
+   "name": "Custom Horizontal - 7:2",
+   "format": "Display",
+   "width": 560,
+   "height": 160
+  },
+  {
+   "id": 294,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1056,
+   "height": 936
+  },
+  {
+   "id": 296,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 1800,
+   "height": 600
+  },
+  {
+   "id": 298,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 418,
+   "height": 236
+  },
+  {
+   "id": 300,
+   "name": "Custom Vertical - 9:16",
+   "format": "Display",
+   "width": 2160,
+   "height": 3840
+  },
+  {
+   "id": 302,
+   "name": "Custom Horizontal - 8:3",
+   "format": "Display",
+   "width": 2048,
+   "height": 768
+  },
+  {
+   "id": 304,
+   "name": "Custom Horizontal - 2:1",
+   "format": "Display",
+   "width": 576,
+   "height": 288
+  },
+  {
+   "id": 306,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 1200,
+   "height": 400
+  },
+  {
+   "id": 308,
+   "name": "Custom Square - 1:1",
+   "format": "Display",
+   "width": 600,
+   "height": 600
+  },
+  {
+   "id": 310,
+   "name": "Custom Horizontal - 5:2",
+   "format": "Display",
+   "width": 1000,
+   "height": 400
+  },
+  {
+   "id": 312,
+   "name": "Custom Horizontal - 4:1",
+   "format": "Display",
+   "width": 1600,
+   "height": 400
+  },
+  {
+   "id": 314,
+   "name": "Custom Horizontal 32:9",
+   "format": "Display",
+   "width": 2560,
+   "height": 720
+  },
+  {
+   "id": 316,
+   "name": "Custom Horizontal - 16:10",
+   "format": "Display",
+   "width": 1000,
+   "height": 625
+  },
+  {
+   "id": 318,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 678,
+   "height": 508
+  },
+  {
+   "id": 320,
+   "name": "Custom Horizontal - 4:3",
+   "format": "Display",
+   "width": 512,
+   "height": 384
+  },
+  {
+   "id": 322,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 752,
+   "height": 208
+  },
+  {
+   "id": 324,
+   "name": "Custom Horizontal - 4:1",
+   "format": "Display",
+   "width": 1024,
+   "height": 256
+  },
+  {
+   "id": 326,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 560,
+   "height": 288
+  },
+  {
+   "id": 328,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1920,
+   "height": 674
+  },
+  {
+   "id": 334,
+   "name": "Full Image Display",
+   "format": "Display",
+   "width": 580,
+   "height": 400
+  },
+  {
+   "id": 336,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 548,
+   "height": 974
+  },
+  {
+   "id": 338,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1612,
+   "height": 1144
+  },
+  {
+   "id": 340,
+   "name": "Custom Vertical - 11:16",
+   "format": "Display",
+   "width": 572,
+   "height": 832
+  },
+  {
+   "id": 342,
+   "name": "Custom Vertical - 7:10",
+   "format": "Display",
+   "width": 448,
+   "height": 640
+  },
+  {
+   "id": 344,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 768,
+   "height": 1076
+  },
+  {
+   "id": 346,
+   "name": "Custom Horizontal - 23:16",
+   "format": "Display",
+   "width": 1196,
+   "height": 832
+  },
+  {
+   "id": 348,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 806,
+   "height": 2084
+  },
+  {
+   "id": 350,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 594,
+   "height": 886
+  },
+  {
+   "id": 352,
+   "name": "Custom Vertical - 9:13",
+   "format": "Display",
+   "width": 432,
+   "height": 624
+  },
+  {
+   "id": 354,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 480,
+   "height": 440
+  },
+  {
+   "id": 356,
+   "name": "Custom Horizontal - 4:3",
+   "format": "Display",
+   "width": 768,
+   "height": 576
+  },
+  {
+   "id": 358,
+   "name": "Custom Horizontal - 4:3",
+   "format": "Display",
+   "width": 720,
+   "height": 540
+  },
+  {
+   "id": 360,
+   "name": "Custom Horizontal - 5:4",
+   "format": "Display",
+   "width": 720,
+   "height": 576
+  },
+  {
+   "id": 362,
+   "name": "Custom Horizontal - 22:9",
+   "format": "Display",
+   "width": 1056,
+   "height": 432
+  },
+  {
+   "id": 364,
+   "name": "Custom Horizontal - 4:1",
+   "format": "Display",
+   "width": 1152,
+   "height": 288
+  },
+  {
+   "id": 366,
+   "name": "Custom Horizontal - 34:9",
+   "format": "Display",
+   "width": 1224,
+   "height": 324
+  },
+  {
+   "id": 368,
+   "name": "Custom Horizontal - 31:8",
+   "format": "Display",
+   "width": 1240,
+   "height": 320
+  },
+  {
+   "id": 370,
+   "name": "Custom Horizontal - 26:7",
+   "format": "Display",
+   "width": 1248,
+   "height": 336
+  },
+  {
+   "id": 372,
+   "name": "Custom Horizontal - 4:1",
+   "format": "Display",
+   "width": 1280,
+   "height": 320
+  },
+  {
+   "id": 374,
+   "name": "Custom Horizontal - 17:4",
+   "format": "Display",
+   "width": 1428,
+   "height": 336
+  },
+  {
+   "id": 376,
+   "name": "Custom Horizontal - 9:8",
+   "format": "Display",
+   "width": 324,
+   "height": 288
+  },
+  {
+   "id": 380,
+   "name": "Custom Vertical - 2:3",
+   "format": "Display",
+   "width": 336,
+   "height": 504
+  },
+  {
+   "id": 382,
+   "name": "Custom Vertical - 4:5",
+   "format": "Display",
+   "width": 360,
+   "height": 450
+  },
+  {
+   "id": 384,
+   "name": "Custom Vertical - 2:3",
+   "format": "Display",
+   "width": 448,
+   "height": 672
+  },
+  {
+   "id": 386,
+   "name": "Custom Vertical - 13:20",
+   "format": "Display",
+   "width": 468,
+   "height": 720
+  },
+  {
+   "id": 388,
+   "name": "Custom Vertical - 3:5",
+   "format": "Display",
+   "width": 480,
+   "height": 800
+  },
+  {
+   "id": 390,
+   "name": "Custom Vertical - 11:16",
+   "format": "Display",
+   "width": 495,
+   "height": 720
+  },
+  {
+   "id": 392,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 512,
+   "height": 288
+  },
+  {
+   "id": 394,
+   "name": "Custom Vertical - 2:3",
+   "format": "Display",
+   "width": 576,
+   "height": 864
+  },
+  {
+   "id": 396,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 650,
+   "height": 360
+  },
+  {
+   "id": 398,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 720,
+   "height": 240
+  },
+  {
+   "id": 400,
+   "name": "Custom Horizontal - 4:1",
+   "format": "Display",
+   "width": 768,
+   "height": 192
+  },
+  {
+   "id": 402,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 810,
+   "height": 270
+  },
+  {
+   "id": 404,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 864,
+   "height": 288
+  },
+  {
+   "id": 406,
+   "name": "Custom Horizontal - 28:9",
+   "format": "Display",
+   "width": 896,
+   "height": 288
+  },
+  {
+   "id": 408,
+   "name": "Custom Horizontal - 14:5",
+   "format": "Display",
+   "width": 896,
+   "height": 320
+  },
+  {
+   "id": 410,
+   "name": "Custom Horizontal - 7:3",
+   "format": "Display",
+   "width": 896,
+   "height": 384
+  },
+  {
+   "id": 412,
+   "name": "Custom Horizontal - 34:9",
+   "format": "Display",
+   "width": 952,
+   "height": 252
+  },
+  {
+   "id": 414,
+   "name": "Custom Horizontal - 16:10",
+   "format": "Display",
+   "width": 960,
+   "height": 600
+  },
+  {
+   "id": 416,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 992,
+   "height": 304
+  },
+  {
+   "id": 418,
+   "name": "Marquee",
+   "format": "Display",
+   "width": 1400,
+   "height": 500
+  },
+  {
+   "id": 420,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2532,
+   "height": 1400
+  },
+  {
+   "id": 422,
+   "name": "Responsive Ad",
+   "format": "Display",
+   "width": 1280,
+   "height": 220
+  },
+  {
+   "id": 424,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 1152,
+   "height": 384
+  },
+  {
+   "id": 426,
+   "name": "Custom Vertical - 2:3",
+   "format": "Display",
+   "width": 616,
+   "height": 924
+  },
+  {
+   "id": 428,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1240,
+   "height": 308
+  },
+  {
+   "id": 430,
+   "name": "Custom Horizontal - 8:3",
+   "format": "Display",
+   "width": 2304,
+   "height": 864
+  },
+  {
+   "id": 432,
+   "name": "Custom Horizontal - 46:9",
+   "format": "Display",
+   "width": 7360,
+   "height": 1440
+  },
+  {
+   "id": 434,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 1832,
+   "height": 2304
+  },
+  {
+   "id": 436,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1928,
+   "height": 558
+  },
+  {
+   "id": 438,
+   "name": "Custom Horizontal - 11:7",
+   "format": "Display",
+   "width": 1056,
+   "height": 672
+  },
+  {
+   "id": 440,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 1344,
+   "height": 1696
+  },
+  {
+   "id": 442,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 416,
+   "height": 1584
+  },
+  {
+   "id": 444,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 416,
+   "height": 1376
+  },
+  {
+   "id": 446,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 640,
+   "height": 1696
+  },
+  {
+   "id": 448,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 1832,
+   "height": 2336
+  },
+  {
+   "id": 450,
+   "name": "Custom Horizontal - 2:1",
+   "format": "Display",
+   "width": 768,
+   "height": 384
+  },
+  {
+   "id": 452,
+   "name": "Custom Horizontal - 2:1",
+   "format": "Display",
+   "width": 1024,
+   "height": 512
+  },
+  {
+   "id": 454,
+   "name": "Custom Horizontal - 21:10",
+   "format": "Display",
+   "width": 630,
+   "height": 300
+  },
+  {
+   "id": 456,
+   "name": "Custom Horizontal - 7:3",
+   "format": "Display",
+   "width": 840,
+   "height": 360
+  },
+  {
+   "id": 458,
+   "name": "Custom Horizontal - 5:3",
+   "format": "Display",
+   "width": 1200,
+   "height": 720
+  },
+  {
+   "id": 460,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 880,
+   "height": 256
+  },
+  {
+   "id": 462,
+   "name": "Custom Horizontal - 8:3",
+   "format": "Display",
+   "width": 576,
+   "height": 216
+  },
+  {
+   "id": 464,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 960,
+   "height": 540
+  },
+  {
+   "id": 466,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 456,
+   "height": 360
+  },
+  {
+   "id": 468,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1100,
+   "height": 462
+  },
+  {
+   "id": 470,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 3840,
+   "height": 2160
+  },
+  {
+   "id": 472,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2302,
+   "height": 864
+  },
+  {
+   "id": 474,
+   "name": "Custom Horizontal - 5:1",
+   "format": "Display",
+   "width": 1520,
+   "height": 304
+  },
+  {
+   "id": 476,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1692,
+   "height": 612
+  },
+  {
+   "id": 478,
+   "name": "Custom Horizontal - 25:9",
+   "format": "Display",
+   "width": 1800,
+   "height": 648
+  },
+  {
+   "id": 480,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1800,
+   "height": 612
+  },
+  {
+   "id": 482,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1692,
+   "height": 648
+  },
+  {
+   "id": 484,
+   "name": "Custom Vertical - 9:16",
+   "format": "Display",
+   "width": 720,
+   "height": 1280
+  },
+  {
+   "id": 486,
+   "name": "Custom Horizontal - 5:3",
+   "format": "Display",
+   "width": 1280,
+   "height": 768
+  },
+  {
+   "id": 488,
+   "name": "Custom Horizontal - 10:3",
+   "format": "Display",
+   "width": 1200,
+   "height": 360
+  },
+  {
+   "id": 490,
+   "name": "Custom Horizontal - 16:11",
+   "format": "Display",
+   "width": 720,
+   "height": 495
+  },
+  {
+   "id": 492,
+   "name": "Custom Horizontal - 3:2",
+   "format": "Display",
+   "width": 756,
+   "height": 504
+  },
+  {
+   "id": 494,
+   "name": "Custom Horizontal - 3:1",
+   "format": "Display",
+   "width": 924,
+   "height": 308
+  },
+  {
+   "id": 496,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 765,
+   "height": 1215
+  },
+  {
+   "id": 498,
+   "name": "Custom Horizontal - 4:1",
+   "format": "Display",
+   "width": 1232,
+   "height": 308
+  },
+  {
+   "id": 500,
+   "name": "Custom Horizontal - 17:4",
+   "format": "Display",
+   "width": 1836,
+   "height": 432
+  },
+  {
+   "id": 502,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1244,
+   "height": 324
+  },
+  {
+   "id": 504,
+   "name": "Custom Horizontal - 37:9",
+   "format": "Display",
+   "width": 1184,
+   "height": 288
+  },
+  {
+   "id": 506,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 784,
+   "height": 208
+  },
+  {
+   "id": 508,
+   "name": "Custom Horizontal - 10:7",
+   "format": "Display",
+   "width": 640,
+   "height": 448
+  },
+  {
+   "id": 510,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1062,
+   "height": 324
+  },
+  {
+   "id": 512,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1692,
+   "height": 468
+  },
+  {
+   "id": 514,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2124,
+   "height": 648
+  },
+  {
+   "id": 516,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 1080,
+   "height": 1486
+  },
+  {
+   "id": 518,
+   "name": "Custom Horizontal - 9:32",
+   "format": "Display",
+   "width": 1080,
+   "height": 3840
+  },
+  {
+   "id": 520,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 320,
+   "height": 200
+  },
+  {
+   "id": 522,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 990,
+   "height": 505
+  },
+  {
+   "id": 524,
+   "name": "Custom Pixel",
+   "format": "Display",
+   "width": 1,
+   "height": 2
+  },
+  {
+   "id": 526,
+   "name": "GG (3:2)",
+   "format": "Display",
+   "width": 2160,
+   "height": 1440
+  },
+  {
+   "id": 528,
+   "name": "GG (2:3)",
+   "format": "Display",
+   "width": 1440,
+   "height": 2160
+  },
+  {
+   "id": 530,
+   "name": "GG (4:3)",
+   "format": "Display",
+   "width": 1920,
+   "height": 1440
+  },
+  {
+   "id": 532,
+   "name": "GG (3:4)",
+   "format": "Display",
+   "width": 1440,
+   "height": 1920
+  },
+  {
+   "id": 534,
+   "name": "GG (16:9)",
+   "format": "Display",
+   "width": 2560,
+   "height": 1440
+  },
+  {
+   "id": 536,
+   "name": "GG (9:16)",
+   "format": "Display",
+   "width": 1440,
+   "height": 2560
+  },
+  {
+   "id": 538,
+   "name": "GG (21:9)",
+   "format": "Display",
+   "width": 3360,
+   "height": 1440
+  },
+  {
+   "id": 540,
+   "name": "GG (9:21)",
+   "format": "Display",
+   "width": 1440,
+   "height": 3360
+  },
+  {
+   "id": 542,
+   "name": "GG (40:9)",
+   "format": "Display",
+   "width": 6400,
+   "height": 1400
+  },
+  {
+   "id": 544,
+   "name": "GG (9:40)",
+   "format": "Display",
+   "width": 1440,
+   "height": 6400
+  },
+  {
+   "id": 546,
+   "name": "GG (1:1)",
+   "format": "Display",
+   "width": 1440,
+   "height": 1440
+  },
+  {
+   "id": 548,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 500,
+   "height": 1000
+  },
+  {
+   "id": 550,
+   "name": "Triple Panorama",
+   "format": "Display",
+   "width": 980,
+   "height": 480
+  },
+  {
+   "id": 552,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 300,
+   "height": 200
+  },
+  {
+   "id": 554,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 468,
+   "height": 240
+  },
+  {
+   "id": 556,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 330,
+   "height": 168
+  },
+  {
+   "id": 558,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 640,
+   "height": 640
+  },
+  {
+   "id": 562,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 300,
+   "height": 431
+  },
+  {
+   "id": 564,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 320,
+   "height": 431
+  },
+  {
+   "id": 566,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 320,
+   "height": 300
+  },
+  {
+   "id": 568,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 300,
+   "height": 150
+  },
+  {
+   "id": 570,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 300,
+   "height": 125
+  },
+  {
+   "id": 572,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 250,
+   "height": 350
+  },
+  {
+   "id": 574,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 620,
+   "height": 891
+  },
+  {
+   "id": 576,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 610,
+   "height": 877
+  },
+  {
+   "id": 578,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 980,
+   "height": 552
+  },
+  {
+   "id": 580,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 505,
+   "height": 656
+  },
+  {
+   "id": 582,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 720,
+   "height": 756
+  },
+  {
+   "id": 584,
+   "name": "Custom Vertical - 6:11",
+   "format": "Display",
+   "width": 432,
+   "height": 792
+  },
+  {
+   "id": 586,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1188,
+   "height": 814
+  },
+  {
+   "id": 588,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 648,
+   "height": 468
+  },
+  {
+   "id": 590,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 360,
+   "height": 56
+  },
+  {
+   "id": 592,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 300,
+   "height": 450
+  },
+  {
+   "id": 594,
+   "name": "Custom Vertical - 8:9",
+   "format": "Display",
+   "width": 768,
+   "height": 864
+  },
+  {
+   "id": 596,
+   "name": "Custom Horizontal - 16:9",
+   "format": "Display",
+   "width": 768,
+   "height": 432
+  },
+  {
+   "id": 598,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1152,
+   "height": 468
+  },
+  {
+   "id": 612,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 320,
+   "height": 600
+  },
+  {
+   "id": 616,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2026,
+   "height": 1126
+  },
+  {
+   "id": 622,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 192,
+   "height": 160
+  },
+  {
+   "id": 626,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 900,
+   "height": 600
+  },
+  {
+   "id": 628,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1920,
+   "height": 480
+  },
+  {
+   "id": 630,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 800,
+   "height": 1200
+  },
+  {
+   "id": 632,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1200,
+   "height": 450
+  },
+  {
+   "id": 634,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 340,
+   "height": 450
+  },
+  {
+   "id": 636,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 300,
+   "height": 168
+  },
+  {
+   "id": 638,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 325,
+   "height": 204
+  },
+  {
+   "id": 640,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 360,
+   "height": 600
+  },
+  {
+   "id": 642,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 570,
+   "height": 250
+  },
+  {
+   "id": 644,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 320,
+   "height": 75
+  },
+  {
+   "id": 646,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 512,
+   "height": 341
+  },
+  {
+   "id": 648,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1024,
+   "height": 170
+  },
+  {
+   "id": 650,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1024,
+   "height": 128
+  },
+  {
+   "id": 652,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 512,
+   "height": 512
+  },
+  {
+   "id": 654,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 288,
+   "height": 512
+  },
+  {
+   "id": 658,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 341,
+   "height": 512
+  },
+  {
+   "id": 660,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1056,
+   "height": 304
+  },
+  {
+   "id": 662,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 544,
+   "height": 144
+  },
+  {
+   "id": 664,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 638,
+   "height": 176
+  },
+  {
+   "id": 666,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 660,
+   "height": 180
+  },
+  {
+   "id": 668,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 858,
+   "height": 242
+  },
+  {
+   "id": 670,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1408,
+   "height": 384
+  },
+  {
+   "id": 672,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1152,
+   "height": 576
+  },
+  {
+   "id": 674,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1890,
+   "height": 810
+  },
+  {
+   "id": 680,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 970,
+   "height": 570
+  },
+  {
+   "id": 682,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 300,
+   "height": 240
+  },
+  {
+   "id": 684,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 970,
+   "height": 550
+  },
+  {
+   "id": 686,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 300,
+   "height": 210
+  },
+  {
+   "id": 688,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 300,
+   "height": 220
+  },
+  {
+   "id": 690,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 970,
+   "height": 170
+  },
+  {
+   "id": 692,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 640,
+   "height": 240
+  },
+  {
+   "id": 694,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1520,
+   "height": 240
+  },
+  {
+   "id": 696,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 384,
+   "height": 840
+  },
+  {
+   "id": 698,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 1280,
+   "height": 1520
+  },
+  {
+   "id": 700,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1872,
+   "height": 520
+  },
+  {
+   "id": 702,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2016,
+   "height": 504
+  },
+  {
+   "id": 704,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 480,
+   "height": 80
+  },
+  {
+   "id": 708,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 1728,
+   "height": 3300
+  },
+  {
+   "id": 710,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 600,
+   "height": 250
+  },
+  {
+   "id": 712,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 340,
+   "height": 430
+  },
+  {
+   "id": 714,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 3840,
+   "height": 600
+  },
+  {
+   "id": 716,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1414,
+   "height": 520
+  },
+  {
+   "id": 718,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1440,
+   "height": 406
+  },
+  {
+   "id": 720,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 400,
+   "height": 60
+  },
+  {
+   "id": 722,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 1440,
+   "height": 1620
+  },
+  {
+   "id": 724,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1440,
+   "height": 720
+  },
+  {
+   "id": 726,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1440,
+   "height": 480
+  },
+  {
+   "id": 728,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1920,
+   "height": 432
+  },
+  {
+   "id": 730,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 1920,
+   "height": 2160
+  },
+  {
+   "id": 731,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 1024,
+   "height": 1024
+  },
+  {
+   "id": 733,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 500,
+   "height": 500
+  },
+  {
+   "id": 735,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 400,
+   "height": 300
+  },
+  {
+   "id": 737,
+   "name": "Amazon Mobile Web/App Results",
+   "format": "Display",
+   "width": 414,
+   "height": 125
+  },
+  {
+   "id": 739,
+   "name": "Pushdown XL",
+   "format": "Display",
+   "width": 1280,
+   "height": 100
+  },
+  {
+   "id": 741,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 672,
+   "height": 288
+  },
+  {
+   "id": 743,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 864,
+   "height": 576
+  },
+  {
+   "id": 745,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1056,
+   "height": 288
+  },
+  {
+   "id": 747,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2080,
+   "height": 1280
+  },
+  {
+   "id": 749,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2688,
+   "height": 448
+  },
+  {
+   "id": 751,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 720,
+   "height": 600
+  },
+  {
+   "id": 753,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2400,
+   "height": 280
+  },
+  {
+   "id": 755,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1480,
+   "height": 576
+  },
+  {
+   "id": 757,
+   "name": "Custom Vertical",
+   "format": "Display",
+   "width": 720,
+   "height": 920
+  },
+  {
+   "id": 759,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 6480,
+   "height": 648
+  },
+  {
+   "id": 761,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1408,
+   "height": 768
+  },
+  {
+   "id": 763,
+   "name": "Custom Square",
+   "format": "Display",
+   "width": 1872,
+   "height": 1872
+  },
+  {
+   "id": 769,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1600,
+   "height": 1440
+  },
+  {
+   "id": 771,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1408,
+   "height": 1024
+  },
+  {
+   "id": 795,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1920,
+   "height": 864
+  },
+  {
+   "id": 805,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1173,
+   "height": 512
+  },
+  {
+   "id": 809,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 3600,
+   "height": 720
+  },
+  {
+   "id": 811,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 1536,
+   "height": 768
+  },
+  {
+   "id": 817,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 2048,
+   "height": 575
+  },
+  {
+   "id": 821,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 3952,
+   "height": 676
+  },
+  {
+   "id": 823,
+   "name": "Custom Horizontal",
+   "format": "Display",
+   "width": 3840,
+   "height": 1408
+  },
+  {
+   "id": 161,
+   "name": "Content Wall",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 162,
+   "name": "App Wall",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 163,
+   "name": "News Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 164,
+   "name": "Chat List",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 165,
+   "name": "Carousel",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 166,
+   "name": "Content Stream",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 167,
+   "name": "Grid Adjoining the Content",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 600,
+   "name": "Content In-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 601,
+   "name": "Content In-Article",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 602,
+   "name": "Content Out-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 603,
+   "name": "Content Recommendation",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 604,
+   "name": "Social In-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 605,
+   "name": "Social In-Article",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 606,
+   "name": "Social Out-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 607,
+   "name": "Social Recommendation",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 608,
+   "name": "Product In-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 609,
+   "name": "Product In-Article",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 610,
+   "name": "Product Out-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 611,
+   "name": "Product Recommendation",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 617,
+   "name": "No Context In-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 618,
+   "name": "No Context In-Article",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 619,
+   "name": "No Context Out-Feed",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 620,
+   "name": "No Context Recommendation",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 624,
+   "name": "No Context No Placement",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 657,
+   "name": "Magnite-Enabled Multi-Format",
+   "format": "Native",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 201,
+   "name": "Pre-Roll",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 202,
+   "name": "Interstitial",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 203,
+   "name": "Outstream in-article",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 204,
+   "name": "Mid-Roll",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 205,
+   "name": "Post-Roll",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 207,
+   "name": "Vertical Video",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 273,
+   "name": "Outstream in-feed",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 275,
+   "name": "Outstream slider/floating",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 277,
+   "name": "Outstream in-feed/detach",
+   "format": "Video",
+   "width": null,
+   "height": null
+  },
+  {
+   "id": 656,
+   "name": "Magnite-Enabled Multi-Format",
+   "format": "Video",
+   "width": null,
+   "height": null
+  }
+ ]
+}
