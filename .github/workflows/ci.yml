@@ -56,7 +56,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-      - run: bash -n scripts/bootstrap.sh scripts/update.sh scripts/provision-private-lists.sh deploy/deal-onboarding-cli
+      - run: bash -n scripts/bootstrap.sh scripts/update.sh scripts/provision-private-lists.sh scripts/bsl-change-date.sh scripts/lib/envfile.sh deploy/deal-onboarding-cli
       - run: node --check scripts/check-cutlass-contract.mjs && node --check scripts/check-fleet-contract.mjs && node --check scripts/gen-publisher-catalog.mjs
       - name: Fixtures parse
         run: node -e "for (const f of ['frontend/src/lib/cutlass-contract.json','frontend/src/lib/fleet-contract.json','catalogs/publisher-catalog.json']) JSON.parse(require('fs').readFileSync(f,'utf8'))"
