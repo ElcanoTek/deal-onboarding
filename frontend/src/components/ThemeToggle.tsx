@@ -15,10 +15,10 @@ export function ThemeToggle() {
     >
       <span className="theme-toggle__icon-wrap" aria-hidden="true">
         <svg className="icon-inline theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">
-          <use href="/icons/core-icons.svg#sun" />
+          <use href="/design-system/icons/core-icons.svg#sun" />
         </svg>
         <svg className="icon-inline theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">
-          <use href="/icons/core-icons.svg#moon" />
+          <use href="/design-system/icons/core-icons.svg#moon" />
         </svg>
       </span>
     </button>

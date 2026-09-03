@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Deal Onboarding favicon light mode">
+  <rect width="64" height="64" rx="14" fill="#EEF3FF"/>
+  <rect x="15" y="12" width="30" height="40" rx="5" fill="none" stroke="#1A0B1E" stroke-width="3"/>
+  <path d="M22 23h16M22 31h16M22 39h10" fill="none" stroke="#1A0B1E" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="46" cy="45" r="8" fill="#586F7C"/>
+  <path d="M42 45l3 3 5-6" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

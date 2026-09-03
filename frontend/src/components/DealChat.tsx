@@ -478,7 +478,7 @@ export function DealChat({ form, onFormChange, audit, prefill, resetToken, notic
                 className="chat-composer__chip"
                 title={`${f.name}${f.detectedColumn ? ` · column: ${f.detectedColumn}` : ''}`}
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#paperclip" /></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#paperclip" /></svg>
                 <span className="chat-composer__chip-name">{fileBasename(f.name)}</span>
                 {typeof f.size === 'number' && f.size > 0 && (
                   <span className="chat-composer__chip-size">{formatBytes(f.size)}</span>
@@ -525,7 +525,7 @@ export function DealChat({ form, onFormChange, audit, prefill, resetToken, notic
             >
               {uploading
                 ? <span className="btn-spinner" aria-hidden="true" />
-                : <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#paperclip" /></svg>}
+                : <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#paperclip" /></svg>}
             </button>
           </div>
           <div className="chat-composer__actions">
@@ -542,7 +542,7 @@ export function DealChat({ form, onFormChange, audit, prefill, resetToken, notic
               aria-pressed={sendOnEnter}
               onClick={toggleSendOnEnter}
             >
-              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#return-key" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#return-key" /></svg>
             </button>
             <button
               type="submit"
@@ -553,7 +553,7 @@ export function DealChat({ form, onFormChange, audit, prefill, resetToken, notic
             >
               {uploading
                 ? <span aria-hidden="true">…</span>
-                : <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#arrow-up" /></svg>}
+                : <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#arrow-up" /></svg>}
             </button>
           </div>
         </div>

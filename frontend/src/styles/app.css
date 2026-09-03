@@ -8,6 +8,27 @@
 @import 'flatpickr/dist/flatpickr.min.css';
 
 /* ============================================================
+   PRODUCT TOKENS
+   design-tokens.css is the Flag sheet, vendored byte-for-byte and never
+   edited here. The few tokens Deal Onboarding needs beyond it live in this
+   block, derived from Flag tokens so they follow the theme.
+   ============================================================ */
+:root {
+  /* Side-rail interaction tints (Fleet sidebar grammar). */
+  --rail-hover: rgba(255, 255, 255, 0.07);
+  --rail-active: color-mix(in srgb, var(--color-primary) 18%, transparent);
+
+  /* Deal Assistant composer surface — a lifted panel over the shell. */
+  --composer-surface: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-1) 94%, transparent), color-mix(in srgb, var(--color-bg) 98%, transparent));
+  --composer-shadow: var(--shadow-lg);
+}
+
+:root[data-theme="light"] {
+  --rail-hover: rgba(38, 55, 92, 0.07);
+  --composer-surface: linear-gradient(180deg, color-mix(in srgb, var(--color-surface-1) 96%, transparent), color-mix(in srgb, var(--color-surface-2) 98%, transparent));
+}
+
+/* ============================================================
    RESET & BASE
    ============================================================ */
 *, *::before, *::after {

@@ -85,7 +85,7 @@ export function DatePickerField({ id, value, onChange, minDate, invalid }: Props
         aria-invalid={invalid ? true : undefined}
       />
       <svg className="date-input-icon" aria-hidden="true">
-        <use href="/icons/core-icons.svg#calendar" />
+        <use href="/design-system/icons/core-icons.svg#calendar" />
       </svg>
     </div>
   )

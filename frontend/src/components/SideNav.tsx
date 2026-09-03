@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
-import productMark from '../assets/deal-onboarding-mark.svg'
 import { useTheme } from '../hooks/useTheme'
 import type { ThemePreference } from '../hooks/useTheme'
+
+/** The Elcano mark — every Elcano product carries the same mark in its app
+ *  header (Flag `ds-app-header__mark`); the product name sits beside it. */
+const ELCANO_MARK = '/design-system/logos/elcano-mark-primary.svg'
 
 /** Page key used to highlight the active nav item. Mirrors App.tsx Route. */
 export type NavRoute = 'workspace'
@@ -23,7 +26,7 @@ const RAIL_COLLAPSED_KEY = 'deal-onboarding-rail-collapsed'
 const icon = (id: string) => (
   <span className="side-rail__tile" aria-hidden="true">
     <svg className="side-rail__icon" viewBox="0 0 24 24">
-      <use href={`/icons/core-icons.svg#${id}`} />
+      <use href={`/design-system/icons/core-icons.svg#${id}`} />
     </svg>
   </span>
 )
@@ -175,13 +178,13 @@ function AccountMenu({
             onClick={() => { close(); onHelp() }}
           >
             <span className="account-menu__item-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#info" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#info" /></svg>
             </span>
             <span className="account-menu__item-label">Help</span>
           </button>
           <div className="account-menu__theme">
             <svg className="account-menu__theme-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <use href="/icons/core-icons.svg#moon" />
+              <use href="/design-system/icons/core-icons.svg#moon" />
             </svg>
             <span className="account-menu__theme-label">Theme</span>
             {/* menuitemradio-in-group is the ARIA-sanctioned way to embed a
@@ -210,7 +213,7 @@ function AccountMenu({
             onClick={() => { close(); onLogout() }}
           >
             <span className="account-menu__item-icon">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#logout" /></svg>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#logout" /></svg>
             </span>
             <span className="account-menu__item-label">{loggingOut ? 'Signing out…' : 'Sign out'}</span>
           </button>
@@ -299,7 +302,7 @@ export function SideNav({
       {/* Slim topbar — only rendered below the desktop breakpoint (CSS). */}
       <header className="mobile-topbar">
         <button type="button" className="mobile-topbar__brand" onClick={onNavigateWorkspace} aria-label="Go to the Deal Builder">
-          <img className="mobile-topbar__mark" src={productMark} alt="" />
+          <img className="mobile-topbar__mark" src={ELCANO_MARK} alt="Elcano" />
           <span>Deal Onboarding</span>
         </button>
         <button
@@ -312,7 +315,7 @@ export function SideNav({
           onClick={() => setMobileOpen(true)}
         >
           <svg viewBox="0 0 24 24" aria-hidden="true">
-            <use href="/icons/core-icons.svg#menu" />
+            <use href="/design-system/icons/core-icons.svg#menu" />
           </svg>
         </button>
       </header>
@@ -329,7 +332,7 @@ export function SideNav({
         aria-label="Primary"
       >
         <div className="side-rail__header">
-          <img className="side-rail__mark" src={productMark} alt="" />
+          <img className="side-rail__mark" src={ELCANO_MARK} alt="Elcano" />
           <span className="side-rail__text">
             <span className="side-rail__eyebrow">Self-hosted deal desk</span>
             <span className="side-rail__title">Deal Onboarding</span>

@@ -1187,7 +1187,7 @@ export function DealsList({ form, update, open, onToggle, filled, total, issues,
               title="Duplicate this deal"
               onClick={() => duplicateDeal(deal.id)}
             >
-              <svg viewBox="0 0 24 24" className="deal-card__action-icon" aria-hidden="true"><use href="/icons/core-icons.svg#copy" /></svg>
+              <svg viewBox="0 0 24 24" className="deal-card__action-icon" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#copy" /></svg>
             </button>
             <button
               type="button"
@@ -1196,7 +1196,7 @@ export function DealsList({ form, update, open, onToggle, filled, total, issues,
               title="Remove this deal"
               onClick={() => requestRemoveDeal(deal)}
             >
-              <svg viewBox="0 0 24 24" className="deal-card__action-icon" aria-hidden="true"><use href="/icons/core-icons.svg#trash" /></svg>
+              <svg viewBox="0 0 24 24" className="deal-card__action-icon" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#trash" /></svg>
             </button>
             <button
               type="button"

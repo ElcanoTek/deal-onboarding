@@ -183,9 +183,9 @@ export function ChatModelPicker({ value, onPick, disabled, serverDefaultOption }
           else openPicker()
         }}
       >
-        <svg className="chat-model__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#model" /></svg>
+        <svg className="chat-model__icon" viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#model" /></svg>
         <span className="chat-model__label">{label}</span>
-        <svg className="chat-model__caret" viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#selector" /></svg>
+        <svg className="chat-model__caret" viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#selector" /></svg>
       </button>
       {open && !disabled && (
         <div className="chat-model__pop" style={popPos?.style}>

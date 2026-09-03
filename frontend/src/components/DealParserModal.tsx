@@ -206,7 +206,7 @@ export function DealParserModal({ currentForm, onClose, onApply, onError, defaul
                 onClick={() => fileInputRef.current?.click()}
                 disabled={busy}
               >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#paperclip" /></svg>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#paperclip" /></svg>
               </button>
               {fileName && <span className="parser-attach-name">Loaded: {fileName}</span>}
             </div>
@@ -221,7 +221,7 @@ export function DealParserModal({ currentForm, onClose, onApply, onError, defaul
               >
                 {busy
                   ? <span className="btn-spinner" aria-hidden="true" />
-                  : <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/icons/core-icons.svg#arrow-up" /></svg>}
+                  : <svg viewBox="0 0 24 24" aria-hidden="true"><use href="/design-system/icons/core-icons.svg#arrow-up" /></svg>}
               </button>
             </div>
           </div>
