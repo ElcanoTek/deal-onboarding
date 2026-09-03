@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { useCallback, useSyncExternalStore } from 'react';
 import { DealEntry, FormData, GeoEntry, GeoType, DEFAULT_FORM, migrateCampaignGeoDefaults, migrateCampaignIabCategories, migrateCampaignLanguage, newDeal } from '../types/deal';
 import { EMAIL_RE } from '../lib/sectionStatus';

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 /** Last path segment of a file reference — uploads can
  *  carry full client-side paths; the UI only ever needs the file name. */
 export function fileBasename(name: string): string {

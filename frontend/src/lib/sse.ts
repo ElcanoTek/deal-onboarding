@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Minimal Server-Sent-Events frame parser, ported from a sibling chat app.
 // Parses a (possibly partial) chunk of an SSE stream into complete events plus
 // a remainder to prepend to the next chunk. We only need event + data; the

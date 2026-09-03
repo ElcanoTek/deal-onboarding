@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 /* Ported from a sibling chat app so
  * the Edit-with-chat thinking indicator matches chat exactly. Pass
  * color="var(--color-primary)" to follow the active theme. */

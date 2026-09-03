@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { DealEntry, FormData, CHANNEL_OPTIONS, SSP_OPTIONS, GeoEntry, GeoType, GEO_TYPE_LABEL, sspGeoTypes, StandardList, UploadedFile, dealSupportsAdDuration, dealNameLengthError, isVideoChannel, newDeal, sspReq, magniteFormatKind, MAGNITE_FORMATS_BY_KIND, MAGNITE_POPULAR_SIZE_IDS } from '../types/deal'
 import { MAGNITE_SIZES_MAX } from '../lib/magniteAdFormats'

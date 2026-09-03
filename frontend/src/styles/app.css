@@ -1,3 +1,6 @@
+/* SPDX-License-Identifier: BUSL-1.1
+ * Copyright (c) 2026 ElcanoTek, Inc. */
+
 /* Local copies of the Flag font faces + token set so production builds do not
    depend on a sibling repo. Fonts load first — fonts.css declares the faces
    AND sets --font-brand / --font-code-brand, which design-tokens.css reads to

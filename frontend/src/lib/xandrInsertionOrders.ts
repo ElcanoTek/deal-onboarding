@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Xandr Curate insertion-order catalog for the deal form.
 //
 // Single source of truth: ../../../reference/xandr_insertion_orders.json (the

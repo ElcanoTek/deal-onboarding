@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { FormData, DspEntry } from '../types/deal'
 import { seatOptionalDsp, splitSeatIds } from '../lib/seatPolicy'
 import { FormSection } from './FormSection'

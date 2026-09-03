@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Flight-date policy. Single source of truth for "how long does a deal run?"
 //
 // Policy: a deal's end date should be as far out

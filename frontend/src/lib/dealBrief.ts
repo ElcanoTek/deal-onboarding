@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Structured, file-backed deal brief.
 //
 // A large batch used to be shipped to the runner as ONE giant inline

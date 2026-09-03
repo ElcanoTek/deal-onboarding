@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { describe, it, expect } from 'vitest'
 import { mergeParsedIntoForm } from './dealParser'
 import { DEFAULT_FORM, newDeal } from '../types/deal'

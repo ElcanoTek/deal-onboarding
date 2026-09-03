@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/app.css'

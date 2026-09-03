@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Demo / smoke-test fixtures for the parser modal. Every advertiser, agency,
 // person, id, and segment below is fictional. The multi-deal brief exercises
 // the parser's corner cases: several deals across two SSPs, per-deal

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { CSSProperties, ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { DEFAULT_MODEL, ADVANCED_MODEL, labelForModel, tierForModel } from '../lib/modelAliases'
 import {

@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
 // =============================================================================
 // check-fleet-contract.mjs — Deal Onboarding <-> fleet task-API contract drift checker
 // (#281, the fleet twin of check-cutlass-contract.mjs).

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 package validation
 
 // Batch-3 money/date/targeting-truth rules (#234.1, #235.1,

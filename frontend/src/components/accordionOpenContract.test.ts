@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 /** Accordion open-state contract.
  *
  *  Every collapsible in the trader shell is an uncontrolled <details> that a

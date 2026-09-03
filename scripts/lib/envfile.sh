@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: BUSL-1.1
+# Copyright (c) 2026 ElcanoTek, Inc.
 # scripts/lib/envfile.sh — shared helpers for reading/writing KEY=VALUE
 # env files. Sourced by deploy/deal-onboarding-cli so the quoting rules live in
 # one place. 

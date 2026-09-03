@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Column-header detection for uploaded domain / app-bundle list files.
 //
 // The IX (and other SSP) MCPs want the file path PLUS the column header

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Per-deal IAB category inference — OPT-IN PER DEAL, DEFAULT OFF.
 //
 // Deterministic keyword table matched against each deal's own details (theme,

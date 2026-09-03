@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Package overrideaudit persists authenticated exclusion-override events.
 // The append-only JSONL log is separate from mutable deal records so an event
 // survives post-submit bookkeeping failures.

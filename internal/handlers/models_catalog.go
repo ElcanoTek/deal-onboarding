@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 package handlers
 
 // OpenRouter model catalog + pricing cache — Go port of fleet's

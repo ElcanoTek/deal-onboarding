@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: BUSL-1.1
+# Copyright (c) 2026 ElcanoTek, Inc.
 # Deal Onboarding — single-host bootstrap for a fresh Fedora/RHEL-family box.
 # Safe to re-run: existing secrets, users, and data are preserved.
 set -euo pipefail

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Per-SSP IAB / content-category catalog data layer (PR A of the per-SSP IAB
 // picker work). The JSON fixtures under sspIabCatalogs/ are LIVE-PULLED
 // catalogs (read-only, 2026-07-14 — refresh runbook: scripts/refresh-iab-catalogs.md)

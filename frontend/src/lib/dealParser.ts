@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { DealEntry, FormData, GeoEntry, GeoType, migrateCampaignGeoDefaults, migrateCampaignIabCategories, migrateCampaignLanguage, newDeal } from '../types/deal'
 import { computeAutoEndDate } from './flightDates'
 import { withDefaultGeo } from './geoPolicy'

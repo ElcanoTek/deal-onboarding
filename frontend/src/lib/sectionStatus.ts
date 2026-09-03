@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { AuditCheck, AuditResult, DealEntry, FormData, effectivePubMaticPublisherEntries, isVideoChannel, MAGNITE_PRICE_TYPES, magniteDealNeedsFormats, magnitePriceTypeHasFloor, sspReq, sspsInUse } from '../types/deal'
 import { campaignIdPattern, campaignIdPlaceholder } from './operatorConfig'
 import { splitEmails } from './recipients'

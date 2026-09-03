@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { ReactNode, useEffect, useRef, useState, type JSX } from 'react'
 import { FormData, PubMaticConfig, PublisherAllowlistEntry, effectivePubMaticPublisherEntries, BuyerEntry, OpenXConfig, MagniteConfig, MAGNITE_PRICE_TYPES, magnitePriceTypeHasFloor, sspsInUse } from '../types/deal'
 import { PublisherScope } from './PublisherScope'

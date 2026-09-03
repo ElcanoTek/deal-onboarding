@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Fixture-integrity + full-replay suite for the per-SSP IAB catalog data
 // layer (2026-07-14 live audit). Two guarantees:
 //   1. Every canonical-map target in dealPromptYaml.ts exists (normalized) in

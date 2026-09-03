@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { useMemo, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 import type { PublisherAllowlistEntry } from '../types/deal'

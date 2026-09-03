@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Magnite DV+ ad-format catalog data layer (mirrors the sspIabCatalogs
 // pattern). The JSON fixture under magniteAdFormats/ is the LIVE-PULLED
 // ClearLine format metadata (read-only GET /api/v1/metadata/ad-formats via

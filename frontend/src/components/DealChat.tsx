@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { fileBasename } from '../lib/files'
 import { useEffect, useRef, useState } from 'react'
 import ReactMarkdown from 'react-markdown'

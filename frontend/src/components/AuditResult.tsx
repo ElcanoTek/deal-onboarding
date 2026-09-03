@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { useState } from 'react'
 import { AuditAIInsight, AuditAIResult, AuditResult as AuditResultType, AuditCheck, DealEntry } from '../types/deal'
 import { checkToSectionId } from '../lib/sectionStatus'

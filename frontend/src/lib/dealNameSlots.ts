@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 /** Canonical deal-name slot vocabulary + generation — THE frontend source of
  *  truth for the 12-slot deal name. The spec is docs/DEAL_NAMING.md;
  *  internal/validation/rules.go mirrors these semantics byte-for-byte for the

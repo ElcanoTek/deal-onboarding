@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Package fsutil holds small filesystem helpers shared by the JSON
 // file-backed stores (lists, idempotency, audit).
 package fsutil

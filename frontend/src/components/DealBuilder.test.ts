@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { describe, expect, it } from 'vitest'
 // Source-level guard (no jsdom/RTL in this suite). The key-derivation behavior
 // itself is covered by submitKey.test.ts; this pins the CALL SITE so the

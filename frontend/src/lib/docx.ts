@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Word (.docx) text extraction lives on the server (internal/docx) because it
 // needs ZIP + OOXML handling we don't want to ship to the browser. Spreadsheets
 // and CSV/TSV/TXT are still parsed client-side via SheetJS; this helper is only

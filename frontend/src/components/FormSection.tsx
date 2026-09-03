@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { createContext, ReactNode, useContext } from 'react'
 
 /** Per-section chrome injected by the guided builder: the step-audit banner

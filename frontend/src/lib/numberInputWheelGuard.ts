@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Global guard against the number-input scroll footgun: browsers treat a
 // mouse-wheel event over a FOCUSED <input type="number"> as a spin — silently
 // decrementing/incrementing the value the trader just typed. That is exactly
