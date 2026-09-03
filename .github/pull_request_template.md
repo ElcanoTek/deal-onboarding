@@ -10,6 +10,7 @@
 - [ ] If the change touches deal naming: `deal_naming_golden.json` updated and both Go and TS golden suites pass
 - [ ] Docs updated (`AGENTS.md`, `docs/`) where behaviour changed
 - [ ] No secrets, account ids, customer names, or internal hostnames in the diff
+- [ ] New source files carry the SPDX header; no hardcoded colours, fonts or dates (`LICENSE` derives its Change Date from the commit)
 
 ## Screenshots
 
