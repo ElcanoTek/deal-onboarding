@@ -8,11 +8,11 @@ import { splitSeatIds } from './seatPolicy'
 import { resolveXandrInsertionOrder } from './xandrInsertionOrders'
 
 // =============================================================================
-// MOC DEAL PROMPT GENERATION
+// the runner DEAL PROMPT GENERATION
 //
-// Each builder produces a prompt block that MOC pastes verbatim into Cutlass.
+// Each builder produces a prompt block that the runner pastes verbatim into Cutlass.
 // Every prompt:
-//   1. Names the exact MCP tool MOC must call
+//   1. Names the exact MCP tool the runner must call
 //      (e.g. mcp_xandr_mcp_xandr_execute_deal_from_prompt_inputs)
 //   2. Lists the EXACT MCP argument names with resolved values
 //   3. Adds inline comments explaining MCP defaults / enum constraints
@@ -23,7 +23,7 @@ import { resolveXandrInsertionOrder } from './xandrInsertionOrders'
 // =============================================================================
 
 // =============================================================================
-// LOOKUPS — pre-resolve every name → value translation the MOC agent would
+// LOOKUPS — pre-resolve every name → value translation the runner agent would
 // otherwise burn tool calls confirming.
 // =============================================================================
 
@@ -1103,7 +1103,7 @@ function goTrimSpace(s: string): string {
 /** The exact attachment name a standard list travels under (#198): the human
  *  list name with the data file's extension (Summary.file_ext) appended unless
  *  the name already ends in a recognized DATA extension. BYTE-IDENTICAL to the
- *  server's lists.List.UploadName — the MOC upload display name — so the
+ *  server's lists.List.UploadName — the runner upload display name — so the
  *  prompt's file reference matches the uploaded file exactly (IX rejects an
  *  extensionless list outright; OpenX routes .csv vs .xlsx to different
  *  parsers; a server-only rename would degrade the agent's name match to
@@ -1125,7 +1125,7 @@ export function standardListUploadName(l: StandardList): string {
 // treats ad-hoc uploads and curated lists uniformly. Kind translates to
 // inclusionType (allow → Include, block → Exclude). The name is the list's
 // UploadName (name + data-file extension, #198) — the exact display name the
-// server uploads the list to MOC under — so dealFilePath's emission matches
+// server uploads the list to the runner under — so dealFilePath's emission matches
 // the upload byte-for-byte. The path is /input/<name> matching the convention
 // dealFilePath uses for files served from disk.
 // detectedColumn is pinned to the scope's canonical header: every curated
@@ -1144,7 +1144,7 @@ export function standardListAsFile(l: StandardList): UploadedFile {
 }
 
 // pickPrimaryFile materializes the single file that the current YAML wire
-// format can carry. Until MOC + each SSP MCP confirms multi-file support,
+// format can carry. Until the runner + each SSP MCP confirms multi-file support,
 // we collapse the candidate set with these rules (user-chosen 2026-05-20):
 //   1. Block-kind file wins over Allow-kind file
 //   2. Ad-hoc uploads sort before standard lists within a kind, so a trader
@@ -1190,8 +1190,8 @@ function pickPerDealOrDefault(listId: string | undefined, uploads: UploadedFile[
  *  (DealBuilder handleConfirmCreate + DealPromptOutput SendToMocButton)
  *  MUST use this instead of the applied ids alone — the prompt pipeline
  *  honors per-deal picks (resolve() → pickPerDealOrDefault → findListFile),
- *  so a per-deal standard list absent from POST /api/moc/create listIds is
- *  referenced by name in the prompt but never uploaded to MOC: IX/OpenX/
+ *  so a per-deal standard list absent from POST /api/runner/create listIds is
+ *  referenced by name in the prompt but never uploaded to the runner: IX/OpenX/
  *  PubMatic then fail missing_domain_file, and Media.net creates the deal
  *  LIVE and cannot apply the list. Excluded by construction: '' ("no list"
  *  override), unknown ids, ad-hoc upload ids (those ride filePaths), and
@@ -1452,7 +1452,7 @@ export function feeTypeIsPercent(feeType: string): boolean {
  *  1.00 would silently become a 5000% / 1% margin on a live money deal. No
  *  verified non-percent wire exists yet on any SSP, so the builders emit
  *  this marker INSTEAD of a margin arg. The '# BLOCKED' prefix is the server
- *  submit gate's hard don't-run marker (moc.go), and the Go audit blocks the
+ *  submit gate's hard don't-run marker (runner.go), and the Go audit blocks the
  *  batch upstream (fee_type_wire) — this is the prompt-side defense in
  *  depth. */
 function nonPercentFeeBlockLines(form: FormData, ssp: string, wire: string): string[] {
@@ -1821,7 +1821,7 @@ export function dealListLabel(form: FormData, deal: DealEntry, standardLists: St
 
 /** Compute the effective start_date for a deal. IX (and others) reject past
  *  start dates at create time, but a brief authored days/weeks earlier can
- *  go stale before the trader runs MOC. Bump to today silently and let the
+ *  go stale before the trader runs the runner. Bump to today silently and let the
  *  writer surface a comment so nobody is surprised. "Today" is the BUSINESS
  *  timezone's calendar date (America/New_York), never the UTC date — the old
  *  toISOString() resolution silently bumped an evening-ET submit to
@@ -1857,11 +1857,11 @@ function startDateLines(r: Resolved, opts: { key?: string; formatDate?: (s: stri
 
 function dealFilePath(file: UploadedFile): string {
   // Emit the ORIGINAL filename only — never Deal Onboarding's local server path.
-  // The trader copies the prompt into MOC and re-attaches the file there;
-  // MOC mounts uploads at /input/ with hash-suffixed names, so the MCP
+  // The trader copies the prompt into the runner and re-attaches the file there;
+  // the runner mounts uploads at /input/ with hash-suffixed names, so the MCP
   // resolves the file by fuzzy name match against the originals. The old
   // behavior of emitting `/opt/deal-onboarding/data/uploads/<id>.xlsx` was
-  // unreadable from the MOC sandbox and forced the agent to hand-fix the
+  // unreadable from the runner sandbox and forced the agent to hand-fix the
   // path on every run (observed in the SS-Optimum 4-deal IX brief).
   return file.name
 }
@@ -2219,7 +2219,7 @@ function buildOpenXPrompt(form: FormData, deal: DealEntry, dealName: string, sta
   // an opaque INTERNAL_SERVER_ERROR. The OpenX MCP fails closed
   // (ox_private_auction_unsupported) and the ox_pmp_type audit rule blocks it
   // upstream; this line-anchored "# BLOCKED" marker is the belt-and-braces
-  // backstop the MOC submit gate 422s on, so a stale persisted/parsed value
+  // backstop the runner submit gate 422s on, so a stale persisted/parsed value
   // can never reach a dead create. NEVER silently coerce to PREFERRED_DEAL —
   // Private Auction has different auction semantics.
   const pmpDealType = ox.pmpDealType || 'PREFERRED_DEAL'
@@ -2661,7 +2661,7 @@ function buildPubMaticPrompt(form: FormData, deal: DealEntry, dealName: string, 
   } else {
     // Fail closed: PubMatic has NO usable ad-format id for this channel
     // (Audio is id 14 but uiEnabled=0 in the adType catalog). The unresolved
-    // token blocks the MOC submit rather than guessing a format — the old
+    // token blocks the runner submit rather than guessing a format — the old
     // 'Native (13)' enum guess booked live VIDEO deals.
     lines.push(`ad_formats: <FILL — PubMatic has no usable ad-format id for the ${r.channel} channel (Audio id 14 is uiEnabled=0 in the adType catalog); pick Banner (3), Video (13), or Native (12) explicitly, or drop PubMatic for this deal>`)
   }
@@ -3756,14 +3756,14 @@ function buildMagnitePrompt(form: FormData, deal: DealEntry, dealName: string, s
  * Generate one per-deal prompt block.
  *
  * @param dealIndex  Zero-based position of THIS deal within the cohort the
- *                   trader actually pastes into MOC (e.g. batch-supported
+ *                   trader actually pastes into the runner (e.g. batch-supported
  *                   deals only when called from buildBatchPrompt; the full
  *                   form.deals list otherwise).
  * @param dealTotal  Cohort size for the same view. Defaults to
  *                   form.deals.length for backward-compat with the
  *                   per-deal preview UI. Pass createDeals.length when
  *                   generating a batch payload so the "# Deal N of M"
- *                   header reflects what MOC actually creates — never an
+ *                   header reflects what the runner actually creates — never an
  *                   unfiltered count that includes SSP-less or sheet-only
  *                   deals.
  */
@@ -3773,7 +3773,7 @@ export function generateDealPromptYaml(form: FormData, deal: DealEntry, dealInde
   const dspLabel = (dsp ?? activeDsps(form)[0])?.dsp
   const override = activeExclusionOverride(form, deal)
   const overrideLine = override ? `\n# EXCLUSION_OVERRIDE: ${JSON.stringify(override)}` : ''
-  const header = `# Deal ${dealIndex + 1} of ${dealTotal} — paste into MOC.\n# SSP: ${ssp || '<unset>'} | Channel: ${deal.channel || '<unset>'} | Theme: ${deal.theme || '<unset>'}${dspLabel ? ` | DSP: ${dspLabel}` : ''}${overrideLine}`
+  const header = `# Deal ${dealIndex + 1} of ${dealTotal} — paste into the runner.\n# SSP: ${ssp || '<unset>'} | Channel: ${deal.channel || '<unset>'} | Theme: ${deal.theme || '<unset>'}${dspLabel ? ` | DSP: ${dspLabel}` : ''}${overrideLine}`
 
   let body: string
   switch (ssp) {
@@ -3811,7 +3811,7 @@ export function generateAllDealPrompts(form: FormData, standardLists: StandardLi
  * Operating constraints emitted verbatim at the top of every batch prompt.
  *
  * These rules were proven out by live cutlass smoke tests and the Optimum
- * Display compliance batch (May 2026). MOC ships with SendGrid enabled —
+ * Display compliance batch (May 2026). the runner ships with SendGrid enabled —
  * the deal-sheet email IS expected to fire as the final critical action.
  *
  * Constants #3 and #4 are environment-dependent workarounds and SHOULD be
@@ -3887,7 +3887,7 @@ export function splitBatchDeals(deals: DealEntry[]): { createDeals: DealEntry[];
 /** splitBatchDeals + multi-DSP expansion in one step: the (deal x DSP) pairs
  *  every batch emission path iterates. Create rows AND sheet-only rows both
  *  expand per DSP so the prompt/brief names match the audit's expanded set
- *  (the moc.go gate compares them 1:1). SINGLE SOURCE OF TRUTH shared by
+ *  (the runner.go gate compares them 1:1). SINGLE SOURCE OF TRUTH shared by
  *  buildBatchPrompt/buildCriticalActionsBlock here and buildBatchBrief
  *  (dealBrief.ts). */
 export function splitBatchPairs(form: FormData): { createPairs: DealDspPair[]; sheetOnlyPairs: DealDspPair[] } {
@@ -3924,7 +3924,7 @@ function sheetCountLabel(createCount: number, sheetOnlyCount: number): string {
 /** Build the typed `critical_actions` YAML block that confirm_audit's preferred
  *  form consumes. One {tool, identifier} entry per CREATE deal — sheet-only
  *  rows (already created in a previous batch) get NO create action — plus
- *  a final mcp_sendgrid_send_email entry — MOC ships with SendGrid enabled
+ *  a final mcp_sendgrid_send_email entry — the runner ships with SendGrid enabled
  *  and the deal-sheet email is the canonical batch finalizer. Pre-building
  *  this list removes the substring-matching guesswork the agent would
  *  otherwise have to do. */
@@ -3981,7 +3981,7 @@ export function buildBatchPrompt(form: FormData, standardLists: StandardList[] =
   // form was populated from a client's brief, submitterEmail may be the
   // CLIENT's address, and emailing the deal sheet there is a serious mistake.
   // If the list is empty the YAML carries
-  // the literal placeholder so MOC + the trader both notice before paste.
+  // the literal placeholder so the runner + the trader both notice before paste.
   const allRecipients = splitEmails(form.dealSheetRecipient)
   const recipient = allRecipients[0] || '<UNSET-trader-email>'
   const ccRecipients = allRecipients.slice(1)
@@ -4008,8 +4008,8 @@ export function buildBatchPrompt(form: FormData, standardLists: StandardList[] =
   // deal's slots (medianetDealId); two MN creates resolving to the same id
   // would silently collide at Media.net (cutlass validates format only). The
   // Go audit flags the colliding tuple earlier (mn_deal_id); this guard is the
-  // prompt-level backstop — the <UNSET…> token fail-closes at the /api/moc/create
-  // unresolved-placeholder gate, so a colliding batch can never reach MOC.
+  // prompt-level backstop — the <UNSET…> token fail-closes at the /api/runner/create
+  // unresolved-placeholder gate, so a colliding batch can never reach the runner.
   const mnIdPairs = createPairs
     .filter(p => p.deal.ssp === 'Media.net')
     .map(p => medianetDealId(form, p.deal, { dsp: p.dsp }))
@@ -4033,7 +4033,7 @@ export function buildBatchPrompt(form: FormData, standardLists: StandardList[] =
   // Confirm in the brief envelope when start dates were auto-bumped.
   // The resolver replaces any past flightStartDate with today before each
   // deal block emits its start_date arg (IX rejects past start dates),
-  // so this note is informational — it tells the trader/MOC the value in
+  // so this note is informational — it tells the trader/the runner the value in
   // the prompt is not what was on the form. Per-deal blocks also carry an
   // inline `# start_date auto-bumped from ...` comment.
   if (form.flightStartDate) {
@@ -4099,7 +4099,7 @@ export function buildBatchPrompt(form: FormData, standardLists: StandardList[] =
     lines.push(`    prompt_inputs: |`)
     // The "# Deal N of M" header reflects this batch's view of the world —
     // createDeals excludes SSP-less and sheet-only deals, so N/M agree with
-    // what MOC actually iterates (same indexing as buildBatchBrief). Passing
+    // what the runner actually iterates (same indexing as buildBatchBrief). Passing
     // form.deals.indexOf(d) here historically produced gaps like "Deal 2 of 7"
     // when deals had been filtered out of the batch.
     const body = generateDealPromptYaml(form, d, batchIndex, createPairs.length, standardLists, dsp)
@@ -4112,7 +4112,7 @@ export function buildBatchPrompt(form: FormData, standardLists: StandardList[] =
   // Sheet-only rows — same section name + status the structured brief uses
   // (dealBrief.ts already_created_for_sheet), so agent, brief, and prompt
   // speak one language. These rows carry NO tool and NO prompt_inputs: their
-  // names are embedded here so the server audit gate (moc.go promptEmbedsName)
+  // names are embedded here so the server audit gate (runner.go promptEmbedsName)
   // can bind every audited deal name to the prompt without authorizing a
   // create for them.
   if (sheetOnlyPairs.length > 0) {
@@ -4157,7 +4157,7 @@ export function buildBatchPrompt(form: FormData, standardLists: StandardList[] =
     lines.push(`    deals: <Inferred from successful per-deal creates above.>`)
   }
 
-  // followup_step: send the deal-sheet email via SendGrid. MOC ships
+  // followup_step: send the deal-sheet email via SendGrid. the runner ships
   // with SendGrid enabled — this is the canonical batch finalizer.
   lines.push(`followup_step:`)
   lines.push(`  tool: mcp_sendgrid_send_email`)

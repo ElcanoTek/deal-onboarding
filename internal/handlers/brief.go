@@ -42,7 +42,7 @@ func briefHasUnresolvedToken(s string) bool {
 // validateDealBrief schema-checks a serialized structured deal brief, returning
 // the list of issues (empty = valid). It mirrors the frontend validateBrief so
 // a brief that passed client-side validation also passes here — defense in
-// depth before the brief is attached to a live MOC task. The exact transport
+// depth before the brief is attached to a live runner task. The exact transport
 // hazards from a failed live batch are rejected: unresolved placeholders,
 // missing tool routing, blank envelope fields, and sheet-only rows leaking a
 // create tool.

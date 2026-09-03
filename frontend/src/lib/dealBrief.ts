@@ -159,7 +159,7 @@ export function buildBatchBrief(
   // Shared split + multi-DSP expansion with buildBatchPrompt
   // (dealPromptYaml.ts splitBatchPairs) — brief and prompt must never
   // disagree on which rows create, which only ride the sheet, or how the
-  // batch expands across DSPs (the moc.go gate compares brief names to the
+  // batch expands across DSPs (the runner.go gate compares brief names to the
   // audit's expanded set 1:1).
   const { createPairs, sheetOnlyPairs } = splitBatchPairs(form)
 
@@ -226,10 +226,10 @@ const UNRESOLVED_TOKEN = /<FILL|\$\{|\{\{|<UNSET/
  *  fail-closed reference cross-check (#221):
  *    listNames — upload names of the standard lists in the submit's listIds
  *                (standardListUploadName — the registry name plus the data
- *                file's extension, #198; moc.go uploads each under the same
+ *                file's extension, #198; runner.go uploads each under the same
  *                UploadName, and dealFilePath emits it via standardListAsFile);
  *    fileNames — ORIGINAL client filenames of the ad-hoc uploads in filePaths
- *                (moc.go uploads each under its paired fileNames entry, #157). */
+ *                (runner.go uploads each under its paired fileNames entry, #157). */
 export interface BriefAttachments {
   listNames: string[]
   fileNames: string[]

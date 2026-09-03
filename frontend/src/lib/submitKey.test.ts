@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { canonicalJson, mintSubmitKey, sha256Hex } from './submitKey'
 
 // =============================================================================
-// #225 — the MOC-create idempotency key must be a pure function of the audited
+// #225 — the runner-create idempotency key must be a pure function of the audited
 // snapshot: stable across re-clicks/retries of the SAME audited batch, and
 // different the moment the batch changes. (The old behavior — a fresh
 // crypto.randomUUID() per Create click — fails the stability property: every

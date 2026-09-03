@@ -1760,12 +1760,12 @@ span.flatpickr-weekday {
 }
 
 /* ============================================================
-   MOC DEAL PROMPT OUTPUT
+   RUNNER DEAL PROMPT OUTPUT
    ============================================================ */
 
 /* Dev/debug disclosure wrapping the prompt panel — a quiet row that stays
  * out of the trader's way until a developer flips it open. */
-.moc-debug__toggle {
+.runner-debug__toggle {
   width: 100%;
   display: flex;
   align-items: center;
@@ -1784,17 +1784,17 @@ span.flatpickr-weekday {
   transition: color var(--transition-fast), border-color var(--transition-fast);
 }
 
-.moc-debug__toggle:hover {
+.runner-debug__toggle:hover {
   color: var(--color-text-secondary);
   border-color: var(--color-border-strong);
 }
 
-.moc-debug__toggle:focus-visible {
+.runner-debug__toggle:focus-visible {
   outline: none;
   box-shadow: var(--focus-ring);
 }
 
-.moc-debug__hint {
+.runner-debug__hint {
   margin-left: var(--space-2);
   font-weight: var(--font-weight-regular);
   font-size: var(--font-size-overline);
@@ -1802,14 +1802,14 @@ span.flatpickr-weekday {
   letter-spacing: 0.06em;
 }
 
-.moc-prompts {
+.runner-prompts {
   margin-top: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 
-.moc-prompts__header {
+.runner-prompts__header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -1819,34 +1819,34 @@ span.flatpickr-weekday {
   border-bottom: 1px solid var(--color-border);
 }
 
-.moc-prompts__title {
+.runner-prompts__title {
   margin: 0;
   font-size: var(--font-size-h2, 1.25rem);
   font-weight: 700;
   color: var(--color-text-primary);
 }
 
-.moc-prompts__subtitle {
+.runner-prompts__subtitle {
   margin: var(--space-1) 0 0 0;
   font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
   max-width: 42rem;
 }
 
-.moc-prompts__list {
+.runner-prompts__list {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
-.moc-prompt-card {
+.runner-prompt-card {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface-1);
   overflow: hidden;
 }
 
-.moc-prompt-card__header {
+.runner-prompt-card__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1857,12 +1857,12 @@ span.flatpickr-weekday {
   flex-wrap: wrap;
 }
 
-/* "Send to MOC" one-click action on the batch prompt card. */
-.moc-prompt-card__actions { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
+/* One-click submit action on the batch prompt card. */
+.runner-prompt-card__actions { display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap; }
 
 /* Runner environment picker (create confirm modal, debug panel).
-   Rendered only when a dev MOC (MOC_DEV_*) is configured server-side. */
-.moc-env-picker {
+   Rendered only when a dev runner (RUNNER_DEV_*) is configured server-side. */
+.runner-env-picker {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -1872,24 +1872,24 @@ span.flatpickr-weekday {
   border-radius: var(--radius-md);
   text-align: left;
 }
-.moc-env-picker legend {
+.runner-env-picker legend {
   padding: 0 var(--space-2);
   font-size: var(--font-size-caption);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-secondary);
 }
-.moc-env-picker__radio {
+.runner-env-picker__radio {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   cursor: pointer;
 }
-.moc-env-picker__radio input { flex-shrink: 0; }
-.moc-env-picker__hint {
+.runner-env-picker__radio input { flex-shrink: 0; }
+.runner-env-picker__hint {
   font-size: var(--font-size-overline);
   color: var(--color-text-muted);
 }
-.moc-env-picker__warning {
+.runner-env-picker__warning {
   margin: 0;
   padding: var(--space-2) var(--space-3);
   background: var(--color-status-warning-bg);
@@ -1898,20 +1898,20 @@ span.flatpickr-weekday {
   font-size: var(--font-size-caption);
   color: var(--color-status-warning-fg);
 }
-.moc-env-picker__check {
+.runner-env-picker__check {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
 }
-.moc-env-picker__check-result {
+.runner-env-picker__check-result {
   font-size: var(--font-size-caption);
 }
-.moc-env-picker__check-result--ok { color: var(--color-status-success-fg); }
-.moc-env-picker__check-result--bad { color: var(--color-status-error-fg); }
-.modal .moc-env-picker { margin-bottom: var(--space-4); }
+.runner-env-picker__check-result--ok { color: var(--color-status-success-fg); }
+.runner-env-picker__check-result--bad { color: var(--color-status-error-fg); }
+.modal .runner-env-picker { margin-bottom: var(--space-4); }
 
-.moc-prompt-card__title {
+.runner-prompt-card__title {
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -1919,13 +1919,13 @@ span.flatpickr-weekday {
   flex: 1;
 }
 
-.moc-prompt-card__index {
+.runner-prompt-card__index {
   font-weight: 700;
   color: var(--color-text-primary);
   flex-shrink: 0;
 }
 
-.moc-prompt-card__name {
+.runner-prompt-card__name {
   font-family: var(--font-code);
   font-size: var(--font-size-caption);
   color: var(--color-text-secondary);
@@ -1937,7 +1937,7 @@ span.flatpickr-weekday {
   min-width: 0;
 }
 
-.moc-prompt-card__yaml {
+.runner-prompt-card__yaml {
   margin: 0;
   padding: var(--space-4);
   font-family: var(--font-code);
@@ -1951,7 +1951,7 @@ span.flatpickr-weekday {
   overflow-y: auto;
 }
 
-.moc-prompt-card__yaml:focus {
+.runner-prompt-card__yaml:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
@@ -3552,7 +3552,7 @@ so strip the section's own box and hide its duplicate
   color: var(--color-text-primary);
 }
 
-/* The canonical +/− disclosure indicator (shared: DealBuilder's MOC
+/* The canonical +/− disclosure indicator (shared: DealBuilder's runner
  * debug panel toggle). */
 .prompt-panel__disclosure {
   flex-shrink: 0;

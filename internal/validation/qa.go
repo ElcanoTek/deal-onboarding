@@ -737,7 +737,7 @@ func addGeoItem(add func(string, QAItem), req *AuditRequest) {
 	}
 	if len(overridden) > 0 {
 		add(qaTargeting, QAItem{ID: "qa_geo_override", Label: "Geo exclusion override acknowledged", Status: QAWarn,
-			Detail: "Trader-authorized geo exclusion(s) will NOT be emitted: " + strings.Join(overridden, "; ") + ". The authenticated MOC submit records actor/time and exact stripped values.",
+			Detail: "Trader-authorized geo exclusion(s) will NOT be emitted: " + strings.Join(overridden, "; ") + ". The authenticated the runner submit records actor/time and exact stripped values.",
 			Fix:    "Apply these exclusions manually in the SSP/DSP before activation, or move the deal to an SSP/shape that enforces them."})
 	}
 	// Include-states on an SSP with no state wire (#233.7/.8): the

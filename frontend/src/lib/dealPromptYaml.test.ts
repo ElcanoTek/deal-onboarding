@@ -108,7 +108,7 @@ function twoDealIxFixture(): FormData {
 
 describe('BATCH_OPERATING_PREAMBLE', () => {
   it('encodes the four post-SendGrid-enable constraints', () => {
-    // MOC ships with SendGrid enabled — the legacy "1. SendGrid is NOT
+    // the runner ships with SendGrid enabled — the legacy "1. SendGrid is NOT
     // configured" rule is gone. The remaining four lines are the universal
     // run-time gates: typed critical_actions, validate_brief, IX retry,
     // and the IX-scoped geo_states ban.
@@ -364,7 +364,7 @@ describe('buildBatchPrompt — per-SSP body content', () => {
   it('Xandr prompt omits end_date so the deal is created always-on per house policy', () => {
     // The Xandr MCP + protocol both confirm always-on support (Cutlass audit
     // 2026-05-21). The YAML must NOT carry an end_date: line for Xandr deals,
-    // and must surface the omission so MOC operators understand the intent.
+    // and must surface the omission so runner operators understand the intent.
     const out = buildBatchPrompt(singleSspForm('Xandr', 'CTV'))
     // The "end_date intentionally omitted" comment must be present.
     expect(out).toContain('end_date intentionally omitted — Xandr always-on per house policy')
@@ -467,7 +467,7 @@ describe('buildOpenXPrompt via buildBatchPrompt — exclude-segments always-emit
 })
 
 // =============================================================================
-// Fabrikam Display political-compliance batch (MOC session-1778692463 shape).
+// Fabrikam Display political-compliance batch .
 //
 // Locks in:
 //   - Expected Sensitive Category is a MANUAL post-create UI step (verified
@@ -591,7 +591,7 @@ describe('buildBatchPrompt — Display compliance batch', () => {
 })
 
 // =============================================================================
-// DataCo CTV batch (MOC session-1778622687 shape).
+// DataCo CTV batch .
 //
 // Locks in the rest of the OpenX-MCP-arg-parity wins:
 //   - excluded_publisher_ids replaces the broken targeting.custom NOT path
@@ -803,7 +803,7 @@ describe('buildBatchPrompt — mixed-channel IX file routing', () => {
   it('emits domain_* args for the web deal and app_bundle_* args for the CTV deal', () => {
     const out = buildBatchPrompt(mixedIxFixture())
     // Web deal carries the Include-typed domain file → allowlist operator.
-    // file_path emits the bare original filename (not /input/) because MOC
+    // file_path emits the bare original filename (not /input/) because the runner
     // re-mounts uploads with hash suffixes and resolves by name match.
     expect(out).toMatch(/domain_file_path: "?preferred_news_sites\.csv"?/)
     expect(out).toMatch(/domain_match_operator: allowlist/)
@@ -904,7 +904,7 @@ describe('standardListAsFile — declared value column', () => {
 
 // =============================================================================
 // #198 — standard-list attachment names carry the data file's extension.
-// The MOC upload name is the server's lists.List.UploadName (registry name +
+// The runner upload name is the server's lists.List.UploadName (registry name +
 // data-file extension when the name has none); the prompt must reference the
 // SAME name or the agent's match degrades to fuzzy (and IX rejects the
 // extensionless file outright / OpenX misroutes it). standardListUploadName is
@@ -969,13 +969,13 @@ describe('standardListUploadName — extension-suffixed attachment name (#198)',
     const out = buildBatchPrompt(f, [bare()])
     expect(out).toMatch(/domain_file_path: "Longtail Block\.csv"/)
     // The bare extensionless reference must be gone — a prompt name that
-    // differs from the MOC upload name is exactly the #198 fuzzy-match bug.
+    // differs from the runner upload name is exactly the #198 fuzzy-match bug.
     expect(out).not.toMatch(/domain_file_path: "Longtail Block"/)
   })
 })
 
 // =============================================================================
-// "Deal N of M" labeling — must reflect what MOC actually iterates, not the
+// "Deal N of M" labeling — must reflect what the runner actually iterates, not the
 // raw form.deals list (which includes Magnite manuals that get skipped). The
 // SS-Fabrikam run shipped "Deal 2 of 7" inside a 4-deal IX batch because the
 // header was using form.deals.length unfiltered.
@@ -1124,7 +1124,7 @@ describe('buildBatchPrompt — OpenX prompt corrections', () => {
   // open_auction_access, absent from the create schema; every attempt died
   // with an opaque INTERNAL_SERVER_ERROR). A stale persisted/parsed value
   // must never be emitted as a creatable pmp_deal_type — it becomes a
-  // line-anchored "# BLOCKED" marker the MOC submit gate 422s on.
+  // line-anchored "# BLOCKED" marker the runner submit gate 422s on.
   it('hard-blocks PRIVATE_AUCTION instead of emitting it as a creatable pmp_deal_type (cutlass#766)', () => {
     // FAILS OLD: the pre-guard builder emitted `pmp_deal_type: PRIVATE_AUCTION`.
     const f = openxDisplayFixture()
@@ -2518,7 +2518,7 @@ describe('buildBatchPrompt — sheet-only rows never emit a create entry', () =>
       expect(count(out, name)).toBe(1)
       expect(out.indexOf(name)).toBeGreaterThan(sectionStart)
     }
-    // The audit gate (moc.go promptEmbedsName) binds ALL audited names — the
+    // The audit gate (runner.go promptEmbedsName) binds ALL audited names — the
     // create names must still be present too.
     expect(out).toContain(PM_USERS)
     expect(out).toContain(PM_PROXY)
@@ -2594,7 +2594,7 @@ describe('buildCriticalActionsBlock — sheet-only rows', () => {
 // =============================================================================
 // Multi-DSP expansion (LOCKED): each selected DSP yields its own deal with its
 // own name-slot code (slot 3) and its own seat id in prompt_inputs. Mirrors
-// generateNamedDeals in internal/validation/rules.go — the moc.go gate
+// generateNamedDeals in internal/validation/rules.go — the runner.go gate
 // compares the two sets 1:1.
 // =============================================================================
 
@@ -2772,8 +2772,8 @@ describe('buildBatchPrompt — Media.net deal_id uniqueness', () => {
   it('flags genuinely colliding Media.net deals with a fail-closed <UNSET…> token', () => {
     const form = mnBatchForm()
     // Two identical MN rows — same tuple, same deal_id. The <UNSET…> token is
-    // caught by the /api/moc/create unresolved-placeholder gate, so the batch
-    // can never reach MOC.
+    // caught by the /api/runner/create unresolved-placeholder gate, so the batch
+    // can never reach the runner.
     const dupe = { ...newDeal(), ssp: 'Media.net' as const, channel: 'Display' as const, theme: 'Pets', cpm: '2.50' }
     form.deals = [dupe, { ...dupe, id: 'other' }]
     const out = buildBatchPrompt(form)
@@ -2844,10 +2844,10 @@ describe('buildXandrPrompt — deal code uniqueness (via buildBatchPrompt)', () 
 
 // =============================================================================
 // #221 — collectSubmitListIds: the submit-time attachment union. A per-deal
-// standard-list pick MUST ride POST /api/moc/create listIds even when the
+// standard-list pick MUST ride POST /api/runner/create listIds even when the
 // batch-level applied lists are empty — the old call sites built listIds from
 // form.appliedDomainListIds/appliedAppBundleListIds only, so the prompt
-// referenced the list by name but the file never reached MOC
+// referenced the list by name but the file never reached the runner
 // (IX/OpenX/PubMatic missing_domain_file; Media.net created the deal LIVE
 // without its list).
 // =============================================================================

@@ -15,7 +15,7 @@ interface Props {
   helper?: string
 }
 
-/** Multi-email chip input (MOC-style "Email Results To"): committed addresses
+/** Multi-email chip input (runner-style "Email Results To"): committed addresses
  *  render as removable chips; the trailing inline input commits on Enter,
  *  comma/semicolon, blur, or the Add button. The wire value is the chips
  *  comma-joined — a single address behaves exactly like the old text input. */

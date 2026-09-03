@@ -30,7 +30,7 @@
 
 ```
 ┌──────────────────────────────┐    POST /api/runner/create     ┌──────────────────────────┐
-│  Deal Onboarding (this repo) │ ─────────────────────────────▶ │  Runner (fleet or MOC)   │
+│  Deal Onboarding (this repo) │ ─────────────────────────────▶ │  Runner (fleet)          │
 │  React + Go, single tenant   │   prompt + brief + list files  │  one agent per batch     │
 │  build → audit → prompt      │                                │  loads the engine's      │
 │  server-side re-audit gate   │ ◀───── 2xx {taskId, taskUrl}   │  MCP tools per SSP       │
@@ -61,15 +61,14 @@ works.
 | **Prompt** | The YAML-ish instruction document `frontend/src/lib/dealPromptYaml.ts` builds — the executable artifact the runner's agent follows |
 | **Brief** | The structured JSON (`dealBrief.ts`) attached as `deal_brief.json`; drives the deal sheet and is schema-validated |
 | **Audit** | `POST /api/audit` — the deterministic rule set in `internal/validation`; also re-run server-side at submit |
-| **Runner** | A task API that spawns one agent per task: fleet (`/v1/tasks`) or the legacy MOC task API |
+| **Runner** | A fleet deployment: a task API (`/v1/tasks`) that spawns one agent per task |
 | **Engine** | The MCP servers the agent calls — one per SSP plus `deal_sheet` and `sendgrid` |
 | **Operator config** | `ORG_NAME`, `CAMPAIGN_ID_PREFIX`, `DEFAULT_ATTRIBUTION_CODE`, `RUNNER_PERSONA` |
 
 ## 3. The seam — `POST /api/runner/create`
 
-Handler: `internal/handlers/moc.go` (`HandleMOCCreate` /
-`HandleMOCCreateWithOverrideAudit`). Client: `frontend/src/lib/mocApi.ts`.
-`/api/moc/create` is a compatibility alias.
+Handler: `internal/handlers/runner.go` (`HandleRunnerCreate` /
+`HandleRunnerCreateWithOverrideAudit`). Client: `frontend/src/lib/runnerApi.ts`.
 
 ```jsonc
 {
@@ -81,11 +80,11 @@ Handler: `internal/handlers/moc.go` (`HandleMOCCreate` /
   "fileNames":      ["original-name.csv", …],      // paired 1:1 with filePaths — the name the prompt references
   "idempotencyKey": "…",                           // minted per submit intent by the UI
   "operation":      "create",                      // the only accepted value
-  "mocEnv":         "prod"                         // "prod" (default) | "dev"
+  "runnerEnv":      "prod"                         // "prod" (default) | "dev"
 }
 ```
 
-Response: `{ taskId, taskUrl?, files, mocEnv?, uploaded? }`.
+Response: `{ taskId, taskUrl?, files, runnerEnv?, uploaded?, warnings? }`.
 
 **Gates, all enforced before any network call, in order:**
 
@@ -116,11 +115,13 @@ Response: `{ taskId, taskUrl?, files, mocEnv?, uploaded? }`.
 8. `503` when the targeted runner slot is not configured — never touches the
    network.
 
-**Environments.** The prod slot reads `RUNNER_*` (legacy `MOC_*`); the optional
-dev slot reads `RUNNER_DEV_*`. `mocEnv` selects between them; an unknown id is
-400 (`moc_env_invalid`), an unconfigured dev pick is 503. `GET
-/api/runner/environments` reports `{id, baseUrl, targetNode, enabled}` per slot
-— never API keys.
+**Environments.** The prod slot reads `RUNNER_*`; the optional dev slot reads
+`RUNNER_DEV_*`. `runnerEnv` selects between them; an unknown id is 400
+(`runner_env_invalid`), an unconfigured dev pick is 503. `GET
+/api/runner/environments` reports `{id, baseUrl, enabled}` per slot — never
+API keys. `GET /api/runner/check?env=` probes reachability (`/api-info`) and
+whether the key clears the create gate (`/v1/tasks/estimate`) without creating
+anything.
 
 **Serialization.** Each task carries `serialization_key = campaign:<id>` so two
 batches for the same campaign never run concurrently on the runner.
@@ -143,8 +144,8 @@ batches for the same campaign never run concurrently on the runner.
   and the builder in the same change.
 
 The prompt names tools explicitly as `mcp_<server>_<tool>` (`SSP_SERVER` in
-`dealPromptYaml.ts`, `sspServerByKey` in `internal/handlers/moc.go`, and the
-`defaultFleetMCPServers` roster in `internal/moc/moc.go` are pinned to the same
+`dealPromptYaml.ts`, `sspServerByKey` in `internal/handlers/runner.go`, and the
+`defaultFleetMCPServers` roster in `internal/runner/runner.go` are pinned to the same
 table by `check-fleet-contract.mjs`). Referenced tool names MUST exist in the
 target engine.
 
@@ -215,7 +216,7 @@ fixture), `SSP_SERVER` + `sspServerByKey` + `defaultFleetMCPServers`, a
 `build<SSP>Prompt`, an SSP card component, the fixture block, and the docs
 tables here and in `ENVIRONMENT_TARGETING.md` / `PUBLISHER_ALLOWLISTS.md`.
 
-**Change the runner transport.** Only `internal/moc` knows the wire; keep the
+**Change the runner transport.** Only `internal/runner` knows the wire; keep the
 handler's gates above it. Pin new paths/fields in `fleet-contract.json`.
 
 **Change operator config.** Add the env var to `internal/config`, thread it
@@ -227,7 +228,7 @@ through `validation.Configure`, expose it on `/api/config`, read it in
 | Area | Path |
 |---|---|
 | Routes | `cmd/server/main.go` |
-| Submit seam | `internal/handlers/moc.go`, `internal/moc/` |
+| Submit seam | `internal/handlers/runner.go`, `internal/runner/` |
 | Audit + names | `internal/validation/rules.go`, `qa.go`, `testdata/deal_naming_golden.json` |
 | Assistant | `internal/handlers/deal_chat.go`, `deal_chat_domain.go`; `frontend/src/components/DealAssistantDock.tsx`, `DealChat.tsx`, `lib/assistantProposal.ts` |
 | Prompt + brief | `frontend/src/lib/dealPromptYaml.ts`, `dealBrief.ts` |

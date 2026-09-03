@@ -1338,7 +1338,7 @@ describe('contract: Required-final-summary reporting lines (#226/#244)', () => {
   // Each line fires only when a create deal actually carries the dimension —
   // the reporting contract that forces the agent to close the loop on every
   // emitted arg or NOT-SUPPORTED marker. buildBatchPrompt is the produce
-  // surface MOC executes.
+  // surface the runner executes.
   it('viewability/language/segment-exclude/geo-exclude/TL-IAB lines fire exactly when carried', async () => {
     const { buildBatchPrompt } = await import('./dealPromptYaml')
     const bare = buildBatchPrompt(baseForm('Index Exchange', 'Display'))

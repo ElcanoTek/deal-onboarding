@@ -13,7 +13,7 @@ import (
 // publisherCatalog is the repo-shipped known-publisher snapshot, injected once
 // at boot (SetPublisherCatalog). Package-level rather than threaded through
 // the two audit entrypoints' constructors: it is immutable after boot, purely
-// advisory (nil = no advisory checks), and the MOC handler constructor has
+// advisory (nil = no advisory checks), and the runner handler constructor has
 // ~66 call sites that a parameter would churn for no behavioral gain.
 var publisherCatalog *pubcatalog.Catalog
 
@@ -56,7 +56,7 @@ func HandleAudit(listReg *lists.Registry) http.HandlerFunc {
 		// No fallback campaign id: a blank campaignId fails the campaign_id
 		// check (the id is baked into every deal name, so minting a random one
 		// here produced three surfaces showing three different names). The
-		// /api/moc/create gate still passes the form's own campaignId as the
+		// /api/runner/create gate still passes the form's own campaignId as the
 		// fallback for its deterministic re-run.
 		result := evaluateAudit(listReg, &req, "")
 		writeJSON(w, http.StatusOK, result)

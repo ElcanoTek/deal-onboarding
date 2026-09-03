@@ -614,7 +614,7 @@ func TestMagniteRules_OTTWithSegmentsAndNoSizesIsClean(t *testing.T) {
 }
 
 func TestMagniteRules_DealSheetRecipientRequiredForMagniteOnlyBatch(t *testing.T) {
-	// Magnite-only batches run through MOC like any other SSP now, so the
+	// Magnite-only batches run through the runner like any other SSP now, so the
 	// deal-sheet recipient requirement applies (the old exemption is gone).
 	req := magniteRequest("CTV")
 	req.DealSheetRecipient = ""
@@ -948,7 +948,7 @@ func TestIABCampaignRetiredCheck(t *testing.T) {
 
 	// A non-empty list can only come from a stale cached client whose prompts
 	// would still ship the invisible list — the audit must fail closed. This
-	// runs in the /api/moc/create gate too (it re-runs RunAudit).
+	// runs in the /api/runner/create gate too (it re-runs RunAudit).
 	req.IABCategories = []string{"Auto Parts", "Car Culture"}
 	res = RunAudit(&req, req.CampaignID)
 	c, ok := ruleResult(res.Checks, "iab_campaign_retired")
@@ -993,7 +993,7 @@ func TestSummarizeListSelection_ScopedConflicts(t *testing.T) {
 // =============================================================================
 // Sheet-only rows — deals already created in a previous batch that only ride
 // the deal sheet (DealEntry.sheetOnly in types/deal.ts). Create-only checks
-// must skip them; deal names and TotalDeals must keep including them (the MOC
+// must skip them; deal names and TotalDeals must keep including them (the runner
 // gate binds every audited name against the prompt).
 // =============================================================================
 
@@ -1032,7 +1032,7 @@ func sheetOnlyOpenXRow(id string) DealEntry {
 // rows riding the sheet. The OpenX create-config checks must not fire — this
 // batch never calls an OpenX tool — and the sheet-only row must not demand a
 // create-time CPM. Without the exemption this legitimate batch could never
-// pass the audit (and therefore never pass the MOC gate's re-audit).
+// pass the audit (and therefore never pass the runner gate's re-audit).
 func TestSheetOnlyRows_ExemptFromCreateOnlyChecks(t *testing.T) {
 	req := baseValidRequest()
 	req.Deals = append(req.Deals, sheetOnlyOpenXRow("d2"))
@@ -1054,7 +1054,7 @@ func TestSheetOnlyRows_ExemptFromCreateOnlyChecks(t *testing.T) {
 	}
 }
 
-// deal_names/TotalDeals MUST keep including sheet-only rows: the MOC gate
+// deal_names/TotalDeals MUST keep including sheet-only rows: the runner gate
 // requires every audited deal name to appear in the prompt (promptEmbedsName),
 // and sheet-only names are embedded via the already_created_for_sheet section.
 func TestSheetOnlyRows_StillNamedAndCounted(t *testing.T) {
@@ -1344,7 +1344,7 @@ func TestMultiDSPExpansion_SheetOnlyRowsDoNotExpand(t *testing.T) {
 
 func TestDealNameCharsetCheck_RejectsControlCharacters(t *testing.T) {
 	// A nameOverride with an interior tab passes generation verbatim; the
-	// prompt writer escapes it, but moc.go's promptEmbedsName only matches the
+	// prompt writer escapes it, but runner.go's promptEmbedsName only matches the
 	// raw/minimally-escaped name — such a submit would 422 forever. The audit
 	// must fail EARLY instead.
 	req := multiDSPRequest()
@@ -1402,7 +1402,7 @@ func TestDuplicateDSPCodeMessage_NamesTheSharedCode(t *testing.T) {
 // --- geo_classification (cutlass#724 / #223) -------------------------
 // A subnational geo entry that classifies as neither a US state nor a Canadian
 // province — or an unknown country name — must fail the audit BEFORE submit
-// (the moc.go CREATE re-audit enforces this server-side). Before this rule the
+// (the runner.go CREATE re-audit enforces this server-side). Before this rule the
 // entries passed the audit and died mid-batch at the SSP MCP, or worse: OpenX
 // read a bare "SK" as the country Slovakia.
 

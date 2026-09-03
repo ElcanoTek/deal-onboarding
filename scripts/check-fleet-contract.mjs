@@ -19,8 +19,8 @@
 // Deliberately pinned against the REAL handlers, not fleet's openapi.yaml,
 // which currently omits several TaskCreate fields (fleet#720).
 //
-// It ALSO verifies the Deal Onboarding-side half of the contract (internal/moc/moc.go
-// wire structs + paths, internal/handlers/moc.go SSP server map, the frontend
+// It ALSO verifies the Deal Onboarding-side half of the contract (internal/runner/runner.go
+// wire structs + paths, internal/handlers/runner.go SSP server map, the frontend
 // SSP_SERVER emitter), and — when given an bundle checkout — the bundle
 // MCP catalog + persona the deployment relies on.
 //
@@ -122,7 +122,7 @@ function checkPresence(fact, file, src, literal, what = 'literal') {
 // ---------------------------------------------------------------------------
 
 // The json tag names of a Go struct's fields, from `type <name> struct {` to
-// its closing brace at column 0 indent (fleet/models and internal/moc both
+// its closing brace at column 0 indent (fleet/models and internal/runner both
 // declare wire structs at top level with tab-indented fields).
 function goStructJSONTags(src, structName) {
   const m = src.match(new RegExp(`type ${structName} struct \\{([\\s\\S]*?)\\n\\}`))
@@ -168,7 +168,7 @@ function goStringMapValues(src, varName) {
   const bareUpload = api.uploadPath.replace(api.versionPrefix, '')
   checkPresence(`api.createTaskPath (${api.versionPrefix} + POST ${bareCreate})`, 'cmd/fleet/main.go', main, `Post("${bareCreate}", h.CreateTask)`, 'route registration')
   checkPresence(`api.uploadPath (${api.versionPrefix} + POST ${bareUpload})`, 'cmd/fleet/main.go', main, `Post("${bareUpload}", h.HandleUpload)`, 'route registration')
-  // The connection probe (moc.Client.Check). estimate must stay routed AND
+  // The connection probe (runner.Client.Check). estimate must stay routed AND
   // stay gated by authorizeTaskCreate — if fleet ever loosens that gate the
   // probe stops proving anything about the key.
   const bareEstimate = api.estimateTaskPath.replace(api.versionPrefix, '')
@@ -227,23 +227,23 @@ function goStringMapValues(src, varName) {
   checkPresence('taskCreate.duplicateFileNameError', 'internal/sched/handlers/handlers.go', handlers, tc.duplicateFileNameError, 'validation error')
 
   // Deal Onboarding half: the fleet wire struct sends exactly the pinned field set.
-  const mocGo = readLocal('internal/moc/moc.go')
-  const sentTags = mocGo ? goStructJSONTags(mocGo, 'fleetTaskCreateWire') : null
-  check('taskCreate.manifestSentFields (internal/moc fleetTaskCreateWire)', 'internal/moc/moc.go', tc.manifestSentFields, sentTags ?? '(fleetTaskCreateWire struct not found)', { asSet: true })
-  const manifestChoiceTags = mocGo ? goStructJSONTags(mocGo, 'fleetMCPChoice') : null
-  check('taskCreate.mcpChoiceFields (client fleetMCPChoice)', 'internal/moc/moc.go', tc.mcpChoiceFields, manifestChoiceTags ?? '(fleetMCPChoice struct not found)', { asSet: true })
+  const runnerGo = readLocal('internal/runner/runner.go')
+  const sentTags = runnerGo ? goStructJSONTags(runnerGo, 'fleetTaskCreateWire') : null
+  check('taskCreate.clientSentFields (internal/runner fleetTaskCreateWire)', 'internal/runner/runner.go', tc.clientSentFields, sentTags ?? '(fleetTaskCreateWire struct not found)', { asSet: true })
+  const manifestChoiceTags = runnerGo ? goStructJSONTags(runnerGo, 'fleetMCPChoice') : null
+  check('taskCreate.mcpChoiceFields (client fleetMCPChoice)', 'internal/runner/runner.go', tc.mcpChoiceFields, manifestChoiceTags ?? '(fleetMCPChoice struct not found)', { asSet: true })
   // Every field Deal Onboarding sends beyond fleet's accepted set must be a known,
   // deliberately-early additive field (silently discarded per
   // unknownFieldsIgnored) — anything else is an unnoticed wire mistake.
-  const extras = tc.manifestSentFields.filter((f) => !tc.fleetAcceptedFields.includes(f))
+  const extras = tc.clientSentFields.filter((f) => !tc.fleetAcceptedFields.includes(f))
   check('taskCreate: client-only fields are exactly the tracked additive set', fixturePath, extras, ['serialization_key'], { asSet: true })
 
   // Deal Onboarding hits the pinned versioned paths with the pinned auth header.
-  checkPresence('api.createTaskPath (client)', 'internal/moc/moc.go', mocGo, `"${fixture.api.createTaskPath}"`, 'client path')
-  checkPresence('api.uploadPath (client)', 'internal/moc/moc.go', mocGo, `"${fixture.api.uploadPath}"`, 'client path')
-  checkPresence('api.estimateTaskPath (client)', 'internal/moc/moc.go', mocGo, `"${fixture.api.estimateTaskPath}"`, 'client path')
-  checkPresence('api.apiInfoPath (client)', 'internal/moc/moc.go', mocGo, `"${fixture.api.apiInfoPath}"`, 'client path')
-  checkPresence('api.authHeader (client)', 'internal/moc/moc.go', mocGo, `req.Header.Set("${fixture.api.authHeader}"`, 'auth header write')
+  checkPresence('api.createTaskPath (client)', 'internal/runner/runner.go', runnerGo, `"${fixture.api.createTaskPath}"`, 'client path')
+  checkPresence('api.uploadPath (client)', 'internal/runner/runner.go', runnerGo, `"${fixture.api.uploadPath}"`, 'client path')
+  checkPresence('api.estimateTaskPath (client)', 'internal/runner/runner.go', runnerGo, `"${fixture.api.estimateTaskPath}"`, 'client path')
+  checkPresence('api.apiInfoPath (client)', 'internal/runner/runner.go', runnerGo, `"${fixture.api.apiInfoPath}"`, 'client path')
+  checkPresence('api.authHeader (client)', 'internal/runner/runner.go', runnerGo, `req.Header.Set("${fixture.api.authHeader}"`, 'auth header write')
 }
 
 // ---------------------------------------------------------------------------
@@ -275,8 +275,8 @@ function goStringMapValues(src, varName) {
   checkPresence('upload.multipartField', file, src, `r.FormFile("${up.multipartField}")`, 'multipart field')
   checkPresence('upload.responseFilenameField', file, src, `"${up.responseFilenameField}":`, 'response field')
   // Deal Onboarding half: the client reads that same field.
-  const mocGo = readLocal('internal/moc/moc.go')
-  checkPresence('upload.responseFilenameField (client UploadResult)', 'internal/moc/moc.go', mocGo, `json:"${up.responseFilenameField}"`, 'response decode tag')
+  const runnerGo = readLocal('internal/runner/runner.go')
+  checkPresence('upload.responseFilenameField (client UploadResult)', 'internal/runner/runner.go', runnerGo, `json:"${up.responseFilenameField}"`, 'response decode tag')
 }
 
 // ---------------------------------------------------------------------------
@@ -285,7 +285,7 @@ function goStringMapValues(src, varName) {
 {
   const prefix = fixture.taskUrl.webUiPathPrefix
   checkPresence('taskUrl.webUiPathPrefix (fleet notifications)', 'internal/runner/notify.go', readFleet('internal/runner/notify.go'), `"${prefix}"`, 'URL prefix')
-  checkPresence('taskUrl.webUiPathPrefix (client TaskURL)', 'internal/moc/moc.go', readLocal('internal/moc/moc.go'), `"${prefix}"`, 'URL prefix')
+  checkPresence('taskUrl.webUiPathPrefix (client TaskURL)', 'internal/runner/runner.go', readLocal('internal/runner/runner.go'), `"${prefix}"`, 'URL prefix')
 }
 
 // ---------------------------------------------------------------------------
@@ -320,17 +320,17 @@ function goStringMapValues(src, varName) {
   const feMap = sspBlock ? Object.fromEntries([...sspBlock[1].matchAll(/'([^']+)':\s*'([^']+)'/g)].map((m) => [m[1], m[2]])) : null
   check('mcpServers.sspServers (frontend SSP_SERVER)', 'frontend/src/lib/dealPromptYaml.ts', fixture.mcpServers.sspServers, feMap ?? '(SSP_SERVER map not found)')
   //   Go sspServerByKey (handler form derivation)
-  const handlersGo = readLocal('internal/handlers/moc.go')
+  const handlersGo = readLocal('internal/handlers/runner.go')
   const goServers = handlersGo ? goStringMapValues(handlersGo, 'var sspServerByKey') : null
-  check('mcpServers.sspServers (Go sspServerByKey values)', 'internal/handlers/moc.go', sspServers, goServers ?? '(sspServerByKey map not found)', { asSet: true })
+  check('mcpServers.sspServers (Go sspServerByKey values)', 'internal/handlers/runner.go', sspServers, goServers ?? '(sspServerByKey map not found)', { asSet: true })
   //   Go defaultFleetMCPServers (the empty-selection fallback roster)
-  const mocGo = readLocal('internal/moc/moc.go')
-  const rosterBlock = mocGo ? mocGo.match(/var defaultFleetMCPServers = \[\]string\{([\s\S]*?)\n\}/) : null
+  const runnerGo = readLocal('internal/runner/runner.go')
+  const rosterBlock = runnerGo ? runnerGo.match(/var defaultFleetMCPServers = \[\]string\{([\s\S]*?)\n\}/) : null
   const roster = rosterBlock ? [...rosterBlock[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]) : null
-  check('mcpServers (Go defaultFleetMCPServers fallback roster)', 'internal/moc/moc.go', allNeeded, roster ?? '(defaultFleetMCPServers not found)', { asSet: true })
+  check('mcpServers (Go defaultFleetMCPServers fallback roster)', 'internal/runner/runner.go', allNeeded, roster ?? '(defaultFleetMCPServers not found)', { asSet: true })
   //   Go handler always-appended service pair
   for (const service of services) {
-    checkPresence(`mcpServers.serviceServers[${show(service)}] appended by resolveMCPSelection`, 'internal/handlers/moc.go', handlersGo, `moc.MCPChoice{Server: "${service}"}`, 'service append')
+    checkPresence(`mcpServers.serviceServers[${show(service)}] appended by resolveMCPSelection`, 'internal/handlers/runner.go', handlersGo, `moc.MCPChoice{Server: "${service}"}`, 'service append')
   }
 }
 
@@ -363,7 +363,7 @@ if (drifts.length > 0) {
   }
   console.log('')
   console.log('The Deal Onboarding<->fleet contract drifted. Either fleet@dev changed the wire')
-  console.log('(update the fixture AND the matching adapter code in internal/moc / the')
+  console.log('(update the fixture AND the matching adapter code in internal/runner / the')
   console.log('handlers), or a tracking pin flipped (fleet#709 serialization_key,')
   console.log('fleet#719 scoped upload keys — flip the fixture fact and unlock the')
   console.log('dependent client behavior), or the fixture was edited without')

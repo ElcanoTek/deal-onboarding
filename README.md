@@ -7,8 +7,18 @@ Deal Onboarding is a single-tenant web app for programmatic curation teams. A
 trader pastes or uploads a brief, the Deal Builder turns it into a structured,
 SSP-aware batch, a deterministic audit (plus an optional AI QA pass) checks
 every deal parameter, and one click hands the audited batch to your
-deal-booking runner, which creates the deals on Index Exchange, OpenX,
-PubMatic, Magnite, Xandr, Media.net, and TripleLift and emails the deal sheet.
+[fleet](https://github.com/ElcanoTek/fleet) task runner, whose agent creates
+the deals on Index Exchange, OpenX, PubMatic, Magnite, Xandr, Media.net, and
+TripleLift and emails the deal sheet.
+
+![Deal Builder — the Deals step with the Deal Assistant dock open](docs/images/deal-builder.png)
+
+<details>
+<summary>Deal Summary with the audit and QA report</summary>
+
+![Deal Summary — audit passed, QA specialist report, ready to submit](docs/images/deal-summary.png)
+
+</details>
 
 - **Deal Builder** — campaign, DSP seats, SSP configuration, per-deal cards
   (audience, channel, geo, floors, IAB categories, viewability, publisher
@@ -20,8 +30,8 @@ PubMatic, Magnite, Xandr, Media.net, and TripleLift and emails the deal sheet.
   questions, or ask for bulk edits and review them as a diff before applying.
   Failing audit rows carry a "Fix with assistant" shortcut.
 - **One outbound seam** — `POST /api/runner/create` sends a prompt, a
-  structured brief, and the list files to your runner (fleet task API or a
-  MOC-style task API). Nothing else leaves the box.
+  structured brief, and the list files to your fleet task runner. Nothing
+  else leaves the box.
 
 ## Quick start
 
@@ -97,6 +107,57 @@ deal-onboarding update          # git pull + rebuild + restart
 
 Back up `DATA_DIR` (users, uploads, standard lists, audit log) on your own
 schedule; see [`docs/RETENTION.md`](docs/RETENTION.md).
+
+## Connecting a runner
+
+Deal Onboarding talks to exactly one thing: a fleet deployment's task API.
+
+1. In fleet, create a **scoped `create_task` key** for this app (it also
+   authorizes uploads). Never hand the app an admin key.
+2. Make sure the fleet bundle catalogs the MCP servers the prompts route to
+   (`indexexchange_mcp`, `openx_mcp`, `pubmatic_mcp`, `magnite_mcp`,
+   `xandr_mcp`, `medianet_mcp`, `triplelift_mcp`, `deal_sheet`, `sendgrid`) and,
+   if you use one, the persona named in `RUNNER_PERSONA`.
+3. Set `RUNNER_BASE_URL` (bare origin, no path) and `RUNNER_API_KEY`, restart,
+   and press **Test connection** in the submit dialog: it checks `/api-info`
+   reachability and whether the key clears the create gate, without creating
+   a task.
+4. Optionally configure `RUNNER_DEV_*` for a second deployment; the submit
+   dialog then shows an environment picker. A dev runner with live SSP
+   credentials books live deals.
+
+Pin your engine and fleet revisions with the contract checkers so a tool
+rename upstream fails CI here instead of failing a live batch:
+
+```bash
+node scripts/check-cutlass-contract.mjs /path/to/engine
+node scripts/check-fleet-contract.mjs /path/to/fleet [/path/to/bundle]
+```
+
+## Repository practices
+
+- **CI** (`.github/workflows/ci.yml`) runs on every push and PR: gofmt, `go
+  vet`, `go test -race`, the frontend typecheck/tests/build, shell and checker
+  syntax, and fixture parsing. Keep it green; never skip a test to get there.
+- **Contract checks** (`.github/workflows/contract.yml`) run on demand against
+  the engine and fleet repositories you name as inputs, with an optional
+  `ENGINE_READ_TOKEN` secret for private repos. Run them before upgrading the
+  runner and after any prompt-builder change.
+- **CodeQL** (`.github/workflows/codeql.yml`) scans Go and TypeScript on push,
+  PR, and weekly.
+- **Dependabot** (`.github/dependabot.yml`) opens grouped weekly PRs for Go
+  modules, npm packages, and GitHub Actions. Review anything touching the
+  upload path, the session cookie, or the runner client before merging.
+- **Branch protection** we recommend on `main`: require the CI and CodeQL
+  checks, require one review, disallow force pushes, and squash-merge.
+- **Secrets** live only in `.env` on the host (mode `0600`, owned by the
+  service user) and in GitHub Actions secrets. `.gitignore` refuses every
+  `.env*` variant except `.env.example`; keep it that way.
+- **Releases**: tag `vX.Y.Z` on `main`, and note prompt/contract changes in the
+  tag message so operators know to re-run the contract checkers before
+  upgrading. `deal-onboarding update` fast-forwards a host to the tracked
+  branch.
+- See [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`SECURITY.md`](SECURITY.md).
 
 ## License
 

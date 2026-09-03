@@ -21,11 +21,11 @@ deal-onboarding/
 │   ├── auth/            HMAC session cookie (deal_onboarding_session)
 │   ├── config/          Operator identity (ORG_NAME, CAMPAIGN_ID_PREFIX, DEFAULT_ATTRIBUTION_CODE)
 │   ├── handlers/        HTTP handlers: audit, audit-ai, upload, parse-deal, extract-text,
-│   │                    lists, deal chat (assistant), runner submit (moc.go), config
+│   │                    lists, deal chat (assistant), runner submit (runner.go), config
 │   ├── validation/      All audit rules + deal-name generation (rules.go) + QA report (qa.go)
 │   ├── lists/           Standard-list registry (repo lists + runtime lists)
 │   ├── pubcatalog/      Advisory known-publisher snapshot
-│   ├── moc/             Runner client (fleet task API + legacy MOC task API)
+│   ├── runner/          Runner client (fleet task API)
 │   ├── idempotency/, overrideaudit/, users/, docx/, envfile/, fsutil/, gc/
 ├── frontend/src/
 │   ├── App.tsx                        Routes: / (Deal Builder), /login, /help
@@ -85,7 +85,7 @@ Frontend checks from `frontend/`: `npx tsc --noEmit`, `npm test` (vitest),
 
 All configuration is environment-driven; `.env.example` is the annotated
 catalog. `cmd/server/main.go` prefers `DEAL_ONBOARDING_*` names and still
-honours the legacy `MANIFEST_*` and `MOC_*` aliases.
+honours the legacy `MANIFEST_*` aliases for the login/list settings.
 
 **Operator identity** (`internal/config`, applied through
 `validation.Configure`, served to the UI by `GET /api/config`):
@@ -128,7 +128,7 @@ Session-gated:
 | `GET /api/lists`, `POST /api/lists/create` | Standard-list library |
 | `POST /api/deal/chat` | Deal Assistant SSE stream (`text.delta`, `form.update`, `error`, `done`) |
 | `GET /api/runner/environments`, `GET /api/runner/check` | Configured runner slots (never keys); connectivity probe |
-| `POST /api/runner/create` (alias `/api/moc/create`) | The one outbound seam — see `docs/ARCHITECTURE.md` |
+| `POST /api/runner/create` | The one outbound seam — see `docs/ARCHITECTURE.md` |
 
 LLM routes require `OPENROUTER_API_KEY` and return 503 without it.
 
@@ -191,8 +191,8 @@ The QA report (`qa.go`) adds advisory items (`qa_*`) rendered by
 ## Runner integration
 
 The audited batch is submitted through `POST /api/runner/create
-{ prompt, brief, form, listIds, filePaths, fileNames, idempotencyKey, operation:"create", mocEnv }`
-(`internal/handlers/moc.go`). Before any network call the handler fail-closed
+{ prompt, brief, form, listIds, filePaths, fileNames, idempotencyKey, operation:"create", runnerEnv }`
+(`internal/handlers/runner.go`). Before any network call the handler fail-closed
 gates the prompt (unresolved-token check), the brief (schema), and re-runs the
 full audit server-side against `form`, binding the brief's and prompt's deal
 names to that re-audit — the UI audit is advisory, this is the enforcement

@@ -231,13 +231,13 @@ type DealEntry struct {
 	// SheetOnly mirrors DealEntry.sheetOnly in types/deal.ts: the deal already
 	// exists from a previous batch and only rides the deal sheet — the prompt
 	// and brief generate NO create/tool call for it. Create-only checks skip
-	// these rows; deal names / TotalDeals still include them (the MOC gate's
+	// these rows; deal names / TotalDeals still include them (the runner gate's
 	// prompt binding depends on that).
 	SheetOnly bool `json:"sheetOnly,omitempty"`
 }
 
 // ExclusionOverride is trader intent only. Identity and time are deliberately
-// absent: the /api/moc/create enforcement point derives both from the session
+// absent: the /api/runner/create enforcement point derives both from the session
 // and server clock before writing the durable audit event. SSP binding makes a
 // stale acknowledgement fail closed after the trader changes the deal route.
 type ExclusionOverride struct {
@@ -611,7 +611,7 @@ func seatOptionalDSP(name string) bool {
 // a Seat ID even for a seat-optional DSP: the PubMatic MCP resolves the DSP
 // buyer mapping from seat_id (a seatless create hard-blocks with
 // missing_dsp_buyer), and the TripleLift prompt embeds dsp.seat.seatString —
-// a blank seat would emit an unresolved <FILL> token the /api/moc/create
+// a blank seat would emit an unresolved <FILL> token the /api/runner/create
 // prompt gate rejects. Mirrored in TS: frontend/src/lib/seatPolicy.ts.
 func seatRequiredCreateSSPs(deals []DealEntry) []string {
 	var out []string
@@ -892,7 +892,7 @@ func audienceExcludeBlockReason(deal DealEntry) (reason, provenance string) {
 
 // ExclusionOverrideDetails is the canonical, server-recomputed description of
 // what an acknowledgement strips. It intentionally contains no client-sent
-// actor or timestamp; the MOC handler adds those at its authenticated seam.
+// actor or timestamp; the runner handler adds those at its authenticated seam.
 type ExclusionOverrideDetails struct {
 	DealID   string   `json:"deal_id"`
 	SSP      string   `json:"ssp"`
@@ -1153,7 +1153,7 @@ func RunAudit(req *AuditRequest, campaignID string) AuditResponse {
 			// 0.10`), and IX hard-rejects floors below $0.10 (classID=4
 			// minimum). deal_cpm's >0 check let 0.08/0.07 through and both
 			// DEAL07253 creates 422'd at the SSP (2026-07-20 E2E) — fail the
-			// batch here instead, before it ever reaches MOC.
+			// batch here instead, before it ever reaches the runner.
 			if cpmOK && strings.EqualFold(strings.TrimSpace(deal.SSP), "Index Exchange") && cpmVal < 0.10 {
 				checks = append(checks, CheckResult{Rule: "ix_floor", Passed: false, Message: fmt.Sprintf("%s: the deal CPM ships as the Index Exchange floor and must be at least $0.10 (IX Marketplace Package minimum) — got %s. Raise the CPM, or clear it to use the $0.10 default.", prefix, strings.TrimSpace(effectiveCPM)), DealIndex: i, FieldPath: fmt.Sprintf("deals[%d].cpm", i)})
 			}
@@ -1903,7 +1903,7 @@ func RunAudit(req *AuditRequest, campaignID string) AuditResponse {
 	// submit still ships every uploaded file to the task. The result is a
 	// deal created with zero list scoping and an orphaned attachment —
 	// exactly the DEAL07253 E2E failure shape (2026-07-20). Fail closed here;
-	// evaluateAudit backs both the UI audit and the /api/moc/create gate.
+	// evaluateAudit backs both the UI audit and the /api/runner/create gate.
 	checks = append(checks, listRefChecks(req)...)
 
 	// 8a''. list_applied — an uploaded list pool nothing will carry is an
@@ -2024,7 +2024,7 @@ func RunAudit(req *AuditRequest, campaignID string) AuditResponse {
 	// 9. Campaign ID — REQUIRED. /api/audit no longer mints a random campaign id
 	// for a blank form (that made the campaign_id check vacuous and put three
 	// different names on three surfaces); fail EARLY with a clear message
-	// instead. The fallback parameter is kept for the /api/moc/create gate,
+	// instead. The fallback parameter is kept for the /api/runner/create gate,
 	// which passes the form's own campaignId so its evaluation stays
 	// deterministic.
 	effectiveCampaignID := trimInput(req.CampaignID)
@@ -2061,7 +2061,7 @@ func RunAudit(req *AuditRequest, campaignID string) AuditResponse {
 	// per-deal picks/inference. A non-empty list here can only come from a
 	// stale cached client whose prompts would still ship the invisible list
 	// (a 2026-07 automotive-category incident) — fail closed. RunAudit
-	// backs both the UI audit and the /api/moc/create enforcement gate, so a
+	// backs both the UI audit and the /api/runner/create enforcement gate, so a
 	// stale bundle cannot submit past this.
 	if len(req.IABCategories) > 0 {
 		checks = append(checks, CheckResult{Rule: "iab_campaign_retired", Passed: false, Message: fmt.Sprintf("The campaign-level IAB categories field is retired — reload the app so the %d stored value(s) fold onto the deal cards, review the per-deal picks, and re-run the audit", len(req.IABCategories)), FieldPath: "iabCategories"})
@@ -2090,7 +2090,7 @@ func RunAudit(req *AuditRequest, campaignID string) AuditResponse {
 	// deal_name_charset — control/invisible characters in a FINAL deal name
 	// (only a nameOverride can carry them; generated slots are sanitized).
 	// quote() in dealPromptYaml.ts escapes them so the emitted YAML cannot
-	// break, but the submit gate's prompt binding (moc.go promptEmbedsName)
+	// break, but the submit gate's prompt binding (runner.go promptEmbedsName)
 	// only matches the raw or minimally-escaped name — such a submit would
 	// pass the audit and then 422 audit_prompt_mismatch forever. Fail closed
 	// HERE, at /api/audit, with an actionable message instead.
@@ -2273,7 +2273,7 @@ func RunAudit(req *AuditRequest, campaignID string) AuditResponse {
 	return AuditResponse{
 		Status: status,
 		// Total deals = Audiences × Channels × SSPs × DSPs — the expanded set,
-		// matching deal_names, the brief, and what MOC will actually create.
+		// matching deal_names, the brief, and what the runner will actually create.
 		TotalDeals: len(dealNames),
 		DealNames:  dealNames,
 		Checks:     checks,

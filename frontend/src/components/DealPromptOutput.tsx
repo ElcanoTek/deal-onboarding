@@ -83,7 +83,7 @@ export function DealPromptOutput({ form, auditPassed }: Props) {
 
   // Guard against exporting a prompt with unresolved <FILL …> placeholders —
   // these are the required fields (Magnite marketplace/sizes, PubMatic
-  // publishers, etc.) that, if pasted into MOC as-is, fail at the SSP
+  // publishers, etc.) that, if run as-is, fail at the SSP
   // API. Copy is blocked until they're filled. Keep the token in sync with the
   // placeholders emitted in dealPromptYaml.ts.
   const allHasFill = allYaml.includes('<FILL')
@@ -97,13 +97,13 @@ export function DealPromptOutput({ form, auditPassed }: Props) {
   }
 
   return (
-    <section className="moc-prompts" aria-labelledby="moc-prompts-heading">
-      <header className="moc-prompts__header">
+    <section className="runner-prompts" aria-labelledby="runner-prompts-heading">
+      <header className="runner-prompts__header">
         <div>
-          <h2 className="moc-prompts__title" id="moc-prompts-heading">MOC Deal Prompts</h2>
-          <p className="moc-prompts__subtitle">
+          <h2 className="runner-prompts__title" id="runner-prompts-heading">Runner Deal Prompts</h2>
+          <p className="runner-prompts__subtitle">
             {auditPassed
-              ? 'Audit passed. Pick an output mode and copy into MOC.'
+              ? 'Audit passed. Pick an output mode and copy the prompt for your runner.'
               : 'Run an audit first to verify these prompts are complete. Prompts with unresolved required fields can’t be copied until they’re filled in.'}
           </p>
         </div>
@@ -134,7 +134,7 @@ export function DealPromptOutput({ form, auditPassed }: Props) {
           className={`deal-output-tab${mode === 'batch' ? ' is-active' : ''}`}
           onClick={() => setMode('batch')}
           disabled={!hasBatch}
-          title={!hasBatch ? 'No batch-supported deals — pick an SSP on each deal card' : 'One combined MOC prompt for all deals'}
+          title={!hasBatch ? 'No batch-supported deals — pick an SSP on each deal card' : 'One combined runner prompt for all deals'}
         >
           Batch (MCP) {hasBatch ? `· ${batchCount}` : ''}
         </button>
@@ -145,17 +145,17 @@ export function DealPromptOutput({ form, auditPassed }: Props) {
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 'var(--space-3)' }}>
             <CopyButton text={allYaml} label={`Copy all ${prompts.length}`} size="md" disabled={allHasFill} disabledTitle={FILL_BLOCK_TITLE} />
           </div>
-          <div className="moc-prompts__list">
+          <div className="runner-prompts__list">
             {prompts.map((p, i) => (
-              <article key={p.deal.id} className="moc-prompt-card">
-                <header className="moc-prompt-card__header">
-                  <div className="moc-prompt-card__title">
-                    <span className="moc-prompt-card__index">Deal {i + 1}</span>
-                    <code className="moc-prompt-card__name" title={p.name}>{p.name}</code>
+              <article key={p.deal.id} className="runner-prompt-card">
+                <header className="runner-prompt-card__header">
+                  <div className="runner-prompt-card__title">
+                    <span className="runner-prompt-card__index">Deal {i + 1}</span>
+                    <code className="runner-prompt-card__name" title={p.name}>{p.name}</code>
                   </div>
                   <CopyButton text={p.yaml} label="Copy" disabled={p.yaml.includes('<FILL')} disabledTitle={FILL_BLOCK_TITLE} />
                 </header>
-                <pre className="moc-prompt-card__yaml" tabIndex={0} aria-label={`YAML prompt for deal ${i + 1}`}>
+                <pre className="runner-prompt-card__yaml" tabIndex={0} aria-label={`YAML prompt for deal ${i + 1}`}>
                   <code>{p.yaml}</code>
                 </pre>
               </article>
@@ -165,17 +165,17 @@ export function DealPromptOutput({ form, auditPassed }: Props) {
       )}
 
       {mode === 'batch' && hasBatch && (
-        <article className="moc-prompt-card">
-          <header className="moc-prompt-card__header">
-            <div className="moc-prompt-card__title">
-              <span className="moc-prompt-card__index">Batch · {batchCount} deal{batchCount !== 1 ? 's' : ''}</span>
-              <code className="moc-prompt-card__name">Multi-deal MCP creation</code>
+        <article className="runner-prompt-card">
+          <header className="runner-prompt-card__header">
+            <div className="runner-prompt-card__title">
+              <span className="runner-prompt-card__index">Batch · {batchCount} deal{batchCount !== 1 ? 's' : ''}</span>
+              <code className="runner-prompt-card__name">Multi-deal MCP creation</code>
             </div>
-            <div className="moc-prompt-card__actions">
+            <div className="runner-prompt-card__actions">
               <CopyButton text={batchYaml} label="Copy batch prompt" size="md" disabled={batchHasFill} disabledTitle={FILL_BLOCK_TITLE} />
             </div>
           </header>
-          <pre className="moc-prompt-card__yaml" tabIndex={0} aria-label="Combined batch YAML prompt">
+          <pre className="runner-prompt-card__yaml" tabIndex={0} aria-label="Combined batch YAML prompt">
             <code>{batchYaml}</code>
           </pre>
         </article>

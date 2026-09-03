@@ -3,7 +3,7 @@
 // =============================================================================
 // SUBMIT-KEY DERIVATION (#225)
 //
-// The MOC-create idempotency key is derived from the AUDITED form snapshot —
+// The runner-create idempotency key is derived from the AUDITED form snapshot —
 // sha256 over canonicalized JSON — instead of being minted fresh per Create
 // click. That makes the key stable per batch INTENT: every retry of the same
 // audited batch (re-click after an error toast, a lost/timed-out response,

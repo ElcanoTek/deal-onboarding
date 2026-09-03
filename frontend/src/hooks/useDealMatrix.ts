@@ -59,7 +59,7 @@ export function useDealMatrix(form: FormData): DealMatrix {
     // Multi-DSP expansion (LOCKED product decision): total deals =
     // Audiences × Channels × SSPs × DSPs. One matrix row per (deal × DSP)
     // pair — mirrors the audit's generateNamedDeals and the batch emission,
-    // so the preview count always equals what MOC will actually create.
+    // so the preview count always equals what the runner will actually create.
     const pairs = expandDealDsps(deals, form);
     const items: DealMatrixItem[] = pairs.map(({ deal: d, dsp }) => {
       return {

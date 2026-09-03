@@ -16,7 +16,7 @@ export function seatOptionalDsp(dsp: string): boolean {
  *  DSP: the PubMatic MCP resolves the DSP buyer mapping from seat_id (a
  *  seatless create hard-blocks with missing_dsp_buyer), and the TripleLift
  *  prompt embeds dsp.seat.seatString (a blank seat would emit an unresolved
- *  <FILL> token the /api/moc/create prompt gate rejects). Mirrored in Go:
+ *  <FILL> token the /api/runner/create prompt gate rejects). Mirrored in Go:
  *  seatRequiredCreateSSPs (internal/validation/rules.go). */
 export const SEAT_REQUIRED_SSPS: readonly string[] = ['PubMatic', 'TripleLift']
 

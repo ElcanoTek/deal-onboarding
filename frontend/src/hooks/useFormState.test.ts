@@ -213,6 +213,6 @@ describe('hydrateForm — deal-sheet recipient scrub (admin-identity regression)
 // The DEAL07300 submit block (2026-08-24): an LLM-authored draft put the
 // upload ATTACHMENT id into appliedAppBundleListIds. Applied arrays hold
 // standard-list REGISTRY ids only — an upload id there is invisible in the UI
-// (chips resolve against the live registry) and failed the /api/moc/create
+// (chips resolve against the live registry) and failed the /api/runner/create
 // standard-list gate on every retry. hydrateForm is the single funnel every
 // saved form passes (localStorage, restored drafts).

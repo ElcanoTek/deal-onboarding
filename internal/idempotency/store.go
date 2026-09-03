@@ -1,5 +1,5 @@
 // Package idempotency provides a small file-backed store that makes a
-// side-effectful submission (creating a MOC task that books real deals on live
+// side-effectful submission (creating a runner task that books real deals on live
 // exchanges) safe to retry. A client mints a stable key per user intent (one
 // per form instance) and sends it with every submit attempt; the server
 // reserves the key BEFORE doing the work and returns the original result on a
@@ -96,7 +96,7 @@ func (s *Store) Reserve(op, clientKey string) (rec Record, reserved bool, err er
 // Get returns the non-expired record for (op, clientKey) without reserving —
 // a read-only probe for callers that need to know whether a key is already
 // spoken for under a DIFFERENT namespace (e.g. the same submission key on the
-// other MOC environment) before doing any work.
+// other runner environment) before doing any work.
 func (s *Store) Get(op, clientKey string) (Record, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

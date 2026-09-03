@@ -21,7 +21,7 @@ import { FormData } from '../types/deal'
 
 const KEY = 'deal-onboarding-last-submitted-key-v1'
 
-/** Record the idempotency key of a batch MOC just accepted (2xx). Called the
+/** Record the idempotency key of a batch the runner just accepted (2xx). Called the
  *  moment the submit is confirmed live — before any post-submit bookkeeping
  *  that might fail and keep the form around. */
 export function markBatchSubmitted(submitKey: string): void {

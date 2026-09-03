@@ -324,7 +324,7 @@ export interface StandardList {
   /** Extension of the list's data file including the dot (".csv"), from the
    *  /api/lists Summary. standardListUploadName appends it to an extensionless
    *  list name so the prompt references the EXACT name the server uploads to
-   *  MOC (lists.List.UploadName, #198). Optional so older API responses still
+   *  the runner (lists.List.UploadName, #198). Optional so older API responses still
    *  parse — absent means the name is emitted as-is (legacy behavior). */
   file_ext?: string;
   /** On-disk basename of the list's data file, from the Summary — the fallback
@@ -637,7 +637,7 @@ export interface FormData {
   // THE deals list
   deals: DealEntry[];
 
-  // Email the deal-sheet XLSX will be sent to at the end of the MOC batch.
+  // Email the deal-sheet XLSX will be sent to at the end of the runner batch.
   // ALWAYS defaults to the logged-in trader's session email, NEVER to
   // submitterEmail — submitterEmail can be a client address when the form
   // was populated from a client brief, and emailing a deal sheet

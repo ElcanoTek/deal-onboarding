@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/ElcanoTek/deal-onboarding/internal/lists"
-	"github.com/ElcanoTek/deal-onboarding/internal/moc"
+	"github.com/ElcanoTek/deal-onboarding/internal/runner"
 )
 
 // The attachment gates run on the create path after the audit gate, so each
@@ -17,9 +17,9 @@ import (
 
 func createBodyWithExtras(t *testing.T, promptSuffix, extras string) string {
 	t.Helper()
-	formJSON, dealName := passingMocFormJSON(t)
+	formJSON, dealName := passingRunnerFormJSON(t)
 	prompt := createPromptFor(dealName) + promptSuffix
-	return fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s%s}`, jsonString(prompt), formJSON, jsonString(passingMocBrief(t, dealName)), extras)
+	return fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s%s}`, jsonString(prompt), formJSON, jsonString(passingRunnerBrief(t, dealName)), extras)
 }
 
 func postCreate(h http.HandlerFunc, body string) *httptest.ResponseRecorder {
@@ -29,8 +29,8 @@ func postCreate(h http.HandlerFunc, body string) *httptest.ResponseRecorder {
 	return w
 }
 
-func TestHandleMOCCreate_RejectsFileNamesLengthMismatch(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_RejectsFileNamesLengthMismatch(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
 	// One path, two names — the check fires before any path resolution.
 	w := postCreate(h, createBodyWithExtras(t, "", `,"filePaths":["/tmp/x.csv"],"fileNames":["a.csv","b.csv"]`))
 	if w.Code != http.StatusBadRequest {
@@ -41,8 +41,8 @@ func TestHandleMOCCreate_RejectsFileNamesLengthMismatch(t *testing.T) {
 	}
 }
 
-func TestHandleMOCCreate_RejectsTooManyAttachments(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_RejectsTooManyAttachments(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
 	paths := make([]string, maxAttachRefs+1)
 	for i := range paths {
 		paths[i] = fmt.Sprintf(`"/tmp/f%d.csv"`, i)
@@ -56,12 +56,12 @@ func TestHandleMOCCreate_RejectsTooManyAttachments(t *testing.T) {
 	}
 }
 
-func TestHandleMOCCreate_RejectsUnknownListID(t *testing.T) {
+func TestHandleRunnerCreate_RejectsUnknownListID(t *testing.T) {
 	listReg, err := lists.Load(t.TempDir()) // empty registry — no id resolves
 	if err != nil {
 		t.Fatalf("load lists: %v", err)
 	}
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://runner.example", APIKey: "k"}), listReg, nil, t.TempDir())
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://runner.example", APIKey: "k"}), listReg, nil, t.TempDir())
 	w := postCreate(h, createBodyWithExtras(t, "", `,"listIds":["ghost-list"]`))
 	if w.Code != http.StatusBadRequest {
 		t.Fatalf("want 400 when a listId does not resolve, got %d: %s", w.Code, w.Body.String())
@@ -71,8 +71,8 @@ func TestHandleMOCCreate_RejectsUnknownListID(t *testing.T) {
 	}
 }
 
-func TestHandleMOCCreate_RejectsUnattachedPromptReference(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_RejectsUnattachedPromptReference(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
 	// Every reference syntax the generated prompts emit, none attached.
 	refs := "\ndomain_file_path: \"Preferred News Sites\"\n" +
 		"app_bundle_file_path: bundles.csv\n" +
@@ -93,8 +93,8 @@ func TestHandleMOCCreate_RejectsUnattachedPromptReference(t *testing.T) {
 	}
 }
 
-func TestHandleMOCCreate_BlockedMarkerPromptRejected(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_BlockedMarkerPromptRejected(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://runner.example", APIKey: "k"}), nil, nil, t.TempDir())
 	marker := "\n      # BLOCKED: OpenX requires an inventory attachment — upload a domain or app-bundle list for this deal.\n"
 	w := postCreate(h, createBodyWithExtras(t, marker, ""))
 	if w.Code != http.StatusUnprocessableEntity {

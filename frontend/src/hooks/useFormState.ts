@@ -78,7 +78,7 @@ function migrateSeededFormatDefaults(form: FormData): FormData {
 
 /** Applied standard-list ids must be registry ids — but LLM-authored drafts
  *  have leaked ad-hoc UPLOAD ids into these arrays (an attachment id in
- *  appliedAppBundleListIds failed the /api/moc/create standard-list gate on
+ *  appliedAppBundleListIds failed the /api/runner/create standard-list gate on
  *  every retry, and the chips/summary — which resolve against the live
  *  registry — showed nothing to remove). Drop any applied id that matches an
  *  attached upload's id: that file already rides domainLists/appBundleLists +

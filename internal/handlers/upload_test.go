@@ -143,7 +143,7 @@ func TestHandleResolveUpload(t *testing.T) {
 // =============================================================================
 
 // The auth-gated trader endpoint keeps returning the absolute path (the
-// workspace feeds it back as filePaths on the MOC submit) plus the new
+// workspace feeds it back as filePaths on the runner submit) plus the new
 // basename field.
 func TestHandleUpload_TraderResponseKeepsPath(t *testing.T) {
 	uploadDir := t.TempDir()

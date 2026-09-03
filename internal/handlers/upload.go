@@ -43,7 +43,7 @@ type UploadResponse struct {
 // So .tsv/.txt/.xls stay accepted at upload (the update path reads them); a
 // create-time attachment that a domain extractor can't read is failed loud at
 // SUBMIT instead, scoped to create only (see createExtractorReadableExts in
-// moc.go). #238's original "no extractor reads .tsv/.txt" premise held only
+// runner.go). #238's original "no extractor reads .tsv/.txt" premise held only
 // for the parse-deal TEXT extractor, a different endpoint (/api/extract-text,
 // .docx-only).
 var allowedUploadExts = map[string]bool{
@@ -166,7 +166,7 @@ func handleUploadInto(w http.ResponseWriter, r *http.Request, uploadDir string, 
 	}
 	if !public {
 		// Absolute path for auth-gated callers only (#212) — the workspace
-		// feeds it back as filePaths on the MOC submit.
+		// feeds it back as filePaths on the runner submit.
 		resp.Path = dst
 	}
 	writeJSON(w, http.StatusOK, resp)

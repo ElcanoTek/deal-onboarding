@@ -4,21 +4,31 @@ on:
   push:
     branches: [main]
   pull_request:
-  # Manual re-run.
   workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   backend:
-    name: Go build / vet / test
+    name: Go fmt / build / vet / test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+      - name: gofmt
+        run: |
+          out="$(gofmt -l ./cmd ./internal)"
+          if [ -n "$out" ]; then echo "gofmt needed on:"; echo "$out"; exit 1; fi
       - run: go build ./...
       - run: go vet ./...
-      - run: go test ./...
+      - run: go test -race ./...
 
   frontend:
     name: Frontend typecheck / test / build
@@ -37,3 +47,16 @@ jobs:
       - run: npx tsc --noEmit
       - run: npm test
       - run: npm run build
+
+  scripts:
+    name: Shell + contract checker syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: bash -n scripts/bootstrap.sh scripts/update.sh scripts/provision-private-lists.sh deploy/deal-onboarding-cli
+      - run: node --check scripts/check-cutlass-contract.mjs && node --check scripts/check-fleet-contract.mjs && node --check scripts/gen-publisher-catalog.mjs
+      - name: Fixtures parse
+        run: node -e "for (const f of ['frontend/src/lib/cutlass-contract.json','frontend/src/lib/fleet-contract.json','catalogs/publisher-catalog.json']) JSON.parse(require('fs').readFileSync(f,'utf8'))"

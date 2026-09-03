@@ -1,4 +1,4 @@
-package moc
+package runner
 
 import (
 	"context"
@@ -18,9 +18,9 @@ func TestEnabled(t *testing.T) {
 		cfg  Config
 		want bool
 	}{
-		{"both set", Config{BaseURL: "https://moc", APIKey: "k"}, true},
+		{"both set", Config{BaseURL: "https://fleet", APIKey: "k"}, true},
 		{"no url", Config{APIKey: "k"}, false},
-		{"no key", Config{BaseURL: "https://moc"}, false},
+		{"no key", Config{BaseURL: "https://fleet"}, false},
 		{"empty", Config{}, false},
 	}
 	for _, c := range cases {
@@ -32,7 +32,7 @@ func TestEnabled(t *testing.T) {
 
 func TestUpload(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/upload" {
+		if r.URL.Path != "/v1/upload" {
 			t.Errorf("path: got %s", r.URL.Path)
 		}
 		if r.Header.Get("X-API-Key") != "secret" {
@@ -128,7 +128,7 @@ func TestUploadStreamsBeforeSourceEOF(t *testing.T) {
 
 func TestCreateTask(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/tasks" {
+		if r.URL.Path != "/v1/tasks" {
 			t.Errorf("path: got %s", r.URL.Path)
 		}
 		if r.Header.Get("X-API-Key") != "secret" {
@@ -156,46 +156,8 @@ func TestCreateTask(t *testing.T) {
 	if res.ID != "task-123" {
 		t.Errorf("id: %q", res.ID)
 	}
-	if got := c.TaskURL(res.ID); got != srv.URL+"/tasks/task-123" {
+	if got := c.TaskURL(res.ID); got != srv.URL+"/orchestrator/tasks/task-123" {
 		t.Errorf("TaskURL: %q", got)
-	}
-}
-
-func TestCreateTaskPinsNodeAndModel(t *testing.T) {
-	var got map[string]any
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if err := json.NewDecoder(r.Body).Decode(&got); err != nil {
-			t.Fatalf("decode: %v", err)
-		}
-		_ = json.NewEncoder(w).Encode(map[string]any{"id": "t1"})
-	}))
-	defer srv.Close()
-
-	// Config pins flow onto the wire body.
-	c := New(Config{BaseURL: srv.URL, APIKey: "k", TargetNode: "deal-runner-01", Model: "anthropic/claude-opus-4.8", FallbackModel: "anthropic/claude-sonnet-4.6"})
-	if _, err := c.CreateTask(context.Background(), CreateTaskInput{Prompt: "p"}); err != nil {
-		t.Fatalf("CreateTask: %v", err)
-	}
-	if got["target_node_name"] != "deal-runner-01" {
-		t.Errorf("target_node_name: %v", got["target_node_name"])
-	}
-	if got["model"] != "anthropic/claude-opus-4.8" {
-		t.Errorf("model: %v", got["model"])
-	}
-	if got["fallback_model"] != "anthropic/claude-sonnet-4.6" {
-		t.Errorf("fallback_model: %v", got["fallback_model"])
-	}
-
-	// Empty pins are omitted so MOC applies its own defaults.
-	got = nil
-	c = New(Config{BaseURL: srv.URL, APIKey: "k"})
-	if _, err := c.CreateTask(context.Background(), CreateTaskInput{Prompt: "p"}); err != nil {
-		t.Fatalf("CreateTask: %v", err)
-	}
-	for _, k := range []string{"target_node_name", "model", "fallback_model"} {
-		if _, present := got[k]; present {
-			t.Errorf("expected %q omitted when unset, got %v", k, got[k])
-		}
 	}
 }
 
@@ -211,7 +173,7 @@ func TestFleetCreateTaskWire(t *testing.T) {
 		_ = json.NewEncoder(w).Encode(map[string]any{"id": "fleet-1"})
 	}))
 	defer srv.Close()
-	c := New(Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "k", Persona: "runner-persona"})
+	c := New(Config{BaseURL: srv.URL, APIKey: "k", Persona: "runner-persona"})
 	_, err := c.CreateTask(context.Background(), CreateTaskInput{
 		Prompt: "create", Files: []string{"domains_abcd.csv"}, FileNames: []string{"domains.csv"},
 		MCPSelection: []MCPChoice{
@@ -219,7 +181,7 @@ func TestFleetCreateTaskWire(t *testing.T) {
 			{Server: "pubmatic_mcp"},
 			{Server: "deal_sheet"},
 		},
-		SerializationKey: "client:client-a",
+		SerializationKey: "campaign:DEAL00002",
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -241,7 +203,7 @@ func TestFleetCreateTaskWire(t *testing.T) {
 	if !reflect.DeepEqual(got.CredentialAllowlist, want) {
 		t.Fatalf("credential_allowlist = %+v, want %+v", got.CredentialAllowlist, want)
 	}
-	if got.SerializationKey != "client:client-a" {
+	if got.SerializationKey != "campaign:DEAL00002" {
 		t.Fatalf("serialization_key = %q", got.SerializationKey)
 	}
 }
@@ -260,7 +222,7 @@ func TestFleetCreateTaskEmptySelectionFallsBackToFullRoster(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	c := New(Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "k"})
+	c := New(Config{BaseURL: srv.URL, APIKey: "k"})
 	if _, err := c.CreateTask(context.Background(), CreateTaskInput{Prompt: "free text"}); err != nil {
 		t.Fatal(err)
 	}
@@ -277,7 +239,7 @@ func TestFleetCreateTaskEmptySelectionFallsBackToFullRoster(t *testing.T) {
 
 	// A deployment pin (MCP_SERVERS) overrides the built-in roster.
 	got = fleetTaskCreateWire{}
-	c = New(Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "k", MCPServers: []string{"openx_mcp", "deal_sheet", "sendgrid"}})
+	c = New(Config{BaseURL: srv.URL, APIKey: "k", MCPServers: []string{"openx_mcp", "deal_sheet", "sendgrid"}})
 	if _, err := c.CreateTask(context.Background(), CreateTaskInput{Prompt: "free text"}); err != nil {
 		t.Fatal(err)
 	}
@@ -287,9 +249,8 @@ func TestFleetCreateTaskEmptySelectionFallsBackToFullRoster(t *testing.T) {
 }
 
 // TestCreateTaskSerializationKeyWire pins the exact wire name of the
-// serialization key on the LEGACY moc wire (MOC's TaskCreate.serialization_key,
-// moc#442): present verbatim when supplied, omitted entirely when empty so
-// pre-#442 MOC versions see an unchanged body.
+// serialization key: present verbatim when supplied, omitted entirely when
+// empty so runner versions that predate the field see an unchanged body.
 func TestCreateTaskSerializationKeyWire(t *testing.T) {
 	var got map[string]any
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -301,10 +262,10 @@ func TestCreateTaskSerializationKeyWire(t *testing.T) {
 	defer srv.Close()
 
 	c := New(Config{BaseURL: srv.URL, APIKey: "k"})
-	if _, err := c.CreateTask(context.Background(), CreateTaskInput{Prompt: "p", SerializationKey: "client:acme"}); err != nil {
+	if _, err := c.CreateTask(context.Background(), CreateTaskInput{Prompt: "p", SerializationKey: "campaign:DEAL00001"}); err != nil {
 		t.Fatalf("CreateTask: %v", err)
 	}
-	if got["serialization_key"] != "client:acme" {
+	if got["serialization_key"] != "campaign:DEAL00001" {
 		t.Errorf("serialization_key: %v", got["serialization_key"])
 	}
 
@@ -314,37 +275,6 @@ func TestCreateTaskSerializationKeyWire(t *testing.T) {
 	}
 	if _, present := got["serialization_key"]; present {
 		t.Errorf("expected serialization_key omitted when unset, got %v", got["serialization_key"])
-	}
-}
-
-// On the fleet backend the trader-facing task link is the orchestrator web UI
-// route (the same link fleet's own notifications build), never the auth-gated
-// JSON API route (#282.1). The legacy moc backend keeps /tasks/{id}.
-func TestTaskURLPerBackend(t *testing.T) {
-	mocClient := New(Config{BaseURL: "https://moc.example", APIKey: "k"})
-	if got := mocClient.TaskURL("t1"); got != "https://moc.example/tasks/t1" {
-		t.Errorf("moc TaskURL = %q", got)
-	}
-	fleetClient := New(Config{Backend: "fleet", BaseURL: "https://fleet.example", APIKey: "k"})
-	if got := fleetClient.TaskURL("t1"); got != "https://fleet.example/orchestrator/tasks/t1" {
-		t.Errorf("fleet TaskURL = %q", got)
-	}
-	if got := fleetClient.TaskURL(""); got != "" {
-		t.Errorf("empty id must yield empty URL, got %q", got)
-	}
-}
-
-func TestFleetUploadUsesVersionedPath(t *testing.T) {
-	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/v1/upload" {
-			t.Errorf("path = %s", r.URL.Path)
-		}
-		_ = json.NewEncoder(w).Encode(map[string]any{"filename": "x_abcd.csv"})
-	}))
-	defer srv.Close()
-	_, err := New(Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "k"}).Upload(context.Background(), "x.csv", strings.NewReader("x"))
-	if err != nil {
-		t.Fatal(err)
 	}
 }
 
@@ -364,62 +294,39 @@ func TestCreateTaskNestedID(t *testing.T) {
 }
 
 func TestEnvironmentsFromEnv(t *testing.T) {
-	t.Setenv("MOC_BASE_URL", "https://moc.example/")
-	t.Setenv("MOC_API_KEY", "pk")
-	t.Setenv("MOC_TARGET_NODE", "prod-node")
-	t.Setenv("RUNNER_DEV_BACKEND", "fleet")
+	t.Setenv("RUNNER_BASE_URL", "https://fleet.example/")
+	t.Setenv("RUNNER_API_KEY", "pk")
+	t.Setenv("RUNNER_PERSONA", "runner-persona")
+	t.Setenv("RUNNER_MCP_SERVERS", "openx_mcp, deal_sheet ,sendgrid")
 	t.Setenv("RUNNER_DEV_BASE_URL", "https://fleetdev.example/")
 	t.Setenv("RUNNER_DEV_API_KEY", "dk")
-	t.Setenv("RUNNER_DEV_PERSONA", "runner-persona")
 
 	envs := EnvironmentsFromEnv()
-	if envs.Prod.BaseURL != "https://moc.example" || !envs.Prod.Enabled() || envs.Prod.TargetNode != "prod-node" {
+	if envs.Prod.BaseURL != "https://fleet.example" || envs.Prod.APIKey != "pk" || envs.Prod.Persona != "runner-persona" || !envs.Prod.Enabled() {
 		t.Fatalf("bad prod config: %+v", envs.Prod)
 	}
-	if envs.Prod.Backend != "moc" {
-		t.Fatalf("prod must stay on the MOC backend when only MOC_* is set: %+v", envs.Prod)
+	if !reflect.DeepEqual(envs.Prod.MCPServers, []string{"openx_mcp", "deal_sheet", "sendgrid"}) {
+		t.Fatalf("MCP_SERVERS not split/trimmed: %v", envs.Prod.MCPServers)
 	}
-	if envs.Dev.BaseURL != "https://fleetdev.example" || envs.Dev.APIKey != "dk" || envs.Dev.Backend != "fleet" || envs.Dev.Persona != "runner-persona" || !envs.Dev.Enabled() {
+	if envs.Dev.BaseURL != "https://fleetdev.example" || envs.Dev.APIKey != "dk" || !envs.Dev.Enabled() {
 		t.Fatalf("bad dev config: %+v", envs.Dev)
 	}
 }
 
-// The dev MOC deployment is retired. A stale MOC_DEV_* block left behind in a
-// deployment's environment must NOT resurrect the dev slot: it would enable
-// the picker and fail every dev submit against a dead host. Prod's own MOC_*
-// fallback is deliberately untouched by that removal.
-func TestDevIgnoresRetiredMOCDevVars(t *testing.T) {
-	t.Setenv("MOC_BASE_URL", "https://moc.example")
-	t.Setenv("MOC_API_KEY", "pk")
-	t.Setenv("MOC_DEV_BASE_URL", "https://dev.runner.example")
-	t.Setenv("MOC_DEV_API_KEY", "stale-key")
-	t.Setenv("MOC_DEV_TARGET_NODE", "deal-runner-01")
-
+// Legacy MOC_* variables are NOT read: a stale block in a deployment's
+// environment must never configure a slot.
+func TestLegacyMOCVarsIgnored(t *testing.T) {
+	t.Setenv("MOC_BASE_URL", "https://old.example")
+	t.Setenv("MOC_API_KEY", "stale")
 	envs := EnvironmentsFromEnv()
-	if envs.Dev.Enabled() || envs.Dev.BaseURL != "" || envs.Dev.APIKey != "" {
-		t.Fatalf("MOC_DEV_* must no longer configure the dev slot: %+v", envs.Dev)
-	}
-	if !envs.Prod.Enabled() || envs.Prod.BaseURL != "https://moc.example" {
-		t.Fatalf("prod MOC_* fallback must survive: %+v", envs.Prod)
-	}
-}
-
-func TestRunnerEnvironmentSupersedesLegacyMOC(t *testing.T) {
-	t.Setenv("MOC_BASE_URL", "https://moc.example")
-	t.Setenv("MOC_API_KEY", "moc-key")
-	t.Setenv("RUNNER_BACKEND", "fleet")
-	t.Setenv("RUNNER_BASE_URL", "https://fleet.example/")
-	t.Setenv("RUNNER_API_KEY", "fleet-key")
-	t.Setenv("RUNNER_PERSONA", "runner-persona")
-	envs := EnvironmentsFromEnv()
-	if envs.Prod.Backend != "fleet" || envs.Prod.BaseURL != "https://fleet.example" || envs.Prod.APIKey != "fleet-key" || envs.Prod.Persona != "runner-persona" {
-		t.Fatalf("runner config did not supersede MOC: %+v", envs.Prod)
+	if envs.Prod.Enabled() || envs.Dev.Enabled() {
+		t.Fatalf("MOC_* must not configure any slot: %+v", envs)
 	}
 }
 
 func TestEnvironmentsFor(t *testing.T) {
 	envs := Environments{
-		Prod: Config{BaseURL: "https://moc.example", APIKey: "pk"},
+		Prod: Config{BaseURL: "https://fleet.example", APIKey: "pk"},
 		Dev:  Config{BaseURL: "https://dev.example", APIKey: "dk"},
 	}
 	for _, id := range []string{"", "prod", "Prod", " PROD "} {
@@ -463,7 +370,7 @@ func TestCheckFleetReachableAndKeyAccepted(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	res := New(Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "k"}).Check(context.Background())
+	res := New(Config{BaseURL: srv.URL, APIKey: "k"}).Check(context.Background())
 	if !res.Reachable || !res.KeyAccepted {
 		t.Fatalf("want reachable+accepted, got %+v", res)
 	}
@@ -486,7 +393,7 @@ func TestCheckFleetKeyRejected(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	res := New(Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "bad"}).Check(context.Background())
+	res := New(Config{BaseURL: srv.URL, APIKey: "bad"}).Check(context.Background())
 	if !res.Reachable {
 		t.Fatalf("a 403 on the key probe must NOT read as unreachable: %+v", res)
 	}
@@ -507,7 +414,7 @@ func TestCheckFleetTreatsBadRequestAsKeyAccepted(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	res := New(Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "k"}).Check(context.Background())
+	res := New(Config{BaseURL: srv.URL, APIKey: "k"}).Check(context.Background())
 	if !res.Reachable || !res.KeyAccepted {
 		t.Fatalf("400 must count as key-accepted: %+v", res)
 	}
@@ -518,19 +425,13 @@ func TestCheckUnreachableAndUnconfigured(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	url := srv.URL
 	srv.Close()
-	res := New(Config{Backend: "fleet", BaseURL: url, APIKey: "k"}).Check(context.Background())
+	res := New(Config{BaseURL: url, APIKey: "k"}).Check(context.Background())
 	if res.Reachable || res.Error == "" || res.KeyAccepted {
 		t.Fatalf("want unreachable with an error and no key claim, got %+v", res)
 	}
 
-	if res := (New(Config{Backend: "fleet"}).Check(context.Background())); res.Error == "" || res.Reachable {
+	if res := (New(Config{}).Check(context.Background())); res.Error == "" || res.Reachable {
 		t.Fatalf("unconfigured instance must report not-configured, got %+v", res)
 	}
 
-	// The legacy MOC backend publishes no probe endpoint; say so rather than
-	// inventing one and reporting a misleading 404.
-	res = New(Config{Backend: "moc", BaseURL: "https://moc.example", APIKey: "k"}).Check(context.Background())
-	if res.Reachable || res.Error == "" {
-		t.Fatalf("moc backend must report the probe as unimplemented, got %+v", res)
-	}
 }

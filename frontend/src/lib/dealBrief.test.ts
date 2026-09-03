@@ -213,7 +213,7 @@ describe('dealBrief — ad_duration (brief schema v1.1)', () => {
 // reference absent from the submit's attachment set (listIds resolved to
 // registry names + ad-hoc fileNames) must FAIL CLOSED. Pre-fix, validateBrief
 // had no attachment awareness at all — the brief validated clean while the
-// referenced file never reached MOC (IX/OpenX/PubMatic missing_domain_file;
+// referenced file never reached the runner (IX/OpenX/PubMatic missing_domain_file;
 // Media.net created the deal LIVE without its list).
 // =============================================================================
 describe('validateBrief — fail closed on referenced-but-unattached lists (#221)', () => {

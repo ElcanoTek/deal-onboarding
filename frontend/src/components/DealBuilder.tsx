@@ -9,7 +9,8 @@ import { formOverwriteLabel, formWorthSaving } from '../lib/formDirty'
 import { isSubmittedBatch, markBatchSubmitted } from '../lib/submittedBatch'
 import { buildBatchPrompt, collectSubmitListIds, generateAllDealPrompts, standardListUploadName } from '../lib/dealPromptYaml'
 import { buildBatchBrief, serializeBrief, validateBrief } from '../lib/dealBrief'
-import { createMocTask, mocEnvLabel, useMocEnvironments } from '../lib/mocApi'
+import { createRunnerTask, runnerEnvLabel, useRunnerEnvironments } from '../lib/runnerApi'
+import { useOperatorConfig } from '../lib/operatorConfig'
 import { auditChecksToDealIssues, auditChecksToFormIssues, auditIssuesBySection, checkToSectionId, EMAIL_RE, fieldPathToElementId, getAllStatuses, getDealsStatus, getLiveFormIssues, readyToAudit, SectionId, totalIssueCount } from '../lib/sectionStatus'
 import { splitEmails } from '../lib/recipients'
 import { mintSubmitKey } from '../lib/submitKey'
@@ -78,17 +79,21 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
     return isSubmittedBatch(form) ? 'submitted' : 'draft'
   })
   const matrix = useDealMatrix(form)
-  const statuses = useMemo(() => getAllStatuses(form), [form])
+  // The operator config (campaign-id prefix) arrives asynchronously; the live
+  // section statuses read it, so they must recompute when it lands or a
+  // non-default prefix shows a false "Campaign ID format" warning.
+  const operator = useOperatorConfig()
+  const statuses = useMemo(() => getAllStatuses(form), [form, operator])
   const statusById = useMemo(() => {
     const map: Record<SectionId, typeof statuses[number]> = {} as Record<SectionId, typeof statuses[number]>
     for (const s of statuses) map[s.id] = s
     return map
   }, [statuses])
-  const dealsStatus = useMemo(() => getDealsStatus(form), [form])
+  const dealsStatus = useMemo(() => getDealsStatus(form), [form, operator])
   // Merge audit-driven failures with live validation issues so deal cards
   // surface backend rule failures (e.g. always-exclude missing) on the right field.
-  const totalIssues = useMemo(() => totalIssueCount(form), [form])
-  const isReady = useMemo(() => readyToAudit(form), [form])
+  const totalIssues = useMemo(() => totalIssueCount(form), [form, operator])
+  const isReady = useMemo(() => readyToAudit(form), [form, operator])
 
   // Guided-builder position. maxStep tracks the furthest step visited so the
   // stepper only warns about steps the trader has actually seen; `reviewed`
@@ -160,7 +165,7 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
   // on prod-only deployments this state is inert. handleCreate resets the
   // selection to defaultEnv per create intent — a dev choice made for one
   // test batch must never silently ride into the next real create.
-  const { environments: mocEnvironments, mocEnv, setMocEnv, defaultEnv: defaultMocEnv } = useMocEnvironments()
+  const { environments: runnerEnvironments, runnerEnv, setRunnerEnv, defaultEnv: defaultRunnerEnv } = useRunnerEnvironments()
   const [modal, setModal] = useState<ModalState>('none')
   const [toast, setToast] = useState<ToastState>(null)
   // Deal Assistant dock plumbing. prefill seeds the composer from a "Fix with
@@ -176,10 +181,10 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
   }
   // Runner prompt YAML visibility — a dev/debug surface, hidden for traders by
   // default; the preference persists so developers only flip it once.
-  const [showMocPrompts, setShowMocPrompts] = useState<boolean>(() => {
+  const [showRunnerPrompts, setShowRunnerPrompts] = useState<boolean>(() => {
     try { return localStorage.getItem('deal-onboarding-show-runner-prompts') === '1' } catch { return false }
   })
-  const toggleMocPrompts = () => setShowMocPrompts(v => {
+  const toggleRunnerPrompts = () => setShowRunnerPrompts(v => {
     const next = !v
     try { localStorage.setItem('deal-onboarding-show-runner-prompts', next ? '1' : '0') } catch { /* ignore */ }
     return next
@@ -526,7 +531,7 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
     // Fresh intent, fresh environment: reset to the safe default so a dev
     // selection left over from an earlier test can't preselect itself for a
     // real batch. Picking dev is a deliberate per-intent act in the modal.
-    setMocEnv(defaultMocEnv)
+    setRunnerEnv(defaultRunnerEnv)
     setModal('confirm')
   }
   const handleConfirmCreate = async () => {
@@ -538,18 +543,18 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
       // Attachment set FIRST (#221): batch-applied standard lists UNIONed with
       // every per-deal standard-list pick (collectSubmitListIds — the same
       // resolution the prompt builders use), so every list the prompt
-      // references by name is actually uploaded to MOC.
+      // references by name is actually uploaded to the runner.
       const listIds = collectSubmitListIds(form, standardLists)
       // Pair filePaths with fileNames by index: filter the FILE objects first
       // so an empty-path file can't misalign the two arrays. The server uploads
-      // each attachment to MOC under fileNames[i] so the agent can match the
+      // each attachment to the runner under fileNames[i] so the agent can match the
       // prompt's original-filename reference (#157).
       const attachFiles = [...form.domainLists, ...form.appBundleLists].filter(f => f.path)
       const filePaths = attachFiles.map(f => f.path)
       const fileNames = attachFiles.map(f => f.name)
       // Fail closed BEFORE any network call when the brief references a
       // list/file that is not in the attachment set — advisory here,
-      // enforced again server-side (moc.go prompt_reference_unattached).
+      // enforced again server-side (runner.go prompt_reference_unattached).
       // listNames use standardListUploadName (#198): the extension-suffixed
       // name the server uploads each list under AND the name the prompt
       // references — comparing against the bare registry name would
@@ -561,13 +566,13 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
       if (!briefVal.ok) {
         throw new Error(`Brief validation failed: ${briefVal.issues.join('; ')}`)
       }
-      const res = await createMocTask({
+      const res = await createRunnerTask({
         prompt,
         brief: serializeBrief(brief),
         listIds,
         filePaths,
         fileNames,
-        mocEnv,
+        runnerEnv,
         idempotencyKey: submitKey,
         operation: 'create',
         // The audited snapshot — the exact FormData JSON the passing /api/audit
@@ -588,7 +593,7 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
       const submitWarnings: string[] = res.warnings?.length ? [...res.warnings] : []
       const sentMsg = res.duplicate
         ? 'Already submitted — showing the existing runner task.'
-        : `Sent ${matrix.totalDeals} deal${matrix.totalDeals !== 1 ? 's' : ''} to ${mocEnvLabel(res.mocEnv, mocEnvironments.find(e => e.id === res.mocEnv)?.backend)}${res.taskId ? ` · task ${res.taskId}` : ''}.`
+        : `Sent ${matrix.totalDeals} deal${matrix.totalDeals !== 1 ? 's' : ''} to ${runnerEnvLabel(res.runnerEnv)}${res.taskId ? ` · task ${res.taskId}` : ''}.`
       if (submitWarnings.length > 0) {
         showToast(`${sentMsg} BUT ${submitWarnings.join('; ')}.`, 'error')
       } else {
@@ -599,7 +604,7 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
         count: matrix.totalDeals,
         taskId: res.taskId,
         duplicate: !!res.duplicate,
-        envLabel: mocEnvLabel(res.mocEnv, mocEnvironments.find(e => e.id === res.mocEnv)?.backend),
+        envLabel: runnerEnvLabel(res.runnerEnv),
         recipient: form.dealSheetRecipient,
         sspCounts: matrix.sspCounts,
       })
@@ -1150,22 +1155,22 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
                     disclosure so traders aren't confronted with raw prompts; devs
                     flip it open and the choice sticks via localStorage. */}
                 {form.deals.length > 0 && (
-                  <div className="moc-debug">
+                  <div className="runner-debug">
                     <button
                       type="button"
-                      className="moc-debug__toggle"
-                      aria-expanded={showMocPrompts}
-                      aria-controls="moc-debug-panel"
-                      onClick={toggleMocPrompts}
+                      className="runner-debug__toggle"
+                      aria-expanded={showRunnerPrompts}
+                      aria-controls="runner-debug-panel"
+                      onClick={toggleRunnerPrompts}
                     >
                       <span>
                         Runner deal prompts
-                        <span className="moc-debug__hint">debug — for developers</span>
+                        <span className="runner-debug__hint">debug — for developers</span>
                       </span>
-                      <span className="prompt-panel__disclosure" aria-hidden="true">{showMocPrompts ? '−' : '+'}</span>
+                      <span className="prompt-panel__disclosure" aria-hidden="true">{showRunnerPrompts ? '−' : '+'}</span>
                     </button>
-                    {showMocPrompts && (
-                      <div id="moc-debug-panel">
+                    {showRunnerPrompts && (
+                      <div id="runner-debug-panel">
                         {/* Read-only — Submit on this step is the only create path. */}
                         <DealPromptOutput
                           form={form}
@@ -1285,7 +1290,7 @@ export function DealBuilder({ onLogout }: DealBuilderProps) {
               <p className="auth-copy" style={{ margin: 0 }}>
                 This will create <strong>{matrix.totalDeals} deal{matrix.totalDeals !== 1 ? 's' : ''}</strong> across <strong>{sspsUsed.join(', ')}</strong>. Proceed?
               </p>
-              <RunnerEnvPicker environments={mocEnvironments} value={mocEnv} onChange={setMocEnv} disabled={creating} name="workspace-moc-env" />
+              <RunnerEnvPicker environments={runnerEnvironments} value={runnerEnv} onChange={setRunnerEnv} disabled={creating} name="workspace-runner-env" />
             </div>
             <div className="modal-footer">
               <button type="button" className="btn btn-secondary" onClick={() => setModal('none')}>Cancel</button>

@@ -27,11 +27,11 @@ describe('DealBuilder — submit key derived from the audited snapshot', () => {
 // the load-bearing wiring so a re-stub (or a dropped field) fails CI.
 describe('DealBuilder — Create submit wiring', () => {
   it('handleConfirmCreate actually submits to the runner', () => {
-    expect(src).toMatch(/const res = await createMocTask\(\{/)
+    expect(src).toMatch(/const res = await createRunnerTask\(\{/)
   })
 
   it('sends the audited form snapshot, prompt, brief, attachments, and the idempotency key', () => {
-    const body = src.slice(src.indexOf('await createMocTask({'), src.indexOf('})', src.indexOf('await createMocTask({')))
+    const body = src.slice(src.indexOf('await createRunnerTask({'), src.indexOf('})', src.indexOf('await createRunnerTask({')))
     for (const field of ['prompt,', 'brief: serializeBrief(brief)', 'listIds,', 'filePaths,', 'fileNames,', 'idempotencyKey: submitKey', "operation: 'create'", 'form: auditedSnapshot']) {
       expect(body).toContain(field)
     }
@@ -52,7 +52,7 @@ describe('DealBuilder — Create submit wiring', () => {
 describe('DealBuilder — submitted batches leave the builder', () => {
   it('marks the submit key the moment the submit is confirmed live (2xx)', () => {
     expect(src).toContain("import { isSubmittedBatch, markBatchSubmitted } from '../lib/submittedBatch'")
-    const submitIdx = src.indexOf('await createMocTask({')
+    const submitIdx = src.indexOf('await createRunnerTask({')
     const markIdx = src.indexOf('markBatchSubmitted(submitKey)', submitIdx)
     expect(markIdx).toBeGreaterThan(submitIdx)
   })

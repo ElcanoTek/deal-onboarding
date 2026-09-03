@@ -1,0 +1,34 @@
+name: Bug report
+description: Something in Deal Onboarding behaves incorrectly
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you do, what did you expect, what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the Deal Builder…
+        2. …
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Output of `GET /api/version` or the commit you are running.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options: [Deal Builder, Audit / QA, Prompt or brief, Runner submit, Deal Assistant, Login / operator CLI, Deployment scripts, Docs]
+  - type: textarea
+    id: logs
+    attributes:
+      label: Server log excerpt
+      description: Redact secrets, seat ids, and client names before pasting.
+      render: text

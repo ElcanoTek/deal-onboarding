@@ -54,7 +54,7 @@ func HandleCreateList(reg *lists.Registry, uploadDir string) http.HandlerFunc {
 		// when DATA_DIR is (the default ./data), so a filepath.Clean-only check
 		// against the absolute upload dir never matched — save-as-standard-list
 		// was silently broken in every relative-DATA_DIR deployment. Mirror the
-		// moc.go handoff: Abs + EvalSymlinks (rejects nonexistent + symlink
+		// runner.go handoff: Abs + EvalSymlinks (rejects nonexistent + symlink
 		// smuggling), then containment.
 		abs, err := filepath.Abs(raw)
 		if err != nil {

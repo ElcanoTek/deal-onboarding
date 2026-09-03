@@ -11,7 +11,7 @@ import (
 // deals shipped floors of 0.08/0.07 (both 422'd at the SSP), and the trader's
 // domain block list uploaded to the task without any deal's prompt
 // referencing it. All three failure shapes must now fail the audit — and
-// therefore the /api/moc/create gate — before a batch reaches MOC.
+// therefore the /api/runner/create gate — before a batch reaches the runner.
 
 func strPtr(s string) *string { return &s }
 

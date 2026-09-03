@@ -87,7 +87,7 @@ type Summary struct {
 	SHA256      string    `json:"sha256,omitempty"`
 	UpdatedAt   time.Time `json:"updated_at,omitempty"`
 	// FileExt is the data file's extension including the dot (".csv"), so the
-	// frontend can derive the exact attachment name the MOC upload uses
+	// frontend can derive the exact attachment name the runner upload uses
 	// (UploadName) and keep the prompt's file reference byte-identical to the
 	// uploaded file's name (#198). Empty for an extensionless data file.
 	FileExt string `json:"file_ext,omitempty"`
@@ -109,7 +109,7 @@ var dataFileExts = map[string]bool{
 	".csv": true, ".tsv": true, ".txt": true, ".xlsx": true, ".xls": true,
 }
 
-// UploadName is the display name the list's data file is uploaded to MOC under
+// UploadName is the display name the list's data file is uploaded to the runner under
 // AND the exact name the generated prompts reference (#198). It is the human
 // list name with the data file's extension appended unless the name already
 // ends in a recognized DATA extension (.csv/.tsv/.txt/.xlsx/.xls): IX rejects

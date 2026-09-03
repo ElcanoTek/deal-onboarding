@@ -1,7 +1,7 @@
 import type { UploadedFile } from '../types/deal'
 
 /** POST a single file to /api/upload, reporting upload progress (0–100).
- *  Resolves to an UploadedFile carrying the server `path` (used as the MOC
+ *  Resolves to an UploadedFile carrying the server `path` (used as the runner
  *  attachment path) with an empty `inclusionType` for the caller to fill in.
  *  Shared by the deal-CREATE File Uploads section (campaign domain / app-bundle
  *  lists) and the deal-UPDATE attachment picker. */

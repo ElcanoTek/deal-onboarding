@@ -17,8 +17,8 @@ import (
 	"time"
 
 	"github.com/ElcanoTek/deal-onboarding/internal/idempotency"
-	"github.com/ElcanoTek/deal-onboarding/internal/moc"
 	"github.com/ElcanoTek/deal-onboarding/internal/overrideaudit"
+	"github.com/ElcanoTek/deal-onboarding/internal/runner"
 	"github.com/ElcanoTek/deal-onboarding/internal/validation"
 )
 
@@ -31,7 +31,7 @@ func TestGateExclusionOverrideEnvelopeBindsSessionPromptAndBrief(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req := httptest.NewRequest(http.MethodPost, "/api/moc/create", nil)
+	req := httptest.NewRequest(http.MethodPost, "/api/runner/create", nil)
 	req = req.WithContext(WithSessionEmail(context.Background(), "trader@example.com"))
 	w := httptest.NewRecorder()
 	if !gateExclusionOverrideEnvelope(w, req, store, marker, string(briefBytes), []validation.ExclusionOverrideDetails{detail}) {
@@ -45,7 +45,7 @@ func TestGateExclusionOverrideEnvelopeBindsSessionPromptAndBrief(t *testing.T) {
 }
 
 func TestGateExclusionOverrideEnvelopeRejectsOrphanAndMissingStore(t *testing.T) {
-	req := httptest.NewRequest(http.MethodPost, "/api/moc/create", nil)
+	req := httptest.NewRequest(http.MethodPost, "/api/runner/create", nil)
 	req = req.WithContext(WithSessionEmail(context.Background(), "trader@example.com"))
 	w := httptest.NewRecorder()
 	if gateExclusionOverrideEnvelope(w, req, nil, "# EXCLUSION_OVERRIDE: {}", `{}`, nil) || w.Code != http.StatusUnprocessableEntity {
@@ -61,10 +61,10 @@ func TestGateExclusionOverrideEnvelopeRejectsOrphanAndMissingStore(t *testing.T)
 	}
 }
 
-// passingMocFormJSON returns an audited-form payload that passes RunAudit with
+// passingRunnerFormJSON returns an audited-form payload that passes RunAudit with
 // a nil client registry, plus the single deal name the audit regenerates for
 // it — the fixture behind the create-gate tests (#152).
-func passingMocFormJSON(t *testing.T) (formJSON, dealName string) {
+func passingRunnerFormJSON(t *testing.T) (formJSON, dealName string) {
 	t.Helper()
 	form := map[string]any{
 		"submitterName":        "Test Trader",
@@ -91,9 +91,9 @@ func passingMocFormJSON(t *testing.T) (formJSON, dealName string) {
 	return string(raw), "Curator_Index_TTD_Northwind_Acme_NA_Digital Consumer_Display_All_Global_DEAL12345_A1"
 }
 
-// passingMocBrief returns a serialized brief (embeddable in a JSON body) that
+// passingRunnerBrief returns a serialized brief (embeddable in a JSON body) that
 // passes validateDealBrief and carries the given deal name.
-func passingMocBrief(t *testing.T, dealName string) string {
+func passingRunnerBrief(t *testing.T, dealName string) string {
 	t.Helper()
 	brief := map[string]any{
 		"client_name": "Acme",
@@ -139,20 +139,20 @@ func gateErrorBody(t *testing.T, w *httptest.ResponseRecorder) struct {
 	return body
 }
 
-// mocTestServer is a stub MOC that accepts uploads and task creation.
-func mocTestServer(t *testing.T) *httptest.Server {
+// runnerTestServer is a stub runner that accepts uploads and task creation.
+func runnerTestServer(t *testing.T) *httptest.Server {
 	t.Helper()
 	srv, _ := stubMoc(t, "task-1")
 	return srv
 }
 
-func TestHandleMOCCreate_DisabledReturns503(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{}), nil, nil, t.TempDir())
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(`{"prompt":"x"}`))
+func TestHandleRunnerCreate_DisabledReturns503(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{}), nil, nil, t.TempDir())
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(`{"prompt":"x"}`))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusServiceUnavailable {
-		t.Fatalf("want 503 when MOC unconfigured, got %d", w.Code)
+		t.Fatalf("want 503 when the runner unconfigured, got %d", w.Code)
 	}
 }
 
@@ -168,8 +168,8 @@ func TestResolveMCPSelectionDefaultSeatCreate(t *testing.T) {
 		{ID: "d4", SSP: "OpenX", SheetOnly: true}, // sheet-only rows create nothing
 		{ID: "d5"}, // SSP-less rows are not batch deals
 	}}
-	got := resolveMCPSelection(&mocCreateRequest{Prompt: "deals:\n  - name: X", Form: form})
-	want := []moc.MCPChoice{
+	got := resolveMCPSelection(&runnerCreateRequest{Prompt: "deals:\n  - name: X", Form: form})
+	want := []runner.MCPChoice{
 		{Server: "indexexchange_mcp"},
 		{Server: "medianet_mcp"},
 		{Server: "deal_sheet"},
@@ -181,21 +181,21 @@ func TestResolveMCPSelectionDefaultSeatCreate(t *testing.T) {
 }
 
 // A prompt with no recognizable batch structure (hand-written free text)
-// yields nil — the moc client then inherits the full default-seat roster
+// yields nil — the runner client then inherits the full default-seat roster
 // instead of shipping a deal_sheet/sendgrid-only lockout allowlist.
 func TestResolveMCPSelectionUnrecognizableBatchIsNil(t *testing.T) {
-	if got := resolveMCPSelection(&mocCreateRequest{Prompt: "please pause every deal for Acme"}); got != nil {
+	if got := resolveMCPSelection(&runnerCreateRequest{Prompt: "please pause every deal for Acme"}); got != nil {
 		t.Fatalf("want nil selection for free-text prompt, got %v", got)
 	}
-	if got := resolveMCPSelection(&mocCreateRequest{Prompt: "deals:\n  - name: X"}); got != nil {
+	if got := resolveMCPSelection(&runnerCreateRequest{Prompt: "deals:\n  - name: X"}); got != nil {
 		t.Fatalf("want nil selection for a form-less create, got %v", got)
 	}
 }
 
-func TestHandleMOCCreate_MissingPrompt(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(`{"prompt":"  "}`))
+func TestHandleRunnerCreate_MissingPrompt(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(`{"prompt":"  "}`))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusBadRequest {
@@ -203,15 +203,15 @@ func TestHandleMOCCreate_MissingPrompt(t *testing.T) {
 	}
 }
 
-func TestHandleMOCCreate_RejectsUnresolvedPromptToken(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_RejectsUnresolvedPromptToken(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
 	// A prompt carrying an unresolved FILL marker (a required deal field the
 	// trader never filled) must be rejected before any network call — covers
 	// the brief-less deal-update flow too.
 	for _, tok := range []string{"buyer: <FILL>", "to: <UNSET-trader-email>", "x: ${y}", "x: {{ y }}"} {
 		body := `{"prompt":"name: deal\n` + tok + `"}`
-		r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+		r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 		w := httptest.NewRecorder()
 		h(w, r)
 		if w.Code != http.StatusBadRequest {
@@ -220,16 +220,16 @@ func TestHandleMOCCreate_RejectsUnresolvedPromptToken(t *testing.T) {
 	}
 }
 
-func TestHandleMOCCreate_RejectsPathTraversal(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_RejectsPathTraversal(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
 	// A fully gate-passing create (form + matching brief + name-bearing prompt)
 	// so the rejection under test is the path containment check itself.
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	body := fmt.Sprintf(`{"prompt":%s,"filePaths":["/etc/passwd"],"form":%s,"brief":%s}`,
 		jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusBadRequest {
@@ -240,7 +240,7 @@ func TestHandleMOCCreate_RejectsPathTraversal(t *testing.T) {
 	}
 }
 
-func TestHandleMOCCreate_RejectsMissingAndSymlinkEscapedFiles(t *testing.T) {
+func TestHandleRunnerCreate_RejectsMissingAndSymlinkEscapedFiles(t *testing.T) {
 	uploadDir := t.TempDir()
 	outsideDir := t.TempDir()
 	outside := filepath.Join(outsideDir, "secret.csv")
@@ -251,9 +251,9 @@ func TestHandleMOCCreate_RejectsMissingAndSymlinkEscapedFiles(t *testing.T) {
 	if err := os.Symlink(outside, symlink); err != nil {
 		t.Fatal(err)
 	}
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://moc.example", APIKey: "k"}), nil, nil, uploadDir)
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}), nil, nil, uploadDir)
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 
 	tests := []struct {
 		name string
@@ -268,7 +268,7 @@ func TestHandleMOCCreate_RejectsMissingAndSymlinkEscapedFiles(t *testing.T) {
 			body := fmt.Sprintf(`{"prompt":%s,"filePaths":[%s],"fileNames":["Client Sites.csv"],"form":%s,"brief":%s}`,
 				jsonString(createPromptFor(dealName)), jsonString(tc.path), formJSON, jsonString(brief))
 			rr := httptest.NewRecorder()
-			h(rr, httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body)))
+			h(rr, httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body)))
 			if rr.Code != http.StatusBadRequest || !strings.Contains(rr.Body.String(), tc.want) {
 				t.Fatalf("want 400 containing %q, got %d: %s", tc.want, rr.Code, rr.Body.String())
 			}
@@ -278,14 +278,14 @@ func TestHandleMOCCreate_RejectsMissingAndSymlinkEscapedFiles(t *testing.T) {
 
 // #152: the QA gate must hold server-side. A create submit without the audited
 // form is rejected before any reservation/upload/network work.
-func TestHandleMOCCreate_CreateWithoutFormRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_CreateWithoutFormRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
 	for _, body := range []string{
 		`{"prompt":"create the batch"}`,                      // legacy caller, no operation
 		`{"prompt":"create the batch","operation":"create"}`, // explicit create
 	} {
-		r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+		r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 		w := httptest.NewRecorder()
 		h(w, r)
 		if w.Code != http.StatusBadRequest {
@@ -299,17 +299,17 @@ func TestHandleMOCCreate_CreateWithoutFormRejected(t *testing.T) {
 
 // A create whose form fails a validation rule is rejected with the failed
 // checks so the caller sees exactly what to fix.
-func TestHandleMOCCreate_CreateWithFailingFormRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
+func TestHandleRunnerCreate_CreateWithFailingFormRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
 	// Blank out the deal fee — rule "deal_fee" must fail the re-audit.
 	broken := strings.Replace(formJSON, `"curatedDealFee":"1.50"`, `"curatedDealFee":""`, 1)
 	if broken == formJSON {
 		t.Fatal("fixture edit did not apply")
 	}
-	body := fmt.Sprintf(`{"prompt":"go","form":%s,"brief":%s}`, broken, jsonString(passingMocBrief(t, dealName)))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	body := fmt.Sprintf(`{"prompt":"go","form":%s,"brief":%s}`, broken, jsonString(passingRunnerBrief(t, dealName)))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -335,16 +335,16 @@ func TestHandleMOCCreate_CreateWithFailingFormRejected(t *testing.T) {
 
 // A form without a campaignId can pass /api/audit (a random ELC is minted),
 // but the deal names in the prompt/brief embed the FINAL id — require it.
-func TestHandleMOCCreate_CreateWithoutCampaignIDRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
+func TestHandleRunnerCreate_CreateWithoutCampaignIDRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
 	broken := strings.Replace(formJSON, `"campaignId":"DEAL12345"`, `"campaignId":""`, 1)
 	if broken == formJSON {
 		t.Fatal("fixture edit did not apply")
 	}
-	body := fmt.Sprintf(`{"prompt":"go","form":%s,"brief":%s}`, broken, jsonString(passingMocBrief(t, dealName)))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	body := fmt.Sprintf(`{"prompt":"go","form":%s,"brief":%s}`, broken, jsonString(passingRunnerBrief(t, dealName)))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -357,13 +357,13 @@ func TestHandleMOCCreate_CreateWithoutCampaignIDRejected(t *testing.T) {
 
 // Auditing form A and submitting brief B must not pass: the brief's deal set
 // has to match the deal names the re-audited form regenerates.
-func TestHandleMOCCreate_CreateWithMismatchedBriefRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, _ := passingMocFormJSON(t)
-	brief := passingMocBrief(t, "Curator_OpenX_TTD_Other_Batch_NA_Other_Display_All_Global_DEAL99999_A1")
+func TestHandleRunnerCreate_CreateWithMismatchedBriefRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, _ := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, "Curator_OpenX_TTD_Other_Batch_NA_Other_Display_All_Global_DEAL99999_A1")
 	body := fmt.Sprintf(`{"prompt":"go","form":%s,"brief":%s}`, formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -377,12 +377,12 @@ func TestHandleMOCCreate_CreateWithMismatchedBriefRejected(t *testing.T) {
 // A create without the structured brief is rejected even when the audited
 // form passes: the brief is the artifact the form↔batch name binding runs
 // against, and the legitimate create flow always sends one.
-func TestHandleMOCCreate_CreateWithoutBriefRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
+func TestHandleRunnerCreate_CreateWithoutBriefRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s}`, jsonString(createPromptFor(dealName)), formJSON)
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -393,17 +393,17 @@ func TestHandleMOCCreate_CreateWithoutBriefRejected(t *testing.T) {
 	}
 }
 
-// The PROMPT is what MOC executes — a prompt that doesn't embed the audited
+// The PROMPT is what the runner executes — a prompt that doesn't embed the audited
 // deal names is an unreviewed batch riding audit evidence for another one.
-func TestHandleMOCCreate_CreateWithPromptMissingDealNameRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_CreateWithPromptMissingDealNameRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	// Form passes and the brief matches — but the prompt never mentions the
 	// audited deal.
 	body := fmt.Sprintf(`{"prompt":"create something else entirely","form":%s,"brief":%s}`, formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -421,19 +421,19 @@ func TestHandleMOCCreate_CreateWithPromptMissingDealNameRejected(t *testing.T) {
 // Happy path: a passing audited form + a matching brief + a prompt embedding
 // the audited deal name creates the task (the gate must never falsely reject
 // the money path).
-func TestHandleMOCCreate_CreateHappyPath(t *testing.T) {
-	srv := mocTestServer(t)
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_CreateHappyPath(t *testing.T) {
+	srv := runnerTestServer(t)
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusOK {
 		t.Fatalf("want 200 on passing form + matching brief + name-bearing prompt, got %d: %s", w.Code, w.Body.String())
 	}
-	var resp mocCreateResponse
+	var resp runnerCreateResponse
 	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
@@ -448,33 +448,26 @@ func jsonString(raw string) string {
 	return string(b)
 }
 
-// prodEnvs wraps a single config as the prod environment — the shape every
-// pre-picker test exercised. An enabled prod config gets a node pin stamped
-// (#237: prod submits fail closed without MOC_TARGET_NODE; these fixtures
-// exercise the gates BEYOND that requirement — the requirement itself is
-// covered by TestHandleMOCCreate_ProdWithoutTargetNodeRejected).
-func prodEnvs(cfg moc.Config) moc.Environments {
-	if cfg.Enabled() && cfg.TargetNode == "" {
-		cfg.TargetNode = "test-node"
-	}
-	return moc.Environments{Prod: cfg}
+// prodEnvs wraps one prod config into an Environments value for handler tests.
+func prodEnvs(cfg runner.Config) runner.Environments {
+	return runner.Environments{Prod: cfg}
 }
 
-// stubMoc is mocTestServer with a task counter and a configurable task id, so
+// stubMoc is runnerTestServer with a task counter and a configurable task id, so
 // environment-routing tests can assert WHICH instance received the work.
 func stubMoc(t *testing.T, taskID string) (*httptest.Server, *atomic.Int32) {
 	t.Helper()
 	var tasks atomic.Int32
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/upload":
+		case "/v1/upload":
 			_, h, ferr := r.FormFile("file")
 			if ferr != nil {
 				t.Errorf("FormFile: %v", ferr)
 				return
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{"filename": h.Filename})
-		case "/tasks":
+		case "/v1/tasks":
 			tasks.Add(1)
 			_ = json.NewEncoder(w).Encode(map[string]any{"id": taskID})
 		default:
@@ -485,31 +478,31 @@ func stubMoc(t *testing.T, taskID string) (*httptest.Server, *atomic.Int32) {
 	return srv, &tasks
 }
 
-// mocEnv:"dev" routes the task to the dev instance and only the dev instance;
+// runnerEnv:"dev" routes the task to the dev instance and only the dev instance;
 // the response echoes the environment.
-func TestHandleMOCCreate_DevEnvRoutesToDevMoc(t *testing.T) {
+func TestHandleRunnerCreate_DevEnvRoutesToDevRunner(t *testing.T) {
 	prodSrv, prodTasks := stubMoc(t, "task-prod")
 	devSrv, devTasks := stubMoc(t, "task-dev")
-	envs := moc.Environments{
-		Prod: moc.Config{BaseURL: prodSrv.URL, APIKey: "pk", TargetNode: "prod-node"},
-		Dev:  moc.Config{BaseURL: devSrv.URL, APIKey: "dk"},
+	envs := runner.Environments{
+		Prod: runner.Config{BaseURL: prodSrv.URL, APIKey: "pk"},
+		Dev:  runner.Config{BaseURL: devSrv.URL, APIKey: "dk"},
 	}
-	h := HandleMOCCreate(envs, nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
-	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s,"mocEnv":"dev"}`, jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	h := HandleRunnerCreate(envs, nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
+	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s,"runnerEnv":"dev"}`, jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusOK {
 		t.Fatalf("want 200 on dev submit, got %d: %s", w.Code, w.Body.String())
 	}
-	var resp mocCreateResponse
+	var resp runnerCreateResponse
 	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
-	if resp.TaskID != "task-dev" || resp.MocEnv != "dev" {
-		t.Fatalf("want task-dev on mocEnv dev, got %+v", resp)
+	if resp.TaskID != "task-dev" || resp.RunnerEnv != "dev" {
+		t.Fatalf("want task-dev on runnerEnv dev, got %+v", resp)
 	}
 	if got := devTasks.Load(); got != 1 {
 		t.Fatalf("want 1 task on the dev instance, got %d", got)
@@ -521,31 +514,31 @@ func TestHandleMOCCreate_DevEnvRoutesToDevMoc(t *testing.T) {
 
 // Picking dev while only prod is configured fails closed with an actionable
 // 503 — never a silent fallback to prod.
-func TestHandleMOCCreate_DevRequestedButUnconfigured(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://moc.example", APIKey: "k"}), nil, nil, t.TempDir())
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(`{"prompt":"x","mocEnv":"dev"}`))
+func TestHandleRunnerCreate_DevRequestedButUnconfigured(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}), nil, nil, t.TempDir())
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(`{"prompt":"x","runnerEnv":"dev"}`))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusServiceUnavailable {
 		t.Fatalf("want 503 when dev env unset, got %d: %s", w.Code, w.Body.String())
 	}
-	if got := gateErrorBody(t, w); got.Error != "moc_env_not_configured" || got.Message == "" {
-		t.Fatalf("want moc_env_not_configured with a message, got %+v", got)
+	if got := gateErrorBody(t, w); got.Error != "runner_env_not_configured" || got.Message == "" {
+		t.Fatalf("want runner_env_not_configured with a message, got %+v", got)
 	}
 }
 
 // An unknown environment id is a hard 400 — a typo must never submit a live
-// batch to the wrong MOC.
-func TestHandleMOCCreate_InvalidEnvRejected(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://moc.example", APIKey: "k"}), nil, nil, t.TempDir())
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(`{"prompt":"x","mocEnv":"staging"}`))
+// batch to the wrong runner.
+func TestHandleRunnerCreate_InvalidEnvRejected(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}), nil, nil, t.TempDir())
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(`{"prompt":"x","runnerEnv":"staging"}`))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusBadRequest {
-		t.Fatalf("want 400 on unknown mocEnv, got %d: %s", w.Code, w.Body.String())
+		t.Fatalf("want 400 on unknown runnerEnv, got %d: %s", w.Code, w.Body.String())
 	}
-	if got := gateErrorBody(t, w); got.Error != "moc_env_invalid" {
-		t.Fatalf("want moc_env_invalid, got %+v", got)
+	if got := gateErrorBody(t, w); got.Error != "runner_env_invalid" {
+		t.Fatalf("want runner_env_invalid, got %+v", got)
 	}
 }
 
@@ -553,37 +546,37 @@ func TestHandleMOCCreate_InvalidEnvRejected(t *testing.T) {
 // replays the original task, while reusing the key on the OTHER environment
 // is a 409 conflict — never a second live batch and never a cross-env replay
 // that would mislabel where the task ran.
-func TestHandleMOCCreate_IdempotencyCrossEnvConflict(t *testing.T) {
+func TestHandleRunnerCreate_IdempotencyCrossEnvConflict(t *testing.T) {
 	prodSrv, prodTasks := stubMoc(t, "task-prod")
 	devSrv, devTasks := stubMoc(t, "task-dev")
-	envs := moc.Environments{
-		Prod: moc.Config{BaseURL: prodSrv.URL, APIKey: "pk", TargetNode: "prod-node"},
-		Dev:  moc.Config{BaseURL: devSrv.URL, APIKey: "dk"},
+	envs := runner.Environments{
+		Prod: runner.Config{BaseURL: prodSrv.URL, APIKey: "pk"},
+		Dev:  runner.Config{BaseURL: devSrv.URL, APIKey: "dk"},
 	}
 	store, err := idempotency.NewStore(t.TempDir(), time.Hour)
 	if err != nil {
 		t.Fatalf("idempotency store: %v", err)
 	}
-	h := HandleMOCCreate(envs, nil, store, t.TempDir())
+	h := HandleRunnerCreate(envs, nil, store, t.TempDir())
 
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
-	send := func(mocEnv string) *httptest.ResponseRecorder {
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
+	send := func(runnerEnv string) *httptest.ResponseRecorder {
 		t.Helper()
 		envField := ""
-		if mocEnv != "" {
-			envField = fmt.Sprintf(`,"mocEnv":%q`, mocEnv)
+		if runnerEnv != "" {
+			envField = fmt.Sprintf(`,"runnerEnv":%q`, runnerEnv)
 		}
 		body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s,"idempotencyKey":"same-key"%s}`,
 			jsonString(createPromptFor(dealName)), formJSON, jsonString(brief), envField)
-		r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+		r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 		w := httptest.NewRecorder()
 		h(w, r)
 		return w
 	}
-	decode := func(w *httptest.ResponseRecorder) mocCreateResponse {
+	decode := func(w *httptest.ResponseRecorder) runnerCreateResponse {
 		t.Helper()
-		var resp mocCreateResponse
+		var resp runnerCreateResponse
 		if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
 			t.Fatalf("decode response: %v", err)
 		}
@@ -617,7 +610,7 @@ func TestHandleMOCCreate_IdempotencyCrossEnvConflict(t *testing.T) {
 	if replay.Code != http.StatusOK {
 		t.Fatalf("want 200 on same-env retry, got %d: %s", replay.Code, replay.Body.String())
 	}
-	if resp := decode(replay); !resp.Duplicate || resp.TaskID != "task-prod" || resp.MocEnv != "prod" {
+	if resp := decode(replay); !resp.Duplicate || resp.TaskID != "task-prod" || resp.RunnerEnv != "prod" {
 		t.Fatalf("same-env retry must replay the original prod task, got %+v", resp)
 	}
 	if got := prodTasks.Load(); got != 1 {
@@ -628,9 +621,9 @@ func TestHandleMOCCreate_IdempotencyCrossEnvConflict(t *testing.T) {
 // The operation string namespaces the idempotency ledger, so it is
 // allowlisted — a forged value like "create@dev" could otherwise collide with
 // another environment's namespace and replay that environment's task.
-func TestHandleMOCCreate_InvalidOperationRejected(t *testing.T) {
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://moc.example", APIKey: "k"}), nil, nil, t.TempDir())
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(`{"prompt":"x","operation":"create@dev"}`))
+func TestHandleRunnerCreate_InvalidOperationRejected(t *testing.T) {
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}), nil, nil, t.TempDir())
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(`{"prompt":"x","operation":"create@dev"}`))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusBadRequest {
@@ -643,9 +636,9 @@ func TestHandleMOCCreate_InvalidOperationRejected(t *testing.T) {
 
 // A fully-disabled deployment answers 503 BEFORE reading the body — malformed
 // JSON must not turn the actionable "not configured" signal into a 400.
-func TestHandleMOCCreate_DisabledReturns503BeforeDecode(t *testing.T) {
-	h := HandleMOCCreate(moc.Environments{}, nil, nil, t.TempDir())
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(`{not json`))
+func TestHandleRunnerCreate_DisabledReturns503BeforeDecode(t *testing.T) {
+	h := HandleRunnerCreate(runner.Environments{}, nil, nil, t.TempDir())
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(`{not json`))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusServiceUnavailable {
@@ -655,22 +648,21 @@ func TestHandleMOCCreate_DisabledReturns503BeforeDecode(t *testing.T) {
 
 // The environments endpoint reports per-instance enablement without leaking
 // API keys.
-func TestHandleMOCEnvironments(t *testing.T) {
-	envs := moc.Environments{
-		Prod: moc.Config{BaseURL: "https://moc.example", APIKey: "prod-secret-key", TargetNode: "node-a"},
-		Dev:  moc.Config{BaseURL: "https://dev.example"}, // no key → disabled
+func TestHandleRunnerEnvironments(t *testing.T) {
+	envs := runner.Environments{
+		Prod: runner.Config{BaseURL: "https://fleet.example", APIKey: "prod-secret-key"},
+		Dev:  runner.Config{BaseURL: "https://dev.example"}, // no key → disabled
 	}
 	w := httptest.NewRecorder()
-	HandleMOCEnvironments(envs)(w, httptest.NewRequest("GET", "/api/moc/environments", nil))
+	HandleRunnerEnvironments(envs)(w, httptest.NewRequest("GET", "/api/runner/environments", nil))
 	if w.Code != http.StatusOK {
 		t.Fatalf("want 200, got %d", w.Code)
 	}
 	var body struct {
 		Environments []struct {
-			ID         string `json:"id"`
-			BaseURL    string `json:"baseUrl"`
-			TargetNode string `json:"targetNode"`
-			Enabled    bool   `json:"enabled"`
+			ID      string `json:"id"`
+			BaseURL string `json:"baseUrl"`
+			Enabled bool   `json:"enabled"`
 		} `json:"environments"`
 	}
 	if err := json.Unmarshal(w.Body.Bytes(), &body); err != nil {
@@ -680,7 +672,7 @@ func TestHandleMOCEnvironments(t *testing.T) {
 		t.Fatalf("want prod+dev entries, got %+v", body.Environments)
 	}
 	prod, dev := body.Environments[0], body.Environments[1]
-	if prod.ID != "prod" || !prod.Enabled || prod.TargetNode != "node-a" {
+	if prod.ID != "prod" || !prod.Enabled || prod.BaseURL != "https://fleet.example" {
 		t.Fatalf("bad prod entry: %+v", prod)
 	}
 	if dev.ID != "dev" || dev.Enabled || dev.BaseURL != "https://dev.example" {
@@ -691,7 +683,7 @@ func TestHandleMOCEnvironments(t *testing.T) {
 	}
 }
 
-// The connection check defaults to the dev instance (the Fleet port target),
+// The connection check defaults to the dev instance,
 // refuses an unknown env rather than silently probing prod, and creates
 // nothing.
 func TestHandleRunnerCheck(t *testing.T) {
@@ -707,9 +699,9 @@ func TestHandleRunnerCheck(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	envs := moc.Environments{
-		Prod: moc.Config{BaseURL: "https://moc.example", APIKey: "prod-secret-key"},
-		Dev:  moc.Config{Backend: "fleet", BaseURL: srv.URL, APIKey: "dev-secret-key"},
+	envs := runner.Environments{
+		Prod: runner.Config{BaseURL: "https://fleet.example", APIKey: "prod-secret-key"},
+		Dev:  runner.Config{BaseURL: srv.URL, APIKey: "dev-secret-key"},
 	}
 
 	// No ?env → dev.
@@ -756,7 +748,7 @@ func TestHandleRunnerCheck(t *testing.T) {
 // must upload it under the original name (supplied in fileNames) so the agent's
 // fuzzy name-match against the prompt resolves — while still reading the bytes
 // from the validated hashed path.
-func TestHandleMOCCreate_UploadsUnderOriginalFilename(t *testing.T) {
+func TestHandleRunnerCreate_UploadsUnderOriginalFilename(t *testing.T) {
 	uploadDir := t.TempDir()
 	// Simulate what the upload handler wrote: a hash-suffixed on-disk name.
 	hashed := filepath.Join(uploadDir, "1720000000-abc123.csv")
@@ -767,7 +759,7 @@ func TestHandleMOCCreate_UploadsUnderOriginalFilename(t *testing.T) {
 	var uploadedNames []string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/upload":
+		case "/v1/upload":
 			f, h, ferr := r.FormFile("file")
 			if ferr != nil {
 				t.Fatalf("FormFile: %v", ferr)
@@ -775,7 +767,7 @@ func TestHandleMOCCreate_UploadsUnderOriginalFilename(t *testing.T) {
 			defer f.Close()
 			uploadedNames = append(uploadedNames, h.Filename)
 			_ = json.NewEncoder(w).Encode(map[string]any{"filename": h.Filename, "checksum": "sha"})
-		case "/tasks":
+		case "/v1/tasks":
 			_ = json.NewEncoder(w).Encode(map[string]any{"id": "task-1"})
 		default:
 			t.Errorf("unexpected path %s", r.URL.Path)
@@ -783,14 +775,14 @@ func TestHandleMOCCreate_UploadsUnderOriginalFilename(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	cfg := moc.Config{BaseURL: srv.URL, APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, uploadDir)
+	cfg := runner.Config{BaseURL: srv.URL, APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, uploadDir)
 
-	formJSON, dealName := passingMocFormJSON(t)
+	formJSON, dealName := passingRunnerFormJSON(t)
 	original := "Auto Sites.csv"
 	body := fmt.Sprintf(`{"prompt":%s,"filePaths":["`+hashed+`"],"fileNames":["`+original+`"],"form":%s,"brief":%s}`,
-		jsonString(createPromptFor(dealName)), formJSON, jsonString(passingMocBrief(t, dealName)))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+		jsonString(createPromptFor(dealName)), formJSON, jsonString(passingRunnerBrief(t, dealName)))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 
@@ -800,7 +792,7 @@ func TestHandleMOCCreate_UploadsUnderOriginalFilename(t *testing.T) {
 	if len(uploadedNames) == 0 || uploadedNames[0] != original {
 		t.Errorf("uploaded under %v, want the prompt-referenced original name %q first", uploadedNames, original)
 	}
-	var resp mocCreateResponse
+	var resp runnerCreateResponse
 	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
@@ -812,7 +804,7 @@ func TestHandleMOCCreate_UploadsUnderOriginalFilename(t *testing.T) {
 
 // Without fileNames (legacy caller) the handler falls back to the on-disk
 // basename — no regression for callers that don't yet supply original names.
-func TestHandleMOCCreate_FallsBackToBasenameWithoutFileNames(t *testing.T) {
+func TestHandleRunnerCreate_FallsBackToBasenameWithoutFileNames(t *testing.T) {
 	uploadDir := t.TempDir()
 	hashed := filepath.Join(uploadDir, "1720000000-def456.csv")
 	if err := os.WriteFile(hashed, []byte("a\n"), 0o644); err != nil {
@@ -820,7 +812,7 @@ func TestHandleMOCCreate_FallsBackToBasenameWithoutFileNames(t *testing.T) {
 	}
 	var uploadedNames []string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/upload" {
+		if r.URL.Path == "/v1/upload" {
 			f, h, ferr := r.FormFile("file")
 			if ferr != nil {
 				t.Fatalf("FormFile: %v", ferr)
@@ -834,11 +826,11 @@ func TestHandleMOCCreate_FallsBackToBasenameWithoutFileNames(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, uploadDir)
-	formJSON, dealName := passingMocFormJSON(t)
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, uploadDir)
+	formJSON, dealName := passingRunnerFormJSON(t)
 	body := fmt.Sprintf(`{"prompt":%s,"filePaths":["`+hashed+`"],"form":%s,"brief":%s}`,
-		jsonString(createPromptFor(dealName)), formJSON, jsonString(passingMocBrief(t, dealName)))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+		jsonString(createPromptFor(dealName)), formJSON, jsonString(passingRunnerBrief(t, dealName)))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusOK {
@@ -894,9 +886,9 @@ func passingMocFormWithSheetOnlyJSON(t *testing.T) (formJSON, createName, sheetO
 	return string(raw), "Curator_Index_TTD_Northwind_Acme_NA_Digital Consumer_Display_All_Global_DEAL12345_A1", sheetOnlyName
 }
 
-// passingMocBriefWithSheetOnly mirrors buildBatchBrief: the create row under
+// passingRunnerBriefWithSheetOnly mirrors buildBatchBrief: the create row under
 // deals[], the live row under already_created_for_sheet[] with NO tool.
-func passingMocBriefWithSheetOnly(t *testing.T, createName, sheetOnlyName string) string {
+func passingRunnerBriefWithSheetOnly(t *testing.T, createName, sheetOnlyName string) string {
 	t.Helper()
 	brief := map[string]any{
 		"client_name": "Acme",
@@ -931,14 +923,14 @@ func createPromptWithSheetSection(createName, sheetOnlyName string) string {
 // A create submit whose form carries sheet-only rows passes the gate with the
 // new prompt shape: the sheet-only name is embedded via the section, not a
 // create block, and the re-audit doesn't demand OpenX create config for it.
-func TestHandleMOCCreate_SheetOnlyRowsPassGateViaSheetSection(t *testing.T) {
-	srv := mocTestServer(t)
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_SheetOnlyRowsPassGateViaSheetSection(t *testing.T) {
+	srv := runnerTestServer(t)
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, t.TempDir())
 	formJSON, createName, sheetOnlyName := passingMocFormWithSheetOnlyJSON(t)
-	brief := passingMocBriefWithSheetOnly(t, createName, sheetOnlyName)
+	brief := passingRunnerBriefWithSheetOnly(t, createName, sheetOnlyName)
 	prompt := createPromptWithSheetSection(createName, sheetOnlyName)
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(prompt), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusOK {
@@ -949,14 +941,14 @@ func TestHandleMOCCreate_SheetOnlyRowsPassGateViaSheetSection(t *testing.T) {
 // Regression for promptEmbedsName: dropping a sheet-only name from the prompt
 // ENTIRELY (the naive fix — filtering sheet-only rows out with no replacement
 // section) must still 422 — the audited set is bound in full.
-func TestHandleMOCCreate_SheetOnlyNameMissingFromPromptRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+func TestHandleRunnerCreate_SheetOnlyNameMissingFromPromptRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
 	formJSON, createName, sheetOnlyName := passingMocFormWithSheetOnlyJSON(t)
-	brief := passingMocBriefWithSheetOnly(t, createName, sheetOnlyName)
+	brief := passingRunnerBriefWithSheetOnly(t, createName, sheetOnlyName)
 	// Prompt embeds only the create name — the sheet-only name is nowhere.
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(createPromptFor(createName)), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -985,7 +977,7 @@ func TestHandleMOCCreate_SheetOnlyNameMissingFromPromptRejected(t *testing.T) {
 // a prompt that references a list/file BY NAME (domain_file_path /
 // app_bundle_file_path args, the Media.net/TripleLift `values_file:` merge
 // blocks, the update flow's attachments `file_path:` rows) with no matching
-// upload must be rejected before any MOC work. Pre-fix the handler uploaded
+// upload must be rejected before any the runner work. Pre-fix the handler uploaded
 // whatever was in listIds/filePaths and never compared the set to the prompt,
 // so a per-deal standard list missing from listIds sailed through and failed
 // missing_domain_file mid-batch (or, on Media.net, created the deal LIVE
@@ -994,14 +986,14 @@ func TestHandleMOCCreate_SheetOnlyNameMissingFromPromptRejected(t *testing.T) {
 
 // The gate covers the CREATE path too, after the audit gate: a fully
 // gate-passing create whose prompt references an unattached list is rejected.
-func TestHandleMOCCreate_CreateWithUnattachedListReferenceRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_CreateWithUnattachedListReferenceRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	prompt := createPromptFor(dealName) + "\ndomain_file_path: \"Ghost List\""
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(prompt), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -1016,29 +1008,29 @@ func TestHandleMOCCreate_CreateWithUnattachedListReferenceRejected(t *testing.T)
 // =============================================================================
 // Idempotency-reservation lifecycle (#225): the reservation is released ONLY
 // on failures provably BEFORE CreateTask could have taken effect. A failure
-// at/after the CreateTask request is AMBIGUOUS — MOC may have accepted the
+// at/after the CreateTask request is AMBIGUOUS — the runner may have accepted the
 // task even though the response was lost — so the key is HELD (fail closed,
 // 409) and a retry with the same key can never book a second live batch.
 // =============================================================================
 
 // A CreateTask failure (the /tasks request was sent — its outcome is unknown)
 // must NOT release the reservation: the handler answers 409
-// moc_submission_state_unknown, the record stays "pending", and a same-key
+// runner_submission_state_unknown, the record stays "pending", and a same-key
 // retry is rejected without another CreateTask attempt. Pre-fix the handler
 // answered 502 and released the key, so the retry created a second live batch.
-func TestHandleMOCCreate_AmbiguousCreateTaskFailureHoldsReservation(t *testing.T) {
+func TestHandleRunnerCreate_AmbiguousCreateTaskFailureHoldsReservation(t *testing.T) {
 	var taskAttempts atomic.Int32
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/upload":
+		case "/v1/upload":
 			_, h, ferr := r.FormFile("file")
 			if ferr != nil {
 				t.Errorf("FormFile: %v", ferr)
 				return
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{"filename": h.Filename})
-		case "/tasks":
-			// The request reached MOC — from the caller's side the outcome is
+		case "/v1/tasks":
+			// The request reached the runner — from the caller's side the outcome is
 			// ambiguous (a timeout / proxy 502 looks exactly like this).
 			taskAttempts.Add(1)
 			http.Error(w, "upstream blew up mid-create", http.StatusInternalServerError)
@@ -1052,15 +1044,15 @@ func TestHandleMOCCreate_AmbiguousCreateTaskFailureHoldsReservation(t *testing.T
 	if err != nil {
 		t.Fatalf("idempotency store: %v", err)
 	}
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: srv.URL, APIKey: "k"}), nil, store, t.TempDir())
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: srv.URL, APIKey: "k"}), nil, store, t.TempDir())
 
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	send := func() *httptest.ResponseRecorder {
 		t.Helper()
 		body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s,"idempotencyKey":"ambiguous-key"}`,
 			jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
-		r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+		r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 		w := httptest.NewRecorder()
 		h(w, r)
 		return w
@@ -1070,8 +1062,8 @@ func TestHandleMOCCreate_AmbiguousCreateTaskFailureHoldsReservation(t *testing.T
 	if first.Code != http.StatusConflict {
 		t.Fatalf("ambiguous CreateTask failure must fail closed with 409, got %d: %s", first.Code, first.Body.String())
 	}
-	if got := gateErrorBody(t, first); got.Error != "moc_submission_state_unknown" || got.Message == "" {
-		t.Fatalf("want moc_submission_state_unknown with a message, got %+v", got)
+	if got := gateErrorBody(t, first); got.Error != "runner_submission_state_unknown" || got.Message == "" {
+		t.Fatalf("want runner_submission_state_unknown with a message, got %+v", got)
 	}
 	// The reservation must still be held pending — never released.
 	rec, held := store.Get("create", "ambiguous-key")
@@ -1091,16 +1083,16 @@ func TestHandleMOCCreate_AmbiguousCreateTaskFailureHoldsReservation(t *testing.T
 	}
 }
 
-// A failure provably BEFORE CreateTask (here: the MOC file upload fails, so no
+// A failure provably BEFORE CreateTask (here: the runner file upload fails, so no
 // task-create request was ever issued) must still release the reservation so
 // the client can retry with the same key — and the retry succeeds.
-func TestHandleMOCCreate_PreCreateTaskFailureReleasesReservation(t *testing.T) {
+func TestHandleRunnerCreate_PreCreateTaskFailureReleasesReservation(t *testing.T) {
 	var failUploads atomic.Bool
 	failUploads.Store(true)
 	var taskAttempts atomic.Int32
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/upload":
+		case "/v1/upload":
 			if failUploads.Load() {
 				http.Error(w, "upload store unavailable", http.StatusInternalServerError)
 				return
@@ -1111,7 +1103,7 @@ func TestHandleMOCCreate_PreCreateTaskFailureReleasesReservation(t *testing.T) {
 				return
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{"filename": h.Filename})
-		case "/tasks":
+		case "/v1/tasks":
 			taskAttempts.Add(1)
 			_ = json.NewEncoder(w).Encode(map[string]any{"id": "task-retry"})
 		default:
@@ -1124,17 +1116,17 @@ func TestHandleMOCCreate_PreCreateTaskFailureReleasesReservation(t *testing.T) {
 	if err != nil {
 		t.Fatalf("idempotency store: %v", err)
 	}
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: srv.URL, APIKey: "k"}), nil, store, t.TempDir())
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: srv.URL, APIKey: "k"}), nil, store, t.TempDir())
 
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	send := func() *httptest.ResponseRecorder {
 		t.Helper()
 		// The create flow always uploads the brief, so the failing /upload
 		// trips before any CreateTask request exists.
 		body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s,"idempotencyKey":"pre-task-key"}`,
 			jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
-		r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+		r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 		w := httptest.NewRecorder()
 		h(w, r)
 		return w
@@ -1153,7 +1145,7 @@ func TestHandleMOCCreate_PreCreateTaskFailureReleasesReservation(t *testing.T) {
 	if retry.Code != http.StatusOK {
 		t.Fatalf("same-key retry after a released reservation must succeed, got %d: %s", retry.Code, retry.Body.String())
 	}
-	var resp mocCreateResponse
+	var resp runnerCreateResponse
 	if err := json.Unmarshal(retry.Body.Bytes(), &resp); err != nil {
 		t.Fatalf("decode response: %v", err)
 	}
@@ -1176,25 +1168,25 @@ func TestHandleMOCCreate_PreCreateTaskFailureReleasesReservation(t *testing.T) {
 // CreateTask failure classification (#FIX1): the reservation is HELD only for
 // genuinely-ambiguous failures (the task may exist). Provably-not-created
 // failures (connection never established, definitive 4xx) RELEASE so the same
-// content-derived key can retry cleanly — a transient MOC blip must not wedge
+// content-derived key can retry cleanly — a transient runner blip must not wedge
 // the batch for the whole 24h TTL. Pre-fix EVERY CreateTask error was held.
 // =============================================================================
 
 // hangUpMoc accepts /upload but, on /tasks, hijacks the connection and closes
-// it WITHOUT a response — a reset/EOF mid-request: the request reached MOC
+// it WITHOUT a response — a reset/EOF mid-request: the request reached the runner
 // (ambiguous), but the transport errored. Not a dial error, so → HOLD.
 func hangUpMoc(t *testing.T, taskHits *atomic.Int32) *httptest.Server {
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/upload":
+		case "/v1/upload":
 			_, h, ferr := r.FormFile("file")
 			if ferr != nil {
 				t.Errorf("FormFile: %v", ferr)
 				return
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{"filename": h.Filename})
-		case "/tasks":
+		case "/v1/tasks":
 			taskHits.Add(1)
 			hj, ok := w.(http.Hijacker)
 			if !ok {
@@ -1219,14 +1211,14 @@ func statusMoc(t *testing.T, taskStatus int, taskHits *atomic.Int32) *httptest.S
 	t.Helper()
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/upload":
+		case "/v1/upload":
 			_, h, ferr := r.FormFile("file")
 			if ferr != nil {
 				t.Errorf("FormFile: %v", ferr)
 				return
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{"filename": h.Filename})
-		case "/tasks":
+		case "/v1/tasks":
 			taskHits.Add(1)
 			http.Error(w, "boom", taskStatus)
 		default:
@@ -1246,15 +1238,15 @@ func statusMoc(t *testing.T, taskStatus int, taskHits *atomic.Int32) *httptest.S
 // the audited names PLUS an extra un-audited deal entry passed pre-fix (the
 // binding was one-directional: every audited name in the prompt, nothing about
 // extra prompt-only entries).
-func TestHandleMOCCreate_CreateWithExtraUnauditedDealRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_CreateWithExtraUnauditedDealRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	extra := "Sneaky_OpenX_TTD_X_Y_NA_Z_Display_All_Global_DEAL99999_A1"
 	prompt := createPromptFor(dealName) + "\n  - name: " + extra
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(prompt), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -1271,14 +1263,14 @@ func TestHandleMOCCreate_CreateWithExtraUnauditedDealRejected(t *testing.T) {
 
 // #232.8 — a DUPLICATED audited entry (same name twice) would double-create at
 // the SSP; the count binding rejects it.
-func TestHandleMOCCreate_CreateWithDuplicatedDealEntryRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_CreateWithDuplicatedDealEntryRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	prompt := createPromptFor(dealName) + "\n  - name: " + dealName
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(prompt), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -1293,14 +1285,14 @@ func TestHandleMOCCreate_CreateWithDuplicatedDealEntryRejected(t *testing.T) {
 // deal entries) is not the shape buildBatchPrompt generates and Cutlass would
 // not execute the audited batch from it; the count binding fails it closed.
 // Pre-fix the substring check passed it.
-func TestHandleMOCCreate_CreateWithProseOnlyNamesRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_CreateWithProseOnlyNamesRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	prompt := "please create a deal called " + dealName + " and also do whatever else you like"
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(prompt), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -1311,63 +1303,22 @@ func TestHandleMOCCreate_CreateWithProseOnlyNamesRejected(t *testing.T) {
 	}
 }
 
-// #237.3 — a PROD submit with no MOC_TARGET_NODE fails closed (an untargeted
-// task runs on ANY registered node); a dev submit stays unpinned-capable.
-func TestHandleMOCCreate_ProdWithoutTargetNodeRejected(t *testing.T) {
-	// Deliberately NOT via prodEnvs — no node pin.
-	envs := moc.Environments{Prod: moc.Config{BaseURL: "https://moc.example", APIKey: "k"}}
-	h := HandleMOCCreate(envs, nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
-	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
-	w := httptest.NewRecorder()
-	h(w, r)
-	if w.Code != http.StatusServiceUnavailable {
-		t.Fatalf("want 503 for a prod submit without a node pin, got %d: %s", w.Code, w.Body.String())
-	}
-	if got := gateErrorBody(t, w); got.Error != "moc_target_node_required" || !strings.Contains(got.Message, "MOC_TARGET_NODE") {
-		t.Fatalf("want moc_target_node_required naming the env var, got %+v", got)
-	}
-}
-
-func TestHandleMOCCreate_DevWithoutTargetNodeAllowed(t *testing.T) {
-	devSrv, devTasks := stubMoc(t, "task-dev")
-	envs := moc.Environments{
-		Prod: moc.Config{BaseURL: "https://moc.example", APIKey: "pk", TargetNode: "prod-node"},
-		Dev:  moc.Config{BaseURL: devSrv.URL, APIKey: "dk"}, // no node pin — allowed on dev
-	}
-	h := HandleMOCCreate(envs, nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
-	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s,"mocEnv":"dev"}`, jsonString(createPromptFor(dealName)), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
-	w := httptest.NewRecorder()
-	h(w, r)
-	if w.Code != http.StatusOK {
-		t.Fatalf("want 200 for an unpinned dev submit, got %d: %s", w.Code, w.Body.String())
-	}
-	if devTasks.Load() != 1 {
-		t.Fatalf("want 1 dev task, got %d", devTasks.Load())
-	}
-}
-
 // #238.4 (create-scoped) — a CREATE attachment whose display name carries an
 // extension the create-time domain extractors cannot read (.txt/.tsv/.xls) is
-// rejected before any MOC work; pre-fix it uploaded fine and failed mid-batch
+// rejected before any the runner work; pre-fix it uploaded fine and failed mid-batch
 // at the SSP MCP ("Unsupported domain file format").
-func TestHandleMOCCreate_CreateRejectsExtractorUnreadableAttachment(t *testing.T) {
+func TestHandleRunnerCreate_CreateRejectsExtractorUnreadableAttachment(t *testing.T) {
 	uploadDir := t.TempDir()
 	onDisk := filepath.Join(uploadDir, "170000-aaaa.txt")
 	if err := os.WriteFile(onDisk, []byte("example.com\n"), 0o644); err != nil {
 		t.Fatalf("seed upload: %v", err)
 	}
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: "https://moc.example", APIKey: "k"}), nil, nil, uploadDir)
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}), nil, nil, uploadDir)
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s,"filePaths":[%s],"fileNames":["Site List.txt"]}`,
 		jsonString(createPromptFor(dealName)), formJSON, jsonString(brief), jsonString(onDisk))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusBadRequest {
@@ -1381,16 +1332,16 @@ func TestHandleMOCCreate_CreateRejectsExtractorUnreadableAttachment(t *testing.T
 // #232.8 — an extra deal entry at a NON-canonical (tab) indent must still be
 // caught by the extras binding. Pre-fix promptDealNameRe matched only 2/4-space
 // canonical entries, so a tab-indented extra escaped the count/identity check.
-func TestHandleMOCCreate_CreateWithTabIndentedExtraDealRejected(t *testing.T) {
-	cfg := moc.Config{BaseURL: "https://moc.example", APIKey: "k"}
-	h := HandleMOCCreate(prodEnvs(cfg), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_CreateWithTabIndentedExtraDealRejected(t *testing.T) {
+	cfg := runner.Config{BaseURL: "https://fleet.example", APIKey: "k"}
+	h := HandleRunnerCreate(prodEnvs(cfg), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	extra := "Sneaky_OpenX_TTD_X_Y_NA_Z_Display_All_Global_DEAL99999_A1"
 	// The extra entry uses a TAB + dash indent instead of the canonical spaces.
 	prompt := createPromptFor(dealName) + "\n\t- name: " + extra
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(prompt), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusUnprocessableEntity {
@@ -1406,11 +1357,11 @@ func TestHandleMOCCreate_CreateWithTabIndentedExtraDealRejected(t *testing.T) {
 // spaces) must bind to exactly ONE audited deal — the 6-space body line must
 // NOT be counted as a second entry. Protects the count binding from a
 // double-count false-block.
-func TestHandleMOCCreate_RealShapeBodyNameNotDoubleCounted(t *testing.T) {
-	srv := mocTestServer(t)
-	h := HandleMOCCreate(prodEnvs(moc.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, t.TempDir())
-	formJSON, dealName := passingMocFormJSON(t)
-	brief := passingMocBrief(t, dealName)
+func TestHandleRunnerCreate_RealShapeBodyNameNotDoubleCounted(t *testing.T) {
+	srv := runnerTestServer(t)
+	h := HandleRunnerCreate(prodEnvs(runner.Config{BaseURL: srv.URL, APIKey: "k"}), nil, nil, t.TempDir())
+	formJSON, dealName := passingRunnerFormJSON(t)
+	brief := passingRunnerBrief(t, dealName)
 	// A single structural entry (4-space `name:`) whose prompt_inputs body
 	// re-emits `name:` at 6-space indent (as buildBatchPrompt does).
 	prompt := "create the batch\ndeals:\n" +
@@ -1421,7 +1372,7 @@ func TestHandleMOCCreate_RealShapeBodyNameNotDoubleCounted(t *testing.T) {
 		"      name: " + dealName + "\n" +
 		"      buyer: The Trade Desk\n"
 	body := fmt.Sprintf(`{"prompt":%s,"form":%s,"brief":%s}`, jsonString(prompt), formJSON, jsonString(brief))
-	r := httptest.NewRequest("POST", "/api/moc/create", strings.NewReader(body))
+	r := httptest.NewRequest("POST", "/api/runner/create", strings.NewReader(body))
 	w := httptest.NewRecorder()
 	h(w, r)
 	if w.Code != http.StatusOK {
@@ -1465,13 +1416,13 @@ func stubFleet(t *testing.T) (*httptest.Server, *map[string]any) {
 
 // capturedPairs projects a captured mcp_selection/credential_allowlist field
 // into comparable {server account} pairs.
-func capturedPairs(t *testing.T, captured map[string]any, field string) []moc.MCPChoice {
+func capturedPairs(t *testing.T, captured map[string]any, field string) []runner.MCPChoice {
 	t.Helper()
 	raw, ok := captured[field].([]any)
 	if !ok {
 		t.Fatalf("wire field %q missing or not a list: %v", field, captured[field])
 	}
-	out := make([]moc.MCPChoice, 0, len(raw))
+	out := make([]runner.MCPChoice, 0, len(raw))
 	for _, entry := range raw {
 		m, ok := entry.(map[string]any)
 		if !ok {
@@ -1479,31 +1430,31 @@ func capturedPairs(t *testing.T, captured map[string]any, field string) []moc.MC
 		}
 		server, _ := m["server"].(string)
 		account, _ := m["account"].(string)
-		out = append(out, moc.MCPChoice{Server: server, Account: account})
+		out = append(out, runner.MCPChoice{Server: server, Account: account})
 	}
 	return out
 }
 
 // ---------------------------------------------------------------------------
-// serialization_key derivation (#280, superseding PR #276) on the legacy moc
+// serialization_key derivation (#280, superseding PR #276) on the
 // wire — the key rides BOTH backends' wires the same way.
 // ---------------------------------------------------------------------------
 
 // stubMocCaptureTasks is stubMoc, additionally decoding the POST /tasks body
-// so tests can pin the exact wire fields Deal Onboarding sends (moc#442).
+// so tests can pin the exact wire fields Deal Onboarding sends .
 func stubMocCaptureTasks(t *testing.T) (*httptest.Server, *map[string]any) {
 	t.Helper()
 	captured := &map[string]any{}
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/upload":
+		case "/v1/upload":
 			_, h, ferr := r.FormFile("file")
 			if ferr != nil {
 				t.Errorf("FormFile: %v", ferr)
 				return
 			}
 			_ = json.NewEncoder(w).Encode(map[string]any{"filename": h.Filename})
-		case "/tasks":
+		case "/v1/tasks":
 			if err := json.NewDecoder(r.Body).Decode(captured); err != nil {
 				t.Errorf("decode /tasks body: %v", err)
 			}

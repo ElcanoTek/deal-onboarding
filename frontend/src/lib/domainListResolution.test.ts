@@ -4,7 +4,7 @@ import { buildBatchPrompt } from './dealPromptYaml'
 
 // Pins the per-deal domain-list resolution contract, born from the DEAL07253
 // E2E run (2026-07-20): an ad-hoc Exclude domain list uploaded in the Files
-// section reached the MOC task as an attachment while NEITHER IX deal's
+// section reached the runner task as an attachment while NEITHER IX deal's
 // prompt_inputs referenced it — the agent (correctly) refused to apply an
 // unreferenced file and both deals would have created unscoped. The silent
 // gap was a stale per-deal pick: the prompt resolver deliberately treats an
@@ -13,7 +13,7 @@ import { buildBatchPrompt } from './dealPromptYaml'
 // intended; the guards are elsewhere — FileUploads.removeFile now clears
 // deal picks pointing at a removed file, and the Go audit fails closed on
 // what remains (list_ref: stale pick; list_applied: pool nothing carries),
-// which also gates /api/moc/create via the #152 server-side re-audit.
+// which also gates /api/runner/create via the #152 server-side re-audit.
 
 const blockFile: UploadedFile = {
   id: 'up-longtail',

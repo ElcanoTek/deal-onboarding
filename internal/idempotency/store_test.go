@@ -27,7 +27,7 @@ func TestReserveThenCompleteReturnsPriorResult(t *testing.T) {
 	}
 
 	// Complete records the task; a later duplicate returns the ORIGINAL task.
-	if err := s.Complete("create", "key-1", "task-123", "https://moc/task-123"); err != nil {
+	if err := s.Complete("create", "key-1", "task-123", "https://fleet.example/orchestrator/tasks/task-123"); err != nil {
 		t.Fatalf("Complete: %v", err)
 	}
 	rec, reserved, _ = s.Reserve("create", "key-1")

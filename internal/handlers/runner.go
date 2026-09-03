@@ -13,15 +13,15 @@ import (
 
 	"github.com/ElcanoTek/deal-onboarding/internal/idempotency"
 	"github.com/ElcanoTek/deal-onboarding/internal/lists"
-	"github.com/ElcanoTek/deal-onboarding/internal/moc"
 	"github.com/ElcanoTek/deal-onboarding/internal/overrideaudit"
+	"github.com/ElcanoTek/deal-onboarding/internal/runner"
 	"github.com/ElcanoTek/deal-onboarding/internal/validation"
 )
 
 // maxAttachRefs caps the number of attachments (ad-hoc uploads + standard
 // lists) one submission may carry. Real batches attach a handful; a much larger
 // count means a malformed or hostile body, and each ref becomes a sequential
-// MOC upload holding the whole file in memory.
+// a runner upload holding the whole file in memory.
 const maxAttachRefs = 64
 
 // dealBriefUploadName is the logical file name the validated structured brief
@@ -83,10 +83,10 @@ func sspServerForDisplay(ssp string) (string, bool) {
 // plus the deal_sheet + sendgrid default-seat services every run needs for
 // its single consolidated email. When NEITHER source
 // yields a server (a hand-written free-text prompt with no recognizable batch
-// structure), it returns nil so the moc client falls back to the configured/
+// structure), it returns nil so the runner client falls back to the configured/
 // full default-seat roster — failing open to the global policy rather than
 // allowlisting the run into a deal_sheet/sendgrid-only lockout.
-func resolveMCPSelection(req *mocCreateRequest) []moc.MCPChoice {
+func resolveMCPSelection(req *runnerCreateRequest) []runner.MCPChoice {
 	variantFor := map[string]string{} // server -> variant slug
 	var variantServers []string
 	for _, m := range mcpLoadServerRe.FindAllStringSubmatch(req.Prompt, -1) {
@@ -120,17 +120,17 @@ func resolveMCPSelection(req *mocCreateRequest) []moc.MCPChoice {
 	if len(variantServers) == 0 && len(defaultServers) == 0 {
 		return nil // unrecognizable batch shape — inherit the full roster
 	}
-	out := make([]moc.MCPChoice, 0, len(variantServers)+len(defaultServers)+2)
+	out := make([]runner.MCPChoice, 0, len(variantServers)+len(defaultServers)+2)
 	for _, server := range variantServers {
-		out = append(out, moc.MCPChoice{Server: server, Account: variantFor[server]})
+		out = append(out, runner.MCPChoice{Server: server, Account: variantFor[server]})
 	}
 	for _, server := range defaultServers {
-		out = append(out, moc.MCPChoice{Server: server})
+		out = append(out, runner.MCPChoice{Server: server})
 	}
-	return append(out, moc.MCPChoice{Server: "deal_sheet"}, moc.MCPChoice{Server: "sendgrid"})
+	return append(out, runner.MCPChoice{Server: "deal_sheet"}, runner.MCPChoice{Server: "sendgrid"})
 }
 
-// mocCreateRequest is the body from the builder's Submit button.
+// runnerCreateRequest is the body from the builder's Submit button.
 //
 //   - prompt:    the generated batch prompt (required).
 //   - listIds:   standard allow/block list ids to attach — resolved to files
@@ -139,7 +139,7 @@ func resolveMCPSelection(req *mocCreateRequest) []moc.MCPChoice {
 //     to live under the trader upload dir before we touch them.
 //   - fileNames: the ORIGINAL client filename for each filePaths entry
 //     (positionally paired) — see the field comment below.
-type mocCreateRequest struct {
+type runnerCreateRequest struct {
 	Prompt    string   `json:"prompt"`
 	ListIDs   []string `json:"listIds"`
 	FilePaths []string `json:"filePaths"`
@@ -168,11 +168,11 @@ type mocCreateRequest struct {
 	// Operation names the flow. The runner seam is create-only: the only
 	// accepted value is "create" (the default when blank).
 	Operation string `json:"operation,omitempty"`
-	// MocEnv selects which configured MOC instance receives the task: "prod"
+	// RunnerEnv selects which configured runner instance receives the task: "prod"
 	// (the default when blank — every pre-picker caller omits the field) or
-	// "dev" (the MOC_DEV_* instance). Unknown values are rejected outright so
-	// a typo can never silently submit a live batch to the wrong MOC.
-	MocEnv string `json:"mocEnv,omitempty"`
+	// "dev" (the RUNNER_DEV_* instance). Unknown values are rejected outright so
+	// a typo can never silently submit a live batch to the wrong runner.
+	RunnerEnv string `json:"runnerEnv,omitempty"`
 	// Form is the audited form snapshot — the exact payload a passing POST
 	// /api/audit run approved. REQUIRED: the server re-runs the same
 	// deterministic audit pipeline (evaluateAudit) against it and rejects the
@@ -181,13 +181,13 @@ type mocCreateRequest struct {
 	Form *validation.AuditRequest `json:"form,omitempty"`
 }
 
-type mocCreateResponse struct {
+type runnerCreateResponse struct {
 	TaskID  string `json:"taskId"`
 	TaskURL string `json:"taskUrl,omitempty"`
 	Files   int    `json:"files"`
-	// MocEnv echoes the environment the task ran on ("prod" | "dev") so the
+	// RunnerEnv echoes the environment the task ran on ("prod" | "dev") so the
 	// client can label the result without re-deriving it from the task URL.
-	MocEnv string `json:"mocEnv,omitempty"`
+	RunnerEnv string `json:"runnerEnv,omitempty"`
 	// Duplicate is true when this response replays a prior submission (matched
 	// by idempotency key) rather than creating a new task.
 	Duplicate bool     `json:"duplicate,omitempty"`
@@ -197,33 +197,33 @@ type mocCreateResponse struct {
 	Warnings []string `json:"warnings,omitempty"`
 }
 
-// HandleMOCCreate creates a MOC task from the generated prompt, uploading any
-// attached list files first. The integration is OFF unless MOC_BASE_URL +
-// MOC_API_KEY are set (per environment — a dev submit needs MOC_DEV_*) — a
+// HandleRunnerCreate creates a runner task from the generated prompt, uploading any
+// attached list files first. The integration is OFF unless RUNNER_BASE_URL +
+// RUNNER_API_KEY are set (per environment — a dev submit needs RUNNER_DEV_*) — a
 // disabled config returns 503 with a clear message and never touches the
 // network.
-func HandleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idempotency.Store, uploadDirs ...string) http.HandlerFunc {
-	return handleMOCCreate(envs, listReg, idem, nil, uploadDirs...)
+func HandleRunnerCreate(envs runner.Environments, listReg *lists.Registry, idem *idempotency.Store, uploadDirs ...string) http.HandlerFunc {
+	return handleRunnerCreate(envs, listReg, idem, nil, uploadDirs...)
 }
 
-// HandleMOCCreateWithOverrideAudit is the production constructor. The legacy
+// HandleRunnerCreateWithOverrideAudit is the production constructor. The legacy
 // wrapper above keeps focused handler tests terse; any request carrying an
 // active override still fails closed when its store is nil.
-func HandleMOCCreateWithOverrideAudit(envs moc.Environments, listReg *lists.Registry, idem *idempotency.Store, auditStore *overrideaudit.Store, uploadDirs ...string) http.HandlerFunc {
-	return handleMOCCreate(envs, listReg, idem, auditStore, uploadDirs...)
+func HandleRunnerCreateWithOverrideAudit(envs runner.Environments, listReg *lists.Registry, idem *idempotency.Store, auditStore *overrideaudit.Store, uploadDirs ...string) http.HandlerFunc {
+	return handleRunnerCreate(envs, listReg, idem, auditStore, uploadDirs...)
 }
 
-func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idempotency.Store, overrideStore *overrideaudit.Store, uploadDirs ...string) http.HandlerFunc {
+func handleRunnerCreate(envs runner.Environments, listReg *lists.Registry, idem *idempotency.Store, overrideStore *overrideaudit.Store, uploadDirs ...string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// A deployment with NO MOC instance configured keeps the legacy
+		// A deployment with NO the runner instance configured keeps the legacy
 		// contract: 503 before reading the body — a disabled integration never
 		// spends up to 8MB of parsing per request, and monitors keyed on the
 		// 503 stay accurate even for malformed bodies.
 		if !envs.Prod.Enabled() && !envs.Dev.Enabled() {
-			writeError(w, http.StatusServiceUnavailable, "MOC integration not configured — set MOC_BASE_URL and MOC_API_KEY to enable one-click submission.")
+			writeError(w, http.StatusServiceUnavailable, "Runner submission not configured — set RUNNER_BASE_URL and RUNNER_API_KEY to enable one-click submission.")
 			return
 		}
-		var req mocCreateRequest
+		var req runnerCreateRequest
 		if err := json.NewDecoder(http.MaxBytesReader(w, r.Body, 8<<20)).Decode(&req); err != nil {
 			writeError(w, http.StatusBadRequest, "invalid request body")
 			return
@@ -231,42 +231,27 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 		// Resolve the target environment before the other gates: an unknown id
 		// is a hard 400 (never a silent prod fallback), and a picked-but-unset
 		// env gets its own actionable 503 rather than the generic one.
-		mocEnv := strings.ToLower(strings.TrimSpace(req.MocEnv))
-		if mocEnv == "" {
-			mocEnv = moc.EnvProd
+		runnerEnv := strings.ToLower(strings.TrimSpace(req.RunnerEnv))
+		if runnerEnv == "" {
+			runnerEnv = runner.EnvProd
 		}
-		cfg, envErr := envs.For(mocEnv)
+		cfg, envErr := envs.For(runnerEnv)
 		if envErr != nil {
 			writeJSON(w, http.StatusBadRequest, map[string]any{
-				"error":   "moc_env_invalid",
+				"error":   "runner_env_invalid",
 				"message": envErr.Error(),
 			})
 			return
 		}
 		if !cfg.Enabled() {
-			if mocEnv == moc.EnvDev {
+			if runnerEnv == runner.EnvDev {
 				writeJSON(w, http.StatusServiceUnavailable, map[string]any{
-					"error":   "moc_env_not_configured",
-					"message": "dev MOC environment not configured — set MOC_DEV_BASE_URL and MOC_DEV_API_KEY to enable dev submissions.",
+					"error":   "runner_env_not_configured",
+					"message": "dev runner environment not configured — set RUNNER_DEV_BASE_URL and RUNNER_DEV_API_KEY to enable dev submissions.",
 				})
 				return
 			}
-			writeError(w, http.StatusServiceUnavailable, "MOC integration not configured — set MOC_BASE_URL and MOC_API_KEY to enable one-click submission.")
-			return
-		}
-		// #237: a PROD deal task must be pinned to the dedicated runner node.
-		// An untargeted MOC task matches EVERY registered node — a stale test
-		// runner or one provisioned with different credentials could pick up a
-		// live batch (full prompt with client terms + attached domain lists),
-		// and the task is visible to every scoped MOC principal. Fail closed
-		// when the pin is missing rather than submit an any-node batch. The
-		// dev instance stays unpinned-capable by design (its node pool is the
-		// test pool).
-		if mocEnv == moc.EnvProd && cfg.Backend != "fleet" && strings.TrimSpace(cfg.TargetNode) == "" {
-			writeJSON(w, http.StatusServiceUnavailable, map[string]any{
-				"error":   "moc_target_node_required",
-				"message": "MOC_TARGET_NODE is not set — a prod deal batch must be pinned to the dedicated runner node (an untargeted task can run on ANY registered node). Set MOC_TARGET_NODE and restart the server.",
-			})
+			writeError(w, http.StatusServiceUnavailable, "Runner submission not configured — set RUNNER_BASE_URL and RUNNER_API_KEY to enable one-click submission.")
 			return
 		}
 		// Allowlist the operation. It namespaces the idempotency ledger (below,
@@ -291,9 +276,9 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 		}
 		// Attachment-reference sanity, fail-closed before any network call:
 		//   - cap the total number of attachments so a malformed/hostile body
-		//     can't fan out into hundreds of MOC uploads;
+		//     can't fan out into hundreds of the runner uploads;
 		//   - when fileNames is present it MUST pair 1:1 with filePaths, since
-		//     each file is uploaded to MOC under its paired original name. A
+		//     each file is uploaded to the runner under its paired original name. A
 		//     length mismatch would silently shift names onto the wrong files.
 		if n := len(req.FilePaths) + len(req.ListIDs); n > maxAttachRefs {
 			writeError(w, http.StatusBadRequest, fmt.Sprintf("too many attachments (%d) — at most %d per submission", n, maxAttachRefs))
@@ -303,7 +288,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			writeError(w, http.StatusBadRequest, fmt.Sprintf("fileNames (%d) must pair 1:1 with filePaths (%d)", len(req.FileNames), len(req.FilePaths)))
 			return
 		}
-		// Unconditional fail-closed gate on the PROMPT itself — it's what MOC
+		// Unconditional fail-closed gate on the PROMPT itself — it's what the runner
 		// actually runs. An unresolved placeholder (<FILL…>, <UNSET…>, ${…},
 		// {{…}}) means a required deal field was never filled; sending it would
 		// either mis-route, 422 at the SSP mid-batch, or email a literal
@@ -311,7 +296,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 		// sends prompt-only), so this guard — not the brief check below — is the
 		// floor that covers BOTH the create and update flows.
 		if briefHasUnresolvedToken(req.Prompt) {
-			writeError(w, http.StatusBadRequest, "prompt contains an unresolved placeholder (<FILL…>, <UNSET…>, ${…}, or {{…}}) — fill every required field before sending to MOC.")
+			writeError(w, http.StatusBadRequest, "prompt contains an unresolved placeholder (<FILL…>, <UNSET…>, ${…}, or {{…}}) — fill every required field before submitting.")
 			return
 		}
 		// #237 (#136 follow-through): the prompt builders emit line-anchored
@@ -319,7 +304,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 		// with no inventory attachment, a Media.net deal with an inapplicable
 		// app-bundle list). Those were prompt-comment-only — the agent was
 		// trusted to honor them, and a direct API caller could submit one
-		// anyway, consuming a live MOC run that dies (or half-applies) mid-
+		// anyway, consuming a live runner run that dies (or half-applies) mid-
 		// batch. This is the server-side fail-loud: a blocked marker is a
 		// hard reject, same tier as the unresolved-token floor above. Line-
 		// anchored so summary prose that merely mentions "BLOCKED" mid-
@@ -332,7 +317,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			return
 		}
 		// Schema-validate the structured brief (if any) BEFORE any network call,
-		// so a malformed/garbled brief never reaches a live MOC task.
+		// so a malformed/garbled brief never reaches a live runner task.
 		if strings.TrimSpace(req.Brief) != "" {
 			if issues := validateDealBrief([]byte(req.Brief)); len(issues) > 0 {
 				writeError(w, http.StatusBadRequest, "deal brief failed validation: "+strings.Join(issues, "; "))
@@ -380,12 +365,12 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 		// instances. Prod keeps the bare operation namespace for continuity
 		// with keys reserved before the environment picker existed.
 		envOp := func(env string) string {
-			if env == moc.EnvProd {
+			if env == runner.EnvProd {
 				return operation
 			}
 			return operation + "@" + env
 		}
-		idemOp := envOp(mocEnv)
+		idemOp := envOp(runnerEnv)
 		reservedKey := false
 		if idem != nil && idemKey != "" {
 			// One key maps to at most one live task EVER, across environments:
@@ -395,9 +380,9 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			// replaying the other env's task here would mislabel where it ran.
 			// (Best-effort: a concurrent pair racing this probe can still slip
 			// through; the client-minted per-intent key is the primary guard.)
-			otherEnv := moc.EnvDev
-			if mocEnv == moc.EnvDev {
-				otherEnv = moc.EnvProd
+			otherEnv := runner.EnvDev
+			if runnerEnv == runner.EnvDev {
+				otherEnv = runner.EnvProd
 			}
 			if prior, exists := idem.Get(envOp(otherEnv), idemKey); exists {
 				writeJSON(w, http.StatusConflict, map[string]any{
@@ -406,7 +391,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 					// is no longer actionable — the only ways forward are to
 					// change the batch content (which re-derives the key) or
 					// have an operator clear the stale reservation.
-					"message": fmt.Sprintf("this exact batch was already submitted to the %s MOC environment%s — it cannot be re-booked on %s. To proceed, change the batch content (which re-derives the submission key) or have an operator clear the reservation.", otherEnv, taskNote(prior.TaskID), mocEnv),
+					"message": fmt.Sprintf("this exact batch was already submitted to the %s runner environment%s — it cannot be re-booked on %s. To proceed, change the batch content (which re-derives the submission key) or have an operator clear the reservation.", otherEnv, taskNote(prior.TaskID), runnerEnv),
 				})
 				return
 			}
@@ -420,7 +405,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 					// Duplicate of a completed submit — return the original task,
 					// NOT a new one and NOT an error (an error would make the
 					// client's own retry look like a failure).
-					writeJSON(w, http.StatusOK, mocCreateResponse{TaskID: existing.TaskID, TaskURL: existing.TaskURL, MocEnv: mocEnv, Duplicate: true})
+					writeJSON(w, http.StatusOK, runnerCreateResponse{TaskID: existing.TaskID, TaskURL: existing.TaskURL, RunnerEnv: runnerEnv, Duplicate: true})
 					return
 				}
 				// A reservation exists but has no task yet — a concurrent submit
@@ -432,10 +417,10 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 		}
 		// Reservation lifecycle (#225). Release ONLY on failures provably
 		// BEFORE CreateTask could have taken effect — local validation,
-		// attachment resolution, and the MOC file uploads, none of which
+		// attachment resolution, and the runner file uploads, none of which
 		// create a task — so the client can retry with the same key. From the
 		// moment the CreateTask request is handed to the transport
-		// (createTaskAttempted below), a failure is AMBIGUOUS: MOC may have
+		// (createTaskAttempted below), a failure is AMBIGUOUS: the runner may have
 		// accepted the task and started booking live deals even though the
 		// response was lost (timeout, proxy 502, connection reset). Releasing
 		// there would let a re-click book a SECOND live batch, so the
@@ -459,7 +444,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			actor, _ := SessionEmailFromRequest(r)
 			for _, detail := range exclusionOverrides {
 				if err := overrideStore.Append(overrideaudit.Event{Actor: actor, IdempotencyKey: idemKey, Operation: operation, Status: "authorized", Override: detail}); err != nil {
-					writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "exclusion_override_audit_failed", "message": "could not durably record the exclusion override — no MOC task was created; retry after the audit store is healthy."})
+					writeJSON(w, http.StatusInternalServerError, map[string]any{"error": "exclusion_override_audit_failed", "message": "could not durably record the exclusion override — no runner task was created; retry after the audit store is healthy."})
 					return
 				}
 			}
@@ -559,7 +544,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			}
 			// The prompt references this attachment by its ORIGINAL filename, but
 			// on disk it carries the hash-suffixed upload name. Prefer the original
-			// name (positionally supplied in FileNames) as the MOC display name so
+			// name (positionally supplied in FileNames) as the runner display name so
 			// the agent can match it; keep reading bytes from the validated path.
 			// filepath.Base defends against a client-supplied name with separators.
 			name := filepath.Base(abs)
@@ -595,7 +580,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 		// whose name collides with an ad-hoc upload). The prompt references files
 		// by name, so a collision is genuinely ambiguous — the agent could match
 		// the wrong file. Fail closed with an actionable message rather than let
-		// MOC silently clobber one upload with the other. The name the
+		// the runner silently clobber one upload with the other. The name the
 		// structured brief uploads under is reserved the same way when a brief
 		// rides this submission (#282.2): fleet 400s duplicate logical
 		// file_names, so a same-named trader attachment would fail the create
@@ -641,7 +626,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			return
 		}
 
-		client := moc.New(cfg)
+		client := runner.New(cfg)
 		ctx := r.Context()
 		uploaded := make([]string, 0, len(refs))
 		logicalNames := make([]string, 0, len(refs)+1)
@@ -688,7 +673,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 				serializationKey = "campaign:" + id
 			}
 		}
-		task, err := client.CreateTask(ctx, moc.CreateTaskInput{
+		task, err := client.CreateTask(ctx, runner.CreateTaskInput{
 			Prompt:           req.Prompt,
 			Files:            uploaded,
 			FileNames:        logicalNames,
@@ -696,7 +681,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			SerializationKey: serializationKey,
 		})
 		if err != nil {
-			// Classify the failure. Ambiguous (default): MOC may have created
+			// Classify the failure. Ambiguous (default): the runner may have created
 			// the task despite the error (timeout / reset mid-flight / 5xx /
 			// undecodable 2xx) → HOLD the reservation (fail closed). Provably
 			// not created (request never sent, connection never established,
@@ -704,7 +689,7 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 			// retried cleanly. A non-*CreateTaskError (shouldn't happen — the
 			// client always returns one) is treated as ambiguous.
 			ambiguous := true
-			var cte *moc.CreateTaskError
+			var cte *runner.CreateTaskError
 			if errors.As(err, &cte) {
 				ambiguous = cte.Ambiguous()
 			}
@@ -718,11 +703,11 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 				// so a retry with the same key can never create a second live
 				// batch. The lock clears when the reservation TTL expires (or
 				// an operator clears it). A transient not-created failure does
-				// NOT reach here (it released above), so a MOC blip no longer
+				// NOT reach here (it released above), so a runner blip no longer
 				// wedges the batch for the full TTL.
 				writeJSON(w, http.StatusConflict, map[string]any{
-					"error":   "moc_submission_state_unknown",
-					"message": fmt.Sprintf("MOC task creation failed after the request was sent (%v) — the task MAY have been created. This submission is held to prevent a duplicate live batch: check the MOC dashboard for the task before doing anything else; the same batch stays locked until the reservation expires.", err),
+					"error":   "runner_submission_state_unknown",
+					"message": fmt.Sprintf("Runner task creation failed after the request was sent (%v) — the task MAY have been created. This submission is held to prevent a duplicate live batch: check the runner dashboard for the task before doing anything else; the same batch stays locked until the reservation expires.", err),
 				})
 				return
 			}
@@ -749,38 +734,36 @@ func handleMOCCreate(envs moc.Environments, listReg *lists.Registry, idem *idemp
 				completed = true
 			}
 		}
-		writeJSON(w, http.StatusOK, mocCreateResponse{
-			TaskID:   task.ID,
-			TaskURL:  taskURL,
-			Files:    len(uploaded),
-			MocEnv:   mocEnv,
-			Uploaded: uploaded,
-			Warnings: submitWarnings,
+		writeJSON(w, http.StatusOK, runnerCreateResponse{
+			TaskID:    task.ID,
+			TaskURL:   taskURL,
+			Files:     len(uploaded),
+			RunnerEnv: runnerEnv,
+			Uploaded:  uploaded,
+			Warnings:  submitWarnings,
 		})
 	}
 }
 
-// mocEnvironmentInfo is the non-secret projection of one configured MOC
+// runnerEnvironmentInfo is the non-secret projection of one configured the runner
 // instance, for the frontend's environment picker.
-type mocEnvironmentInfo struct {
-	ID      string `json:"id"`
-	Backend string `json:"backend,omitempty"`
-	// BaseURL and TargetNode are informational (the task URL embeds the host
-	// anyway); API keys never leave the server.
-	BaseURL    string `json:"baseUrl,omitempty"`
-	TargetNode string `json:"targetNode,omitempty"`
-	Enabled    bool   `json:"enabled"`
+type runnerEnvironmentInfo struct {
+	ID string `json:"id"`
+	// BaseURL is informational (the task URL embeds the host anyway); API
+	// keys never leave the server.
+	BaseURL string `json:"baseUrl,omitempty"`
+	Enabled bool   `json:"enabled"`
 }
 
-// HandleMOCEnvironments reports which MOC instances are configured so the UI
+// HandleRunnerEnvironments reports which the runner instances are configured so the UI
 // can offer the submit-environment picker. The picker only renders when the
 // dev entry is enabled, so prod-only deployments see no UI change.
-func HandleMOCEnvironments(envs moc.Environments) http.HandlerFunc {
+func HandleRunnerEnvironments(envs runner.Environments) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{
-			"environments": []mocEnvironmentInfo{
-				{ID: moc.EnvProd, Backend: envs.Prod.Backend, BaseURL: envs.Prod.BaseURL, TargetNode: envs.Prod.TargetNode, Enabled: envs.Prod.Enabled()},
-				{ID: moc.EnvDev, Backend: envs.Dev.Backend, BaseURL: envs.Dev.BaseURL, TargetNode: envs.Dev.TargetNode, Enabled: envs.Dev.Enabled()},
+			"environments": []runnerEnvironmentInfo{
+				{ID: runner.EnvProd, BaseURL: envs.Prod.BaseURL, Enabled: envs.Prod.Enabled()},
+				{ID: runner.EnvDev, BaseURL: envs.Dev.BaseURL, Enabled: envs.Dev.Enabled()},
 			},
 		})
 	}
@@ -788,28 +771,28 @@ func HandleMOCEnvironments(envs moc.Environments) http.HandlerFunc {
 
 // HandleRunnerCheck probes one configured runner instance and reports whether
 // it is reachable and whether the configured key clears the create gate. It
-// creates nothing — see moc.Client.Check for the two-stage probe and why the
+// creates nothing — see runner.Client.Check for the two-stage probe and why the
 // endpoints it hits are side-effect free.
 //
 // Defaults to the dev instance: this exists for the Fleet port, where the
 // operator needs to confirm a new deployment answers BEFORE risking a submit
 // that books live deals. ?env=prod is accepted so the same button can verify
 // production, but an unknown id is refused rather than silently probing prod.
-func HandleRunnerCheck(envs moc.Environments) http.HandlerFunc {
+func HandleRunnerCheck(envs runner.Environments) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		env := strings.TrimSpace(r.URL.Query().Get("env"))
 		if env == "" {
-			env = moc.EnvDev
+			env = runner.EnvDev
 		}
 		cfg, err := envs.For(env)
 		if err != nil {
 			writeJSON(w, http.StatusBadRequest, map[string]any{
-				"error":   "moc_env_invalid",
+				"error":   "runner_env_invalid",
 				"message": err.Error(),
 			})
 			return
 		}
-		res := moc.New(cfg).Check(r.Context())
+		res := runner.New(cfg).Check(r.Context())
 		writeJSON(w, http.StatusOK, map[string]any{"env": env, "check": res})
 	}
 }
@@ -823,8 +806,8 @@ func HandleRunnerCheck(envs moc.Environments) http.HandlerFunc {
 // rejection carries a machine code in "error" and an actionable human
 // "message". This guards the money path — a create that passes here is
 // exactly a create the trader-facing audit would approve, expressed in the
-// prompt MOC actually runs.
-func gateCreateAudit(w http.ResponseWriter, listReg *lists.Registry, req *mocCreateRequest) bool {
+// prompt the runner actually runs.
+func gateCreateAudit(w http.ResponseWriter, listReg *lists.Registry, req *runnerCreateRequest) bool {
 	if req.Form == nil {
 		writeJSON(w, http.StatusBadRequest, map[string]any{
 			"error":   "audit_form_required",
@@ -898,7 +881,7 @@ func gateCreateAudit(w http.ResponseWriter, listReg *lists.Registry, req *mocCre
 		})
 		return false
 	}
-	// Prompt binding: the PROMPT is what MOC actually executes, so tie it to
+	// Prompt binding: the PROMPT is what the runner actually executes, so tie it to
 	// the audited batch too — every audited deal name must appear in it.
 	// buildBatchPrompt (dealPromptYaml.ts) embeds the name of EVERY SSP-bearing
 	// deal: create rows as `name:` entries under `deals:` (with tool +

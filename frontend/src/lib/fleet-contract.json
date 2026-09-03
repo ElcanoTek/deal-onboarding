@@ -11,7 +11,7 @@
     "createTaskPath": "/v1/tasks",
     "uploadPath": "/v1/upload",
     "estimateTaskPath": "/v1/tasks/estimate",
-    "estimateTaskNote": "Deal Onboarding's connection check (GET /api/runner/check -> moc.Client.Check) POSTs here. EstimateTask shares authorizeTaskCreator with CreateTask/CreateTasksBatch (batch.go) so the creation-shaped endpoints cannot drift apart, and is read-only by construction (\"the forecast creates nothing, so this cannot become a weaker path to task creation\") - so it verifies a scoped create_task key without booking anything. Authorization runs BEFORE readJSON, which is why Deal Onboarding treats any non-401/403 (including a 400 on its minimal probe body) as key-accepted. It reuses the TaskCreate wire shape already pinned in taskCreate, so it adds no new request-schema coupling.",
+    "estimateTaskNote": "Deal Onboarding's connection check (GET /api/runner/check -> runner.Client.Check) POSTs here. EstimateTask shares authorizeTaskCreator with CreateTask/CreateTasksBatch (batch.go) so the creation-shaped endpoints cannot drift apart, and is read-only by construction (\"the forecast creates nothing, so this cannot become a weaker path to task creation\") - so it verifies a scoped create_task key without booking anything. Authorization runs BEFORE readJSON, which is why Deal Onboarding treats any non-401/403 (including a 400 on its minimal probe body) as key-accepted. It reuses the TaskCreate wire shape already pinned in taskCreate, so it adds no new request-schema coupling.",
     "apiInfoUnauthenticated": true,
     "apiInfoUnauthenticatedNote": "/api-info is served OUTSIDE the auth middleware (fleet internal/httpapi/server.go registers it on the bare mux; internal/apiversion.unversionedForever lists it beside the health probes). Deal Onboarding's connection check relies on this to separate \"host unreachable\" from \"host up, key rejected\" - if fleet ever puts it behind auth, the check must stop reporting an auth failure as unreachable.",
     "authHeader": "X-API-Key",
@@ -33,7 +33,7 @@
       "file_names",
       "persona"
     ],
-    "manifestSentFields": [
+    "clientSentFields": [
       "prompt",
       "files",
       "file_names",
@@ -45,7 +45,7 @@
       "serialization_key"
     ],
     "serializationKeyHonored": true,
-    "serializationKeyNote": "fleet#709 SHIPPED (verified 2026-08-31): serialization_key is a real TaskCreate field (internal/sched/models/models.go), persisted on Task, and ENFORCED at claim time - internal/sched/db/claim.go acquireSerializationLockTx + hasActiveTaskWithSerializationKeyTx refuse to claim a task while another task with the same key is active. The <=1-active-task-per-client mutual exclusion (moc#442 parity) therefore holds on the fleet backend, closing the last gap that made fleet weaker than MOC for concurrent batches.",
+    "serializationKeyNote": "fleet#709 SHIPPED (verified 2026-08-31): serialization_key is a real TaskCreate field (internal/sched/models/models.go), persisted on Task, and ENFORCED at claim time - internal/sched/db/claim.go acquireSerializationLockTx + hasActiveTaskWithSerializationKeyTx refuse to claim a task while another task with the same key is active. The <=1-active-task-per-key mutual exclusion therefore holds on fleet.",
     "mcpChoiceFields": [
       "server",
       "account"

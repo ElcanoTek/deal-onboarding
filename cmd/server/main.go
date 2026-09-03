@@ -18,9 +18,9 @@ import (
 	"github.com/ElcanoTek/deal-onboarding/internal/handlers"
 	"github.com/ElcanoTek/deal-onboarding/internal/idempotency"
 	"github.com/ElcanoTek/deal-onboarding/internal/lists"
-	"github.com/ElcanoTek/deal-onboarding/internal/moc"
 	"github.com/ElcanoTek/deal-onboarding/internal/overrideaudit"
 	"github.com/ElcanoTek/deal-onboarding/internal/pubcatalog"
+	"github.com/ElcanoTek/deal-onboarding/internal/runner"
 	"github.com/ElcanoTek/deal-onboarding/internal/users"
 	"github.com/ElcanoTek/deal-onboarding/internal/validation"
 )
@@ -116,13 +116,13 @@ func main() {
 	}
 
 	// Runner integration is OFF unless a base URL + API key are configured
-	// (RUNNER_* or the legacy MOC_* names). When disabled, /api/runner/create
+	// (RUNNER_BASE_URL + RUNNER_API_KEY). When disabled, /api/runner/create
 	// returns 503 and never touches the network. A second instance
 	// (RUNNER_DEV_*) is optional: configuring it surfaces the environment
 	// picker in the submit flow.
-	runnerEnvs := moc.EnvironmentsFromEnv()
+	runnerEnvs := runner.EnvironmentsFromEnv()
 	if runnerEnvs.Prod.Enabled() {
-		log.Printf("Runner submission enabled (%s, backend %s)", runnerEnvs.Prod.BaseURL, runnerEnvs.Prod.Backend)
+		log.Printf("Runner submission enabled (%s)", runnerEnvs.Prod.BaseURL)
 	} else {
 		log.Printf("Runner submission disabled — set RUNNER_BASE_URL and RUNNER_API_KEY to enable")
 	}
@@ -171,16 +171,13 @@ func main() {
 		protected.Post("/api/lists/create", handlers.HandleCreateList(listRegistry, uploadsDir))
 		// Deal Assistant dock — streaming chat over the current form + audit.
 		protected.Post("/api/deal/chat", handlers.HandleDealChat(listRegistry))
-		protected.Get("/api/runner/environments", handlers.HandleMOCEnvironments(runnerEnvs))
-		protected.Get("/api/moc/environments", handlers.HandleMOCEnvironments(runnerEnvs))
+		protected.Get("/api/runner/environments", handlers.HandleRunnerEnvironments(runnerEnvs))
 		// Reachability + key probe for one runner instance (defaults to dev).
-		// Read-only: it creates no task — see moc.Client.Check.
+		// Read-only: it creates no task — see runner.Client.Check.
 		protected.Get("/api/runner/check", handlers.HandleRunnerCheck(runnerEnvs))
-		// The single outbound seam: audited batch → runner task. /api/moc/create
-		// is the legacy alias of /api/runner/create.
-		runnerCreate := handlers.HandleMOCCreateWithOverrideAudit(runnerEnvs, listRegistry, idemStore, overrideAuditStore, uploadsDir)
+		// The single outbound seam: audited batch → runner task.
+		runnerCreate := handlers.HandleRunnerCreateWithOverrideAudit(runnerEnvs, listRegistry, idemStore, overrideAuditStore, uploadsDir)
 		protected.Post("/api/runner/create", runnerCreate)
-		protected.Post("/api/moc/create", runnerCreate)
 	})
 	// Unauthenticated like /health: exposes only a content hash of the built
 	// index.html so long-lived tabs can detect a new deploy and offer a reload.

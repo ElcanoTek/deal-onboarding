@@ -4,7 +4,7 @@
 // inside the spreadsheet that holds the URL or bundle ID. Deal Onboarding used
 // to hardcode "Sites" for domain and "Bundles" for app-bundle — but the
 // real-world files from the SS-Optimum brief had "Domain" and "Bundle ID"
-// columns, forcing the MOC agent to inspect and override every run.
+// columns, forcing the runner agent to inspect and override every run.
 //
 // This helper reads the first row of the uploaded file (xlsx/xls via
 // SheetJS, csv/tsv/txt by line split) and picks the best-matching column

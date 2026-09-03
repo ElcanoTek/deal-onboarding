@@ -72,7 +72,7 @@ reality; booking-time live-catalog verification stays the enforcement):
   hint names the list they match. Magnite validates channel-aware: CTV/audio
   deals against the CTV catalog, DV+ channels against DV+.
 - **Audit receipt:** the advisory `publisher_known_list` check (appended in
-  `evaluateAudit`, so `/api/audit` and the MOC gate agree) reads e.g.
+  `evaluateAudit`, so `/api/audit` and the submit gate agree) reads e.g.
   "OpenX: 22/24 on the known list — not on it: X, Y" with the snapshot date
   and any wrong-card hint.
 
