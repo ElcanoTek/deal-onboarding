@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { useMemo, useRef, useState } from 'react'
 import type { FormData as DealForm, StandardList, UploadedFile } from '../types/deal'
 import { isVideoChannel } from '../types/deal'

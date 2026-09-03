@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 /** Jump-target reveal contract.
  *
  *  Audit / QA "Fix →" jumps resolve a field to a DOM element id, then

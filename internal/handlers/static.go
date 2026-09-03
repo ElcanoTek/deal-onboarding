@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 package handlers
 
 import (
@@ -10,7 +13,8 @@ import (
 
 // Cache policy: Vite fingerprints everything under /assets/ (content-hashed
 // filenames), so those are immutable — a changed file gets a new URL.
-// Everything else (index.html, the SPA fallback, unhashed /icons and /logos)
+// Everything else (index.html, the SPA fallback, the unhashed /design-system
+// icons and logos)
 // must revalidate on every load: `no-cache` doesn't mean "don't cache", it
 // means "check freshness first", and http.ServeFile's Last-Modified handling
 // turns those checks into cheap 304s. Without an explicit policy browsers

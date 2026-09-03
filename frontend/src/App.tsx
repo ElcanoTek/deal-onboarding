@@ -1,6 +1,8 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { Component, lazy, Suspense, useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
-import productMark from './assets/deal-onboarding-mark.svg'
 import { ThemeToggle } from './components/ThemeToggle'
 import { SideNav } from './components/SideNav'
 
@@ -8,6 +10,8 @@ import { SideNav } from './components/SideNav'
 const DealBuilder = lazy(() => import('./components/DealBuilder').then(m => ({ default: m.DealBuilder })))
 
 const PRODUCT_NAME = 'Deal Onboarding'
+/** The Elcano mark (Flag design system) — shared by every Elcano product. */
+const ELCANO_MARK = '/design-system/logos/elcano-mark-primary.svg'
 
 type Session = { email: string }
 type Route = '/' | '/login' | '/help'
@@ -85,7 +89,7 @@ function LoginPage({ error, pending, onLogin, onHelp }: LoginPageProps) {
       <section className="auth-card">
         <div className="auth-card__header">
           <div className="auth-brand">
-            <img className="auth-brand__mark" src={productMark} alt="" />
+            <img className="auth-brand__mark" src={ELCANO_MARK} alt="Elcano" />
             <div>
               <p className="auth-eyebrow">Self-hosted deal desk</p>
               <h1 className="auth-title">Welcome to {PRODUCT_NAME}</h1>

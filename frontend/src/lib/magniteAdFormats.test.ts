@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Pins the Magnite DV+ ad-format catalog fixture (live-pulled 2026-08-21 via
 // magnite_list_ad_formats) and the derived picker constants. The picker must
 // offer the FULL catalog — the pre-fix curated 13-size display subset made

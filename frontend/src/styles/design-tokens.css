@@ -2,39 +2,42 @@
   color-scheme: dark;
   --theme-selector-attribute: data-theme;
   --theme-preference-storage-key: flag-theme-preference;
-  /* Brand faces come from ./fonts/fonts.css, which sets --font-brand to
-   * "Nebula Sans" and both code variables to "Hack". The design system ships exactly
-   * two typefaces; no family is named here beyond those variables and the
-   * generic fallbacks after them. Nebula Sans is NOT variable — it ships
-   * real 400/500/600/700 faces, which are exactly the four weights this app
-   * asks for, so nothing here gets a synthetic weight. */
+  /* Brand faces come from fonts/fonts.css, which sets --font-brand to
+   * "Nebula Sans" and both code variables to "Hack". There is exactly one font
+   * sheet and one pair of faces across every Elcano product — see Flag's FONTS.md.
+   * The fallbacks below name the same two faces, so a product that forgets the
+   * sheet degrades to a system stack rather than to a different brand face.
+   * Never name a family in product CSS; always use these tokens. */
   --font-heading: var(--font-brand, "Nebula Sans"), "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-body: var(--font-brand, "Nebula Sans"), "Segoe UI", system-ui, -apple-system, sans-serif;
-  /* --font-code and --font-code-ui are both Hack, kept separate so product
-   * CSS reading --font-code-ui keeps working. */
+  /* One mono serves both code and code-chrome. The variables stay distinct so
+   * product CSS reading --font-code-ui keeps working, but they resolve alike. */
   --font-code: var(--font-code-brand, "Hack"), ui-monospace, "SF Mono", "Consolas", monospace;
   --font-code-ui: var(--font-code-ui-brand, "Hack"), ui-monospace, "SF Mono", "Consolas", monospace;
 
+  /* Only these four weights are shipped as real faces. Anything else is a
+   * synthetic smear — see Flag's FONTS.md before adding a fifth. */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
-  --font-weight-bold: 600;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
-  --font-size-display: clamp(1.75rem, 1.5rem + 0.8vw, 2.25rem);
+  --font-size-display: clamp(2rem, 1.75rem + 0.8vw, 2.5rem);
   --line-height-display: 1.15;
-  --font-size-title: 1.5rem;
+  --font-size-title: 1.75rem;
   --line-height-title: 1.2;
-  --font-size-subtitle: 1.05rem;
+  --font-size-subtitle: 1.125rem;
   --line-height-subtitle: 1.3;
-  --font-size-body-lg: 0.9375rem;
+  --font-size-body-lg: 1.0625rem;
   --line-height-body-lg: 1.5;
-  --font-size-body: 0.8125rem;
-  --line-height-body: 1.3847;
+  --font-size-body: 1rem;
+  --line-height-body: 1.5;
   --font-size-caption: 0.8125rem;
   --line-height-caption: 1.4;
-  --font-size-overline: 0.6875rem;
+  --font-size-overline: 0.75rem;
   --line-height-overline: 1.4;
 
-  --color-primary: #6c6ca6;
+  --color-primary: #7272ab;
   --color-primary-hover: #8686c4;
   --color-secondary: #586f7c;
   --color-accent: #9da7ef;
@@ -57,21 +60,12 @@
   --color-overlay-soft: rgba(0, 0, 0, 0.2);
   --color-overlay-strong: rgba(0, 0, 0, 0.4);
 
-  --color-success: #8fe7b8;
-  --color-warning: #e7c98f;
-  --color-danger: #e08080;
+  --color-success: #50fa7b;
+  --color-warning: #ff8847;
+  --color-danger: #ff5555;
   --color-info: #8a8bc0;
   /* Text color used on top of --color-success fills (e.g. success buttons). */
   --color-on-success: var(--color-black);
-
-  /* Side-rail interaction tints (Fleet sidebar grammar) */
-  --rail-hover: rgba(255, 255, 255, 0.07);
-  --rail-active: color-mix(in srgb, var(--color-primary) 18%, transparent);
-
-  /* Chat composer surface — same values as the chat repo's globals.css so
-   * Deal Onboarding's Edit-with-chat input reads identically to the chat product. */
-  --composer-surface: linear-gradient(180deg, rgba(31, 18, 39, 0.94), rgba(24, 13, 31, 0.98));
-  --composer-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
 
   --color-status-pending-fg: #d3dde6;
   --color-status-pending-bg: rgba(124, 140, 152, 0.2);
@@ -217,14 +211,11 @@ body.theme-light {
   /* Light-mode accent overrides: the dark-theme accents are tuned for dark
    * surfaces and fail WCAG AA as text on white (#ff5555 ≈ 2.9:1). These darker
    * equivalents all reach ≥ 4.5:1 on --color-bg / --color-surface-1/2. */
-  --color-success: #137b47;
-  --color-warning: #8a6116;
-  --color-danger: #b02a2a;
+  --color-success: #1e7a3f;
+  --color-warning: #8f3e10;
+  --color-danger: #b3261e;
   --color-info: #4f5496;
   --color-on-success: var(--color-white);
-  --rail-hover: rgba(38, 55, 92, 0.07);
-  --composer-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 247, 255, 0.98));
-  --composer-shadow: 0 18px 42px rgba(38, 55, 92, 0.16);
 
   --color-status-pending-fg: #33415f;
   --color-status-pending-bg: rgba(124, 140, 152, 0.18);

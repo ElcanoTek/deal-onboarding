@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+# SPDX-License-Identifier: BUSL-1.1
+# Copyright (c) 2026 ElcanoTek, Inc.
 # Install privately-held standard lists into DATA_DIR/lists without ever
 # copying their contents into the repository checkout.
 #

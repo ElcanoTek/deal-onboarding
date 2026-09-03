@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Deploy detection — the client half of cache busting.
 //
 // The server exposes GET /api/version (unauthenticated): a content hash of

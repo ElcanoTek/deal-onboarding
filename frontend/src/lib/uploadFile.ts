@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import type { UploadedFile } from '../types/deal'
 
 /** POST a single file to /api/upload, reporting upload progress (0–100).

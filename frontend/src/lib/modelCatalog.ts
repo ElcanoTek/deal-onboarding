@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Model catalog client for the composer picker — ported from fleet
 // (chat-experience.tsx's ranked/catalog loaders + filteredRankedModels).
 //

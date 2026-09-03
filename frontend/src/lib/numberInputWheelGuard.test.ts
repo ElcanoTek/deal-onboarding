@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // @vitest-environment jsdom
 // (The suite default is node — dealPromptYaml etc. are pure functions — but
 // this guard is DOM behavior, so this file opts into jsdom.)

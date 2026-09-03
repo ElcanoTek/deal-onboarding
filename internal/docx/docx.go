@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Package docx extracts plain text from Microsoft Word .docx files using only
 // the standard library. A .docx is a ZIP container; the body text lives in
 // word/document.xml as OOXML. We stream that XML and reconstruct readable text,

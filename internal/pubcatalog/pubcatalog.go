@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Package pubcatalog loads the repo-shipped "known publisher list" — a
 // versioned snapshot of each SSP's available publishers (generated from the
 // trader-maintained export, refreshed by code push) — and turns publisher

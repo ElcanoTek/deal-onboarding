@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { useEffect, useRef } from 'react'
 import flatpickr from 'flatpickr'
 import type { Instance as FlatpickrInstance } from 'flatpickr/dist/types/instance'
@@ -85,7 +88,7 @@ export function DatePickerField({ id, value, onChange, minDate, invalid }: Props
         aria-invalid={invalid ? true : undefined}
       />
       <svg className="date-input-icon" aria-hidden="true">
-        <use href="/icons/core-icons.svg#calendar" />
+        <use href="/design-system/icons/core-icons.svg#calendar" />
       </svg>
     </div>
   )

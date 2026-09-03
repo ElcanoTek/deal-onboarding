@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
 // Regenerate catalogs/publisher-catalog.json from a trader-maintained
 // publisher workbook (one sheet per SSP). The shipped catalog is a tiny
 // synthetic placeholder — run this against your own SSP publisher exports. Run from the repo root:

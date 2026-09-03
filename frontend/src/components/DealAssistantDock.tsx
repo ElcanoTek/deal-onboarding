@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { AuditResult, FormData } from '../types/deal'

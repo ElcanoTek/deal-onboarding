@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Package runner is a thin client for the fleet task API. Deal Onboarding uses
 // it to create a deal-creation task directly: it uploads any attached
 // domain/app-bundle list files, then POSTs the generated batch prompt as one

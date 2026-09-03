@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { isSubmittedBatch, markBatchSubmitted } from './submittedBatch'
 import { mintSubmitKey } from './submitKey'

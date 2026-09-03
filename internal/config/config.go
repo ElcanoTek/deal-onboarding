@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Package config holds the operator identity for a Deal Onboarding
 // installation. One installation = one organization: these values replace the
 // per-client preset system of the original app, so the deal-name curator slot, the campaign-id

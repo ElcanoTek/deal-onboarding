@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { useEffect, useMemo, useState } from 'react'
 
 /** Which configured runner instance a submit targets. 'prod' is the default;

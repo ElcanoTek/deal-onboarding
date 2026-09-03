@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Geo-default policy. Single source of truth for "where does a deal serve
 // when the deal info doesn't say?"
 //

@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Golden deal-naming cases — the SAME fixture the Go suite reads
 // (internal/validation/deal_naming_golden_test.go ← testdata/deal_naming_golden.json),
 // so the two generators can never drift silently again.

@@ -39,30 +39,69 @@ deal-onboarding/
 │   ├── lib/assistantProposal.ts       Assistant diff preview / apply / undo
 │   ├── lib/operatorConfig.ts          /api/config → curator slot, campaign-id pattern
 │   ├── lib/cutlass-contract.json, fleet-contract.json   Pinned engine/runner contracts
-│   ├── styles/app.css                 All styles — design tokens only
+│   ├── styles/app.css                 All styles — design tokens only (product tokens block at the top)
+│   ├── styles/design-tokens.css       Flag token sheet, vendored byte-for-byte — never edit here
+│   ├── styles/fonts/                  Nebula Sans + Hack faces, licences, fonts.css (vendored from Flag)
 │   └── types/deal.ts                  Form data types
+├── frontend/public/design-system/     Flag icon sprite + Elcano mark and product favicons (served unhashed)
 ├── catalogs/publisher-catalog.json    Synthetic placeholder — regenerate from your export
 ├── lists/                             Repo-shipped example standard lists
-├── scripts/                           bootstrap, update, private-list provisioning, contract checkers
+├── scripts/                           bootstrap, update, private-list provisioning, contract checkers, bsl-change-date
 ├── deploy/                            systemd unit, operator CLI, sample Caddyfile
 └── docs/                              ARCHITECTURE, DEAL_NAMING, PUBLISHER_ALLOWLISTS, ENVIRONMENT_TARGETING, RETENTION, LICENSING
 ```
 
-## Design system
+Repository policy files: `README.md`, `CONTRIBUTING.md`, `SECURITY.md`,
+`CODE_OF_CONDUCT.md`, `LICENSE` (BSL 1.1), `NOTICE` (third-party and brand
+attribution). `CLAUDE.md` is a symlink to this file.
 
-The UI uses the **Flag design system** (vendored). Rules:
+## Design system and branding
+
+The UI uses the **Elcano Flag design system** (ElcanoTek/flag, vendored), the
+same one Explorer, Pages and Lens ship. Rules:
 
 - **Two typefaces: Nebula Sans** (SIL OFL 1.1 — UI, body, headings) and
   **Hack** (MIT — code, logs, tabular output). No other font ships and there
   is **no CDN font loading**. Both faces live under
   `frontend/src/styles/fonts/` with their licence files; `app.css` imports
   `./fonts/fonts.css` then `./design-tokens.css`, never the other way round.
-- Nebula Sans ships real 400/500/600/700 faces — ask for only those weights.
+- Nebula Sans ships real 400/500/600/700 faces — ask for only those weights
+  (`--font-weight-regular/medium/semibold/bold`).
+- **`design-tokens.css` and `fonts/fonts.css` are byte-for-byte copies of
+  Flag's.** Do not edit them; re-sync from Flag. Tokens this product needs
+  beyond the sheet (`--rail-hover`, `--rail-active`, `--composer-*`) live in
+  the "PRODUCT TOKENS" block at the top of `app.css`, derived from Flag
+  tokens.
 - Every visual property uses a semantic token (`var(--color-primary)`,
   `var(--radius-md)`, `var(--font-body)` …). **Never hardcode** colors, radii,
   spacing, or font families.
 - Theme switching: `html[data-theme="light|dark"]`, persisted under the
-  `flag-theme-preference` localStorage key (`ThemeToggle.tsx`).
+  `flag-theme-preference` localStorage key (`useTheme.ts`, `ThemeToggle.tsx`,
+  and the pre-hydration script in `index.html`).
+- **Branding.** The app header (side rail, mobile topbar, login card) carries
+  the **Elcano mark** (`/design-system/logos/elcano-mark-primary.svg`,
+  `alt="Elcano"`) beside the product name, exactly as the other Elcano
+  products do. The browser tab uses the product favicon
+  (`deal-onboarding-favicon.svg`, drawn in Flag's favicon idiom: dark rounded
+  square, white glyph, primary-purple accent; a `-light` variant exists). The
+  icon sprite is `/design-system/icons/core-icons.svg` — Flag's set plus a
+  few product symbols appended at the end. These are ElcanoTek trademarks
+  (see `NOTICE`); a fork must replace them.
+
+## Source headers
+
+Every first-party `.go`, `.ts`, `.tsx`, `.mjs`, `.sh` and `.css` file starts
+with the SPDX header (after the shebang, if any):
+
+```go
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+```
+
+Vendored Flag assets (`design-tokens.css`, `fonts/`, `public/design-system/`)
+do not get one. `scripts/bsl-change-date.sh` prints the licence Change Date
+for any ref — two years after the commit's author date; never write a date
+into `LICENSE`, `NOTICE`, the README or the docs.
 
 ## Development
 

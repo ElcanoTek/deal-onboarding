@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { describe, expect, it } from 'vitest'
 import { ADVANCED_MODEL, DEFAULT_MODEL, tierForModel } from './modelAliases'
 import { MAX_SEARCH_RESULTS, RankedModel, composePickerModels, isNewlyReleased } from './modelCatalog'

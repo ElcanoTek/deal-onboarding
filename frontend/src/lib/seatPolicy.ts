@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { DealEntry } from '../types/deal'
 
 /** DSPs that bid through a house seat on the exchanges we curate, so there is

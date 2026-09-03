@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Frontend model-slug constants — ported from fleet
 // (web/src/app/lib/modelAliases.ts). The product's blessed slugs live here
 // as named constants; no env plumbing required.

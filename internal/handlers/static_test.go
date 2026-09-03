@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 package handlers
 
 import (
@@ -17,9 +20,9 @@ func writeDistFixture(t *testing.T) string {
 		t.Fatal(err)
 	}
 	files := map[string]string{
-		"index.html":             "<html>v1</html>",
-		"assets/index-AbC123.js": "console.log(1)",
-		"icons/core-icons.svg":   "<svg/>",
+		"index.html":                         "<html>v1</html>",
+		"assets/index-AbC123.js":             "console.log(1)",
+		"design-system/icons/core-icons.svg": "<svg/>",
 	}
 	for name, content := range files {
 		p := filepath.Join(dist, name)
@@ -46,7 +49,7 @@ func TestStaticHandlerCacheHeaders(t *testing.T) {
 		// The shell and unhashed files must revalidate every load.
 		// (/index.html itself 301s to "/" via http.FileServer — same policy.)
 		{"/", "no-cache"},
-		{"/icons/core-icons.svg", "no-cache"},
+		{"/design-system/icons/core-icons.svg", "no-cache"},
 		// SPA fallback routes serve index.html with its policy.
 		{"/pending", "no-cache"},
 	}

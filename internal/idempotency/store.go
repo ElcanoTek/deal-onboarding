@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 // Package idempotency provides a small file-backed store that makes a
 // side-effectful submission (creating a runner task that books real deals on live
 // exchanges) safe to retry. A client mints a stable key per user intent (one

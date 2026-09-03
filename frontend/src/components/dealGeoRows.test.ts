@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 /** Geo direction rows on the deal card.
  *
  *  The deal keeps geoInclude/geoExclude as separate arrays (the prompt builders

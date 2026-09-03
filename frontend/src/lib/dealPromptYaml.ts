@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BUSL-1.1
+// Copyright (c) 2026 ElcanoTek, Inc.
+
 import { DealEntry, dealSupportsAdDuration, DspEntry, effectivePubMaticPublisherEntries, FormData, GeoEntry, isVideoChannel, magniteFormatKind, StandardList, UploadedFile } from '../types/deal'
 import { generateDealName } from '../hooks/useDealMatrix'
 import { activeDsps, curator, DealDspPair, expandDealDsps, medianetDealId, sspCarriesIncludeStates } from './dealNameSlots'

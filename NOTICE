@@ -1,16 +1,91 @@
 Deal Onboarding
 Copyright (c) 2026 ElcanoTek, Inc.
 
-This software is licensed under the Business Source License 1.1 (see LICENSE).
-On the Change Date stated in LICENSE (2028-09-02) it converts to the MIT
-License. Licensing enquiries: licensing@elcanotek.com.
+This product is licensed under the Business Source License 1.1. See the
+LICENSE file for terms and docs/LICENSING.md for a plain-English summary.
 
-Bundled third-party assets, each under its own licence, which travels with
-the files:
+================================================================================
+Third-party components redistributed in this repository
+================================================================================
 
-  Nebula Sans        SIL Open Font License 1.1   frontend/src/styles/fonts/nebula-sans/OFL.txt
-  Hack               MIT License                 frontend/src/styles/fonts/hack/LICENSE.md
-  Flag design tokens ElcanoTek/flag (vendored)   frontend/src/styles/design-tokens.css
+Nebula Sans (400, 500, 600, 700 upright; 400 and 700 italic)
+  Files:   frontend/src/styles/fonts/nebula-sans/NebulaSans-400.woff2
+           frontend/src/styles/fonts/nebula-sans/NebulaSans-500.woff2
+           frontend/src/styles/fonts/nebula-sans/NebulaSans-600.woff2
+           frontend/src/styles/fonts/nebula-sans/NebulaSans-700.woff2
+           frontend/src/styles/fonts/nebula-sans/NebulaSans-400-italic.woff2
+           frontend/src/styles/fonts/nebula-sans/NebulaSans-700-italic.woff2
+  Copyright (c) 2024 Nebula Entertainment & Broadcasting LLC, with Reserved
+           Font Name "Nebula". Based on Source Sans, copyright (c) 2010-2024
+           Adobe, with Reserved Font Name "Source".
+  License: SIL Open Font License, Version 1.1. The full license text is
+           bundled alongside the fonts at
+           frontend/src/styles/fonts/nebula-sans/OFL.txt and must accompany
+           the font files in any redistribution.
+  Source:  https://www.nebulasans.com/
 
-Go and npm dependencies are governed by their own licences as declared in
-go.mod / go.sum and frontend/package.json / package-lock.json.
+Hack (Regular, Bold, Italic, Bold Italic)
+  Files:   frontend/src/styles/fonts/hack/hack-regular.woff2 (+ .woff)
+           frontend/src/styles/fonts/hack/hack-bold.woff2 (+ .woff)
+           frontend/src/styles/fonts/hack/hack-italic.woff2 (+ .woff)
+           frontend/src/styles/fonts/hack/hack-bolditalic.woff2 (+ .woff)
+  Copyright (c) 2018 Source Foundry Authors (MIT License). Bitstream Vera Sans
+           Mono copyright (c) 2003 Bitstream, Inc. (Bitstream Vera License);
+           DejaVu changes are in the public domain.
+  License: MIT, with the Bitstream Vera License covering the Vera-derived
+           glyphs. The full license text is bundled alongside the fonts at
+           frontend/src/styles/fonts/hack/LICENSE.md and must accompany the
+           font files in any redistribution.
+  Source:  https://sourcefoundry.org/hack/
+
+  These are the two typefaces the Elcano Flag design system ships, vendored
+  rather than loaded from a CDN so the UI works on a host with no outbound
+  internet access, and so no third party sees who is using it. Both licenses
+  permit bundling and redistribution, including in a commercial product,
+  provided the license text travels with the fonts and (for Nebula Sans) the
+  Reserved Font Name is not used for modified versions. Neither is covered by
+  the Business Source License applied to the rest of this repository; the OFL
+  and the MIT/Bitstream Vera licenses govern them respectively.
+
+  The files are the complete upstream builds (950 codepoints for Nebula Sans,
+  1548 for Hack) — do not replace them with narrower subsets. A Latin-1-only
+  subset silently drops Latin Extended-A, which is where accented agency,
+  brand and publisher names live, and the browser then substitutes a system
+  font for those characters alone.
+
+================================================================================
+ElcanoTek brand assets and the Flag design system
+================================================================================
+
+  Files:   frontend/public/design-system/logos/*.svg
+           frontend/public/design-system/icons/core-icons.svg
+           frontend/src/styles/design-tokens.css
+           frontend/src/styles/fonts/fonts.css
+  The ElcanoTek name, the Elcano mark and the product favicons in this
+  repository are trademarks and brand assets of ElcanoTek, Inc. The Business
+  Source License grants no trademark rights (see LICENSE, "This License does
+  not grant you any right in any trademark or logo of Licensor"). Replace them
+  with your own marks if you deploy or redistribute a fork.
+
+  The token sheet, icon set and font sheet are vendored from the Flag design
+  system (ElcanoTek/flag). They are ElcanoTek's own work and are covered by
+  the Business Source License like the rest of this repository. Re-sync them
+  from Flag rather than editing in place.
+
+================================================================================
+Go and npm dependencies
+================================================================================
+
+Deal Onboarding depends on, but does not redistribute, the Go modules pinned
+in go.mod / go.sum (chi, chi/cors, golang.org/x/crypto) and the npm packages
+pinned in frontend/package.json / package-lock.json (React, react-markdown and
+its remark/micromark tree, flatpickr, SheetJS `xlsx`, and the Vite / vitest /
+TypeScript toolchain). Each is fetched at build time under its own license
+(MIT, BSD-3-Clause or Apache-2.0). flatpickr's stylesheet is bundled into the
+production CSS by Vite from node_modules; it is not vendored here. Run
+`go-licenses` and `npx license-checker` in your build environment for the
+authoritative list of the exact versions you installed.
+
+The publisher catalog in catalogs/publisher-catalog.json and the standard
+lists under lists/ are synthetic placeholders authored by ElcanoTek; no
+customer, partner or exchange data is included. See lists/README.md.
