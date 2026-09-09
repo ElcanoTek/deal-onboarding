@@ -40,7 +40,7 @@ re-synced from the design system, not edited here.
 
 ## Setup
 
-Go 1.26+ and Node 22.12+ (CI runs Node 22).
+Go 1.26+ and Node 22.12+, 24.x, or >=26 (CI runs Node 22).
 
 ```bash
 git clone https://github.com/ElcanoTek/deal-onboarding.git

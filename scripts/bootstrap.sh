@@ -92,6 +92,25 @@ else
   die "could not parse Go version from: $raw_go_version"
 fi
 
+if ! command -v node >/dev/null 2>&1; then
+  die "node command not found in PATH"
+fi
+if ! command -v npm >/dev/null 2>&1; then
+  die "npm command not found in PATH"
+fi
+if ! raw_node_version="$(node -v 2>&1)"; then
+  die "failed to inspect Node runtime: $raw_node_version"
+fi
+if [[ "$raw_node_version" =~ v?([0-9]+)\.([0-9]+) ]]; then
+  node_major="${BASH_REMATCH[1]}"
+  node_minor="${BASH_REMATCH[2]}"
+  if (( node_major < 22 || (node_major == 22 && node_minor < 12) || node_major == 23 || node_major == 25 )); then
+    die "Node 22.12+, 24.x, or >=26 required (found v${node_major}.${node_minor}). Upgrade Node before bootstrapping."
+  fi
+else
+  die "could not parse Node version from: $raw_node_version"
+fi
+
 if ! id -u "$APP_USER" >/dev/null 2>&1; then
   useradd --system --create-home --home-dir "$APP_DIR" --shell /sbin/nologin "$APP_USER"
 fi
