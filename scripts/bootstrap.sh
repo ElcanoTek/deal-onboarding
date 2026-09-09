@@ -76,6 +76,22 @@ say "Safe to re-run: existing secrets and data are preserved."
 step "Installing system dependencies"
 dnf install -y git curl jq golang nodejs npm openssl rsync >/dev/null
 
+if ! command -v go >/dev/null 2>&1; then
+  die "go command not found in PATH"
+fi
+if ! raw_go_version="$(GOTOOLCHAIN=local go version 2>&1)"; then
+  die "failed to inspect Go toolchain: $raw_go_version"
+fi
+if [[ "$raw_go_version" =~ go([0-9]+)\.([0-9]+) ]]; then
+  go_major="${BASH_REMATCH[1]}"
+  go_minor="${BASH_REMATCH[2]}"
+  if (( go_major < 1 || (go_major == 1 && go_minor < 26) )); then
+    die "Go 1.26+ required (found go${go_major}.${go_minor}). Upgrade Go before bootstrapping."
+  fi
+else
+  die "could not parse Go version from: $raw_go_version"
+fi
+
 if ! id -u "$APP_USER" >/dev/null 2>&1; then
   useradd --system --create-home --home-dir "$APP_DIR" --shell /sbin/nologin "$APP_USER"
 fi

@@ -13,6 +13,26 @@ CLI_PATH="${CLI_PATH:-/usr/local/bin/deal-onboarding}"
 [[ -d "$SRC_DIR/.git" ]] || { echo "no git checkout at $SRC_DIR" >&2; exit 1; }
 [[ -d "$APP_DIR" ]] || { echo "no existing install at $APP_DIR" >&2; exit 1; }
 
+if ! command -v go >/dev/null 2>&1; then
+  echo "error: go command not found in PATH" >&2
+  exit 1
+fi
+if ! raw_go_version="$(GOTOOLCHAIN=local go version 2>&1)"; then
+  echo "error: failed to inspect Go toolchain: $raw_go_version" >&2
+  exit 1
+fi
+if [[ "$raw_go_version" =~ go([0-9]+)\.([0-9]+) ]]; then
+  go_major="${BASH_REMATCH[1]}"
+  go_minor="${BASH_REMATCH[2]}"
+  if (( go_major < 1 || (go_major == 1 && go_minor < 26) )); then
+    echo "error: Go 1.26+ required (found go${go_major}.${go_minor}). Upgrade Go before updating." >&2
+    exit 1
+  fi
+else
+  echo "error: could not parse Go version from: $raw_go_version" >&2
+  exit 1
+fi
+
 cd "$SRC_DIR"
 before_sha="$(git rev-parse HEAD)"
 branch="${DEAL_ONBOARDING_UPDATE_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
