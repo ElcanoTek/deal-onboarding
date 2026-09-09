@@ -58,6 +58,10 @@ else
 fi
 
 cd "$SRC_DIR"
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "error: source directory has uncommitted or untracked changes in $SRC_DIR; commit, stash, or clean before updating" >&2
+  exit 1
+fi
 before_sha="$(git rev-parse HEAD)"
 branch="${DEAL_ONBOARDING_UPDATE_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
 git fetch --quiet origin
