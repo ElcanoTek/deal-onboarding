@@ -17,22 +17,20 @@ if ! command -v go >/dev/null 2>&1; then
   echo "error: go command not found in PATH" >&2
   exit 1
 fi
-go_ver="$(go version | grep -oE 'go[0-9]+(\.[0-9]+)*' | head -1 | sed 's/^go//')"
-go_major="$(echo "$go_ver" | cut -d. -f1)"
-go_minor="$(echo "$go_ver" | cut -d. -f2)"
-if (( go_major < 1 || (go_major == 1 && go_minor < 26) )); then
-  echo "error: Go 1.26+ required (found go$go_ver). Upgrade Go before updating." >&2
+if ! raw_go_version="$(GOTOOLCHAIN=local go version 2>&1)"; then
+  echo "error: failed to inspect Go toolchain: $raw_go_version" >&2
   exit 1
 fi
-
-if command -v node >/dev/null 2>&1; then
-  node_ver="$(node -v | sed 's/^v//')"
-  node_major="$(echo "$node_ver" | cut -d. -f1)"
-  node_minor="$(echo "$node_ver" | cut -d. -f2)"
-  if (( node_major < 22 || (node_major == 22 && node_minor < 12) )); then
-    echo "error: Node 22.12+ required (found v$node_ver). Upgrade Node before updating." >&2
+if [[ "$raw_go_version" =~ go([0-9]+)\.([0-9]+) ]]; then
+  go_major="${BASH_REMATCH[1]}"
+  go_minor="${BASH_REMATCH[2]}"
+  if (( go_major < 1 || (go_major == 1 && go_minor < 26) )); then
+    echo "error: Go 1.26+ required (found go${go_major}.${go_minor}). Upgrade Go before updating." >&2
     exit 1
   fi
+else
+  echo "error: could not parse Go version from: $raw_go_version" >&2
+  exit 1
 fi
 
 cd "$SRC_DIR"
