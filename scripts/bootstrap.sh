@@ -76,6 +76,15 @@ say "Safe to re-run: existing secrets and data are preserved."
 step "Installing system dependencies"
 dnf install -y git curl jq golang nodejs npm openssl rsync >/dev/null
 
+go_ver="$(go version 2>/dev/null | grep -oE 'go[0-9]+(\.[0-9]+)*' | head -1 | sed 's/^go//' || true)"
+if [[ -n "$go_ver" ]]; then
+  go_major="$(echo "$go_ver" | cut -d. -f1)"
+  go_minor="$(echo "$go_ver" | cut -d. -f2)"
+  if (( go_major < 1 || (go_major == 1 && go_minor < 26) )); then
+    die "Go 1.26+ required, but installed go$go_ver. Please upgrade the golang package or toolchain."
+  fi
+fi
+
 if ! id -u "$APP_USER" >/dev/null 2>&1; then
   useradd --system --create-home --home-dir "$APP_DIR" --shell /sbin/nologin "$APP_USER"
 fi

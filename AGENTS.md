@@ -105,7 +105,7 @@ into `LICENSE`, `NOTICE`, the README or the docs.
 
 ## Development
 
-Prerequisites: Go 1.24+, Node 18+ / npm.
+Prerequisites: Go 1.26+, Node 22.12+ / npm.
 
 ```bash
 make dev       # Go API (port 8080) + Vite dev server (port 5173)

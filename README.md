@@ -78,7 +78,7 @@ is the canonical spec for that seam and the invariants around it.
 
 ## Quick start
 
-Requires Go 1.24+ and Node 18+.
+Requires Go 1.26+ and Node 22.12+.
 
 ```bash
 git clone https://github.com/ElcanoTek/deal-onboarding.git
