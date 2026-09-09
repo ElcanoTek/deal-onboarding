@@ -58,7 +58,11 @@ else
 fi
 
 cd "$SRC_DIR"
-if [[ -n "$(git status --porcelain)" ]]; then
+if ! dirty_status="$(git status --porcelain --untracked-files=all 2>&1)"; then
+  echo "error: failed to inspect git status in $SRC_DIR: $dirty_status" >&2
+  exit 1
+fi
+if [[ -n "$dirty_status" ]]; then
   echo "error: source directory has uncommitted or untracked changes in $SRC_DIR; commit, stash, or clean before updating" >&2
   exit 1
 fi
