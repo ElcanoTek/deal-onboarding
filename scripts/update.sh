@@ -33,27 +33,57 @@ else
   exit 1
 fi
 
+if ! command -v node >/dev/null 2>&1; then
+  echo "error: node command not found in PATH" >&2
+  exit 1
+fi
+if ! command -v npm >/dev/null 2>&1; then
+  echo "error: npm command not found in PATH" >&2
+  exit 1
+fi
+if ! raw_node_version="$(node -v 2>&1)"; then
+  echo "error: failed to inspect Node runtime: $raw_node_version" >&2
+  exit 1
+fi
+if [[ "$raw_node_version" =~ v?([0-9]+)\.([0-9]+) ]]; then
+  node_major="${BASH_REMATCH[1]}"
+  node_minor="${BASH_REMATCH[2]}"
+  if (( node_major < 22 || (node_major == 22 && node_minor < 12) || node_major == 23 || node_major == 25 )); then
+    echo "error: Node 22.12+, 24.x, or >=26 required (found v${node_major}.${node_minor}). Upgrade Node before updating." >&2
+    exit 1
+  fi
+else
+  echo "error: could not parse Node version from: $raw_node_version" >&2
+  exit 1
+fi
+
 cd "$SRC_DIR"
+if ! dirty_status="$(git status --porcelain --untracked-files=all 2>&1)"; then
+  echo "error: failed to inspect git status in $SRC_DIR: $dirty_status" >&2
+  exit 1
+fi
+if [[ -n "$dirty_status" ]]; then
+  echo "error: source directory has uncommitted or untracked changes in $SRC_DIR; commit, stash, or clean before updating" >&2
+  exit 1
+fi
 before_sha="$(git rev-parse HEAD)"
 branch="${DEAL_ONBOARDING_UPDATE_BRANCH:-$(git rev-parse --abbrev-ref HEAD)}"
 git fetch --quiet origin
 after_sha="$(git rev-parse "origin/$branch")"
 
 if [[ "$before_sha" == "$after_sha" ]]; then
-  echo "already up to date (${before_sha:0:12})"
-  exit 0
+  echo "source already at ${before_sha:0:12}; rebuilding deployment"
+else
+  if [[ "${DEAL_ONBOARDING_UPDATE_YES:-0}" != "1" ]]; then
+    echo "incoming commits:"
+    git --no-pager log --oneline --no-decorate "${before_sha}..${after_sha}"
+    printf 'Apply update %s -> %s? (y/N) ' "${before_sha:0:12}" "${after_sha:0:12}"
+    read -r answer
+    [[ "${answer,,}" == "y" || "${answer,,}" == "yes" ]] || exit 1
+  fi
+  git checkout --quiet "$branch"
+  git pull --ff-only --quiet origin "$branch"
 fi
-
-if [[ "${DEAL_ONBOARDING_UPDATE_YES:-0}" != "1" ]]; then
-  echo "incoming commits:"
-  git --no-pager log --oneline --no-decorate "${before_sha}..${after_sha}"
-  printf 'Apply update %s -> %s? (y/N) ' "${before_sha:0:12}" "${after_sha:0:12}"
-  read -r answer
-  [[ "${answer,,}" == "y" || "${answer,,}" == "yes" ]] || exit 1
-fi
-
-git checkout --quiet "$branch"
-git pull --ff-only --quiet origin "$branch"
 rsync -a --delete \
   --exclude='/.git' \
   --exclude='/.env' \
