@@ -35,6 +35,7 @@ vet:
 
 test:
 	go test ./...
+	bash scripts/test/doctor_test.sh
 	cd frontend && npm test
 
 tidy:

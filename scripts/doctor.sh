@@ -17,8 +17,6 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# shellcheck disable=SC1091
-. "$SCRIPT_DIR/lib/envfile.sh"
 
 APP_DIR="${DEAL_ONBOARDING_APP_DIR:-/opt/deal-onboarding}"
 SRC_DIR="${DEAL_ONBOARDING_SRC_DIR:-/opt/deal-onboarding-src}"
@@ -112,18 +110,134 @@ have() { command -v "$1" >/dev/null 2>&1; }
 file_mode() { stat -c '%a' "$1" 2>/dev/null || true; }
 file_owner() { stat -c '%U:%G' "$1" 2>/dev/null || true; }
 
+# Refuse to run as root from a script the service user could have written.
+assert_root_may_run() {
+  [[ $EUID -eq 0 ]] || return 0
+  local p owner mode
+  for p in "$@"; do
+    [[ -e "$p" ]] || continue
+    if [[ -L "$p" ]]; then
+      echo "doctor: refusing to run symlink $p as root" >&2
+      return 1
+    fi
+    owner="$(stat -c '%U' "$p" 2>/dev/null || echo unknown)"
+    mode="$(stat -c '%a' "$p" 2>/dev/null || echo 666)"
+    if [[ "$owner" != root || $((8#$mode & 022)) -ne 0 ]]; then
+      echo "doctor: refusing to run as root; $p is $owner mode $mode (install the root-owned copy under /usr/local/lib)" >&2
+      return 1
+    fi
+  done
+}
+
+# fchown/fchmod the inode opened with O_NOFOLLOW on every path component.
+priv_chown() {
+  python3 - "$@" <<'PY'
+import os, stat, sys, pwd, grp
+path, user, group, mode = sys.argv[1:]
+if not path.startswith("/") or "\x00" in path:
+    raise SystemExit(2)
+parts = [p for p in path.split("/") if p]
+if not parts or any(p in (".", "..") for p in parts):
+    raise SystemExit(2)
+fd = os.open("/", os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+try:
+    try:
+        for part in parts:
+            nxt = os.open(part, os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=fd)
+            os.close(fd)
+            fd = nxt
+        st = os.fstat(fd)
+        if not (stat.S_ISREG(st.st_mode) or stat.S_ISDIR(st.st_mode)):
+            raise SystemExit(2)
+        os.fchown(fd, pwd.getpwnam(user).pw_uid, grp.getgrnam(group).gr_gid)
+        os.fchmod(fd, int(mode, 8))
+    except OSError:
+        raise SystemExit(2)
+finally:
+    try:
+        os.close(fd)
+    except OSError:
+        pass
+PY
+}
+
+# mkdir the final component with O_NOFOLLOW. install -d follows a symlink
+# planted in a service-writable parent and would chown the target.
+priv_mkdir() {
+  python3 - "$@" <<'PY'
+import os, sys, pwd, grp
+path, user, group, mode = sys.argv[1:]
+if not path.startswith("/") or "\x00" in path:
+    raise SystemExit(2)
+parts = [p for p in path.split("/") if p]
+if len(parts) < 2 or any(p in (".", "..") for p in parts):
+    raise SystemExit(2)
+fd = os.open("/", os.O_RDONLY | os.O_DIRECTORY | os.O_CLOEXEC)
+try:
+    try:
+        for part in parts[:-1]:
+            nxt = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=fd)
+            os.close(fd)
+            fd = nxt
+        last = parts[-1]
+        os.mkdir(last, 0o700, dir_fd=fd)
+        child = os.open(last, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW | os.O_CLOEXEC, dir_fd=fd)
+        os.close(fd)
+        fd = child
+        os.fchown(fd, pwd.getpwnam(user).pw_uid, grp.getgrnam(group).gr_gid)
+        os.fchmod(fd, int(mode, 8))
+    except OSError:
+        raise SystemExit(2)
+finally:
+    try:
+        os.close(fd)
+    except OSError:
+        pass
+PY
+}
+
+# A data directory taken from an env file may be attacker-controlled.
+# Only APP_DIR/data, or an existing directory the service user already owns
+# under root-owned parents, may be chowned.
+data_dir_claimable() {
+  local data="$1" app parent owner mode
+  [[ "$data" == /* && "$data" != *..* ]] || return 1
+  app="${APP_DIR%/}"
+  if [[ "$data" == "$app/data" ]]; then
+    [[ -L "$app" || -L "$data" ]] && return 1
+    return 0
+  fi
+  [[ -d "$data" && ! -L "$data" ]] || return 1
+  [[ "$(stat -c '%U' "$data" 2>/dev/null || echo "")" == "$APP_USER" ]] || return 1
+  parent="$(dirname "$data")"
+  while :; do
+    [[ -L "$parent" ]] && return 1
+    owner="$(stat -c '%U' "$parent" 2>/dev/null || echo "")"
+    mode="$(stat -c '%a' "$parent" 2>/dev/null || echo 777)"
+    [[ "$owner" == root ]] || return 1
+    [[ $((8#$mode & 022)) -eq 0 ]] || return 1
+    [[ "$parent" == / ]] && break
+    parent="$(dirname "$parent")"
+  done
+}
+
 # https_host URL prints the hostname, or returns 1. The result is a DNS
 # name only, so it can be passed to openssl -servername without becoming a flag.
+# Prints "host port". An explicit https port is kept; the default is 443.
 https_host() {
-  local url="$1" host
+  local url="$1" host port=443
   [[ "$url" == https://* ]] || return 1
   host="${url#https://}"
   host="${host%%/*}"
   host="${host%%\?*}"
   host="${host##*@}"
-  host="${host%%:*}"
+  if [[ "$host" == *:* ]]; then
+    port="${host##*:}"
+    host="${host%%:*}"
+  fi
+  [[ "$port" =~ ^[0-9]+$ ]] || return 1
   [[ "$host" =~ ^[A-Za-z0-9]([A-Za-z0-9.-]{0,251}[A-Za-z0-9])?$ ]] || return 1
-  printf '%s' "$host"
+  printf '%s %s\n' "$host" "$port"
 }
 
 sane_env_mode() {
@@ -203,7 +317,7 @@ check_env() {
   owner="$(file_owner "$ENV_FILE")"
   if [[ "$owner" == "$APP_USER:$APP_USER" ]] && sane_env_mode "$mode"; then
     add pass env-perms "$ENV_FILE is $owner mode $mode"
-  elif [[ "$REPAIR" == 1 ]] && chown "$APP_USER:$APP_USER" "$ENV_FILE" && chmod 600 "$ENV_FILE"; then
+  elif [[ "$REPAIR" == 1 ]] && priv_chown "$ENV_FILE" "$APP_USER" "$APP_USER" 600; then
     mode="$(file_mode "$ENV_FILE")"
     owner="$(file_owner "$ENV_FILE")"
     if [[ "$owner" == "$APP_USER:$APP_USER" && "$mode" == "600" ]]; then
@@ -222,8 +336,12 @@ check_env() {
   # The server accepts the legacy MANIFEST_SESSION_SECRET name, but only
   # the length is checked. The value itself is never printed.
   secret="$(env_get DEAL_ONBOARDING_SESSION_SECRET "$ENV_FILE" 2>/dev/null || true)"
+  secret="${secret#"${secret%%[![:space:]]*}"}"
+  secret="${secret%"${secret##*[![:space:]]}"}"
   if [[ ${#secret} -lt 32 ]]; then
     legacy="$(env_get MANIFEST_SESSION_SECRET "$ENV_FILE" 2>/dev/null || true)"
+    legacy="${legacy#"${legacy%%[![:space:]]*}"}"
+    legacy="${legacy%"${legacy##*[![:space:]]}"}"
     if [[ ${#legacy} -ge 32 ]]; then
       notes+=("session secret is still named MANIFEST_SESSION_SECRET; prefer DEAL_ONBOARDING_SESSION_SECRET")
     else
@@ -270,7 +388,11 @@ check_unit() {
     return
   fi
   if systemctl is-active --quiet "$unit"; then
-    add pass "$name" "$unit active"
+    if systemctl is-enabled --quiet "$unit"; then
+      add pass "$name" "$unit active and enabled"
+    else
+      add warn "$name" "$unit is active but not enabled — it will not start on boot"
+    fi
     return
   fi
   if systemctl is-enabled --quiet "$unit"; then
@@ -291,10 +413,21 @@ check_unit() {
 }
 
 check_health() {
-  local port url code
+  local port url code bind
   port="$(env_get PORT "$ENV_FILE" 2>/dev/null || true)"
   [[ "$port" =~ ^[0-9]+$ ]] || port=8080
-  url="http://127.0.0.1:${port}/health"
+  bind="$(env_get HOST "$ENV_FILE" 2>/dev/null || true)"
+  case "$bind" in
+    ""|0.0.0.0|"::"|"[::]"|"*") bind=127.0.0.1 ;;
+  esac
+  # A concrete bracketed IPv6 address (HOST=[::1]) is a valid bind. Only
+  # wildcards were rewritten above; do not collapse those brackets to loopback.
+  if [[ "$bind" =~ ^\[[0-9A-Fa-f:.]+\]$ ]]; then
+    :
+  elif [[ ! "$bind" =~ ^[A-Za-z0-9._:-]+$ ]]; then
+    bind=127.0.0.1
+  fi
+  url="http://${bind}:${port}/health"
   code="$(curl -sS --connect-timeout 2 --max-time 5 -o /dev/null -w '%{http_code}' "$url" 2>/dev/null || true)"
   if [[ "$code" == "200" ]]; then
     add pass health "$url returned 200"
@@ -321,10 +454,11 @@ caddy_hostname() {
 }
 
 check_tls() {
-  local url host line epoch now days
+  local url host line epoch now days tls_port=443
   url="$(env_get DEAL_ONBOARDING_PUBLIC_URL "$ENV_FILE" 2>/dev/null || true)"
-  if ! host="$(https_host "$url")"; then
+  if ! read -r host tls_port < <(https_host "$url"); then
     host="$(caddy_hostname || true)"
+    tls_port=443
   fi
   if [[ -z "$host" || "$host" == "localhost" ]]; then
     add warn tls "no public https hostname (set DEAL_ONBOARDING_PUBLIC_URL or a Caddy site); skipped the certificate"
@@ -336,9 +470,11 @@ check_tls() {
   fi
   # Connect to loopback with the public name as SNI so the check is the
   # certificate Caddy is serving, not DNS or hairpin NAT.
-  line="$(timeout 15 openssl s_client -servername "$host" -connect "127.0.0.1:443" </dev/null 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null || true)"
+  # -verify_hostname and -verify_return_error make a wrong host or a bad
+  # chain a failed handshake, not a certificate we then trust by expiry alone.
+  line="$(timeout 15 openssl s_client -verify_hostname "$host" -verify_return_error -servername "$host" -connect "127.0.0.1:${tls_port}" </dev/null 2>/dev/null | openssl x509 -noout -enddate 2>/dev/null || true)"
   if [[ "$line" != notAfter=* ]]; then
-    add fail tls "no certificate from 127.0.0.1:443 for $host — is Caddy running?"
+    add fail tls "no verified certificate from 127.0.0.1:${tls_port} for $host — is Caddy running?"
     return
   fi
   line="${line#notAfter=}"
@@ -348,9 +484,13 @@ check_tls() {
     add fail tls "could not parse the certificate expiry for $host"
     return
   fi
+  if [[ "$epoch" -le "$now" ]]; then
+    add fail tls "certificate for $host is expired"
+    return
+  fi
   days="$(( (epoch - now) / 86400 ))"
   if [[ "$days" -lt 0 ]]; then
-    add fail tls "certificate for $host expired ${days#-} day(s) ago"
+    add fail tls "certificate for $host is expired"
   elif [[ "$days" -lt 30 ]]; then
     add warn tls "certificate for $host expires in $days day(s)"
   else
@@ -372,31 +512,69 @@ check_caddy_config() {
   fi
 }
 
+service_can_write() {
+  if [[ $EUID -eq 0 ]]; then
+    runuser -u "$APP_USER" -- test -w "$1" && runuser -u "$APP_USER" -- test -x "$1"
+    return
+  fi
+  if [[ "$(id -un)" == "$APP_USER" ]]; then
+    [[ -w "$1" && -x "$1" ]]
+    return
+  fi
+  return 2
+}
+
 check_data() {
-  local data
+  local data writable=0 owner mode
   data="$(env_get DATA_DIR "$ENV_FILE" 2>/dev/null || true)"
   [[ -n "$data" ]] || data="$APP_DIR/data"
   if [[ "$data" != /* ]]; then
-    data="$APP_DIR/$data"
+    data="$APP_DIR/${data#./}"
   fi
-  if [[ -L "$data" ]]; then
-    add fail database "$data is a symlink; Deal Onboarding keeps its file store in a real directory (no database server)"
+  while [[ "$data" == */ && "$data" != "/" ]]; do
+    data="${data%/}"
+  done
+  DISK_PATH="$data"
+  if [[ -L "$data" || "$data" == *..* ]]; then
+    add fail database "refusing $data (symlink or ..); the file store must be a real directory"
     return
   fi
-  if [[ -d "$data" ]]; then
-    add pass database "file store present at $data (Deal Onboarding has no database server)"
-    return
-  fi
-  if [[ -e "$data" ]]; then
-    add fail database "$data exists but is not a directory"
-    return
-  fi
-  if [[ "$REPAIR" == 1 ]] && install -d -o "$APP_USER" -g "$APP_USER" -m 0750 "$data"; then
-    n_fixed=$((n_fixed + 1))
-    add pass database "repaired; created file store $data"
-  else
+  if [[ ! -d "$data" ]]; then
+    if [[ -e "$data" ]]; then
+      add fail database "$data exists but is not a directory"
+      return
+    fi
+    # Create only the default directory, and only when every parent is trusted.
+    if [[ "$REPAIR" == 1 && "$data" == "${APP_DIR%/}/data" ]] && data_dir_claimable "$data" && priv_mkdir "$data" "$APP_USER" "$APP_USER" 750; then
+      n_fixed=$((n_fixed + 1))
+      add pass database "repaired; created file store $data"
+      return
+    fi
     add fail database "$data is missing — sudo install -d -o $APP_USER -g $APP_USER -m 0750 $data"
+    return
   fi
+  # Read-only: a real directory the service user owns and can write is enough.
+  # A nested store under the service-owned app tree is valid. Claimability
+  # only decides whether --repair may chown the path.
+  if service_can_write "$data"; then
+    writable=1
+  fi
+  owner="$(file_owner "$data")"
+  mode="$(file_mode "$data")"
+  if [[ "$writable" -eq 1 && "$owner" == "$APP_USER:"* && $((8#${mode:-777} & 2)) -eq 0 ]]; then
+    add pass database "file store at $data is writable by $APP_USER (no database server)"
+    return
+  fi
+  if [[ "$REPAIR" == 1 ]] && data_dir_claimable "$data" && priv_chown "$data" "$APP_USER" "$APP_USER" 750; then
+    n_fixed=$((n_fixed + 1))
+    add pass database "repaired; $data is $APP_USER:$APP_USER mode 750"
+    return
+  fi
+  if ! data_dir_claimable "$data"; then
+    add fail database "$data is not a writable $APP_USER directory, and repair will not chown it"
+    return
+  fi
+  add fail database "$data is not writable by $APP_USER ($owner mode $mode)"
 }
 
 check_disk() {
@@ -537,18 +715,74 @@ print(max(nums))' 2>/dev/null || true)"
   fi
 }
 
-gitc() { git -c "safe.directory=$SRC_DIR" -C "$SRC_DIR" "$@"; }
+# Never disable Git's ownership check. A service-owned checkout can set
+# core.fsmonitor; running that as root is code execution. Inspect as the owner.
+gitc() {
+  local owner
+  if [[ $EUID -eq 0 ]]; then
+    owner="$(stat -c '%U' "$SRC_DIR" 2>/dev/null || true)"
+    if [[ -n "$owner" && "$owner" != root ]]; then
+      runuser -u "$owner" -- git -C "$SRC_DIR" "$@"
+      return
+    fi
+  fi
+  git -C "$SRC_DIR" "$@"
+}
+
+# Keep core.sshCommand (deploy key and known_hosts) and only add timeouts.
+# GIT_SSH_COMMAND replaces that command entirely, so it must include it.
+git_ssh_command() {
+  local base
+  base="$(gitc config --get core.sshCommand 2>/dev/null || true)"
+  base="${base//$'\n'/ }"
+  base="${base#"${base%%[![:space:]]*}"}"
+  base="${base%"${base##*[![:space:]]}"}"
+  [[ -n "$base" ]] || base="ssh"
+  case "$base" in
+    *BatchMode*) ;;
+    *) base="$base -o BatchMode=yes" ;;
+  esac
+  case "$base" in
+    *ConnectTimeout*) ;;
+    *) base="$base -o ConnectTimeout=5" ;;
+  esac
+  printf '%s' "$base"
+}
+
+gitc_timeout() {
+  local secs="$1"
+  shift
+  local owner
+  if [[ $EUID -eq 0 ]]; then
+    owner="$(stat -c '%U' "$SRC_DIR" 2>/dev/null || true)"
+    if [[ -n "$owner" && "$owner" != root ]]; then
+      if [[ -n "${GIT_SSH_COMMAND:-}" ]]; then
+        timeout "$secs" runuser -u "$owner" -- env \
+          "GIT_TERMINAL_PROMPT=${GIT_TERMINAL_PROMPT:-0}" \
+          "GIT_SSH_COMMAND=${GIT_SSH_COMMAND}" \
+          git -C "$SRC_DIR" "$@"
+      else
+        timeout "$secs" runuser -u "$owner" -- git -C "$SRC_DIR" "$@"
+      fi
+      return
+    fi
+  fi
+  timeout "$secs" git -C "$SRC_DIR" "$@"
+}
 
 check_git() {
-  local dirty branch counts behind ahead fetch_rc
+  local dirty branch counts behind ahead fetch_rc dirty_rc remote_sha head_sha
   if [[ ! -d "$SRC_DIR/.git" ]]; then
     add warn git-clean "no git checkout at $SRC_DIR (deal-onboarding update needs it)"
     add warn git-branch "no git checkout at $SRC_DIR"
     add warn git-upstream "no git checkout at $SRC_DIR; doctor does not fetch or pull"
     return
   fi
-  dirty="$(gitc status --porcelain 2>/dev/null || true)"
-  if [[ -n "$dirty" ]]; then
+  dirty_rc=0
+  dirty="$(gitc status --porcelain 2>/dev/null)" || dirty_rc=$?
+  if [[ "$dirty_rc" -ne 0 ]]; then
+    add warn git-clean "cannot inspect $SRC_DIR (git status exited $dirty_rc)"
+  elif [[ -n "$dirty" ]]; then
     add warn git-clean "checkout at $SRC_DIR is dirty; deal-onboarding update will refuse"
   else
     add pass git-clean "clean at $SRC_DIR"
@@ -561,17 +795,26 @@ check_git() {
   else
     add warn git-branch "detached HEAD at $SRC_DIR, not main"
   fi
-  # A local origin/main can be months stale. Fetch the branch tip only
-  # (FETCH_HEAD); do not merge or pull. Any failure is "could not reach
-  # origin" rather than a false "level".
+  # ls-remote does not write FETCH_HEAD or remote-tracking refs, so --check
+  # cannot change the checkout. A missing object locally still reports drift.
   fetch_rc=0
-  GIT_TERMINAL_PROMPT=0 \
-    timeout 10 git -c "safe.directory=${SRC_DIR}" -C "$SRC_DIR" fetch --quiet origin main >/dev/null 2>&1 || fetch_rc=$?
-  if [[ "$fetch_rc" -ne 0 ]] || ! gitc rev-parse --verify --quiet FETCH_HEAD >/dev/null 2>&1; then
+  remote_sha="$(GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="$(git_ssh_command)" gitc_timeout 10 ls-remote origin refs/heads/main 2>/dev/null)" || fetch_rc=$?
+  remote_sha="${remote_sha%%$'\t'*}"
+  remote_sha="${remote_sha%% *}"
+  if [[ "$fetch_rc" -ne 0 || ! "$remote_sha" =~ ^[0-9a-f]{40}$ ]]; then
     add warn git-upstream "could not reach origin"
     return
   fi
-  counts="$(gitc rev-list --left-right --count FETCH_HEAD...HEAD 2>/dev/null || true)"
+  head_sha="$(gitc rev-parse HEAD 2>/dev/null || true)"
+  if [[ "$head_sha" == "$remote_sha" ]]; then
+    add pass git-upstream "level with origin/main"
+    return
+  fi
+  if ! gitc cat-file -e "${remote_sha}^{commit}" >/dev/null 2>&1; then
+    add warn git-upstream "not at origin/main (${remote_sha:0:12}); $UPDATE_CMD"
+    return
+  fi
+  counts="$(gitc rev-list --left-right --count "${remote_sha}...HEAD" 2>/dev/null || true)"
   counts="${counts//$'\t'/ }"
   # shellcheck disable=SC2086
   read -r behind ahead <<<"$counts"
@@ -594,15 +837,19 @@ check_git() {
   fi
 }
 
+assert_root_may_run "${BASH_SOURCE[0]}" "$SCRIPT_DIR/lib/envfile.sh" || exit 1
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/lib/envfile.sh"
+
 check_install
 check_env
+check_data
 check_unit service "$SERVICE" core
 check_unit caddy caddy.service optional
 check_health
 check_tls
 check_caddy_config
-check_data
-check_disk "$APP_DIR"
+check_disk "${DISK_PATH:-$APP_DIR}"
 check_updates
 check_reboot
 check_fedora
