@@ -327,8 +327,14 @@ awk '
   /^check_unit / { if (!u) u = NR }
   END { exit !(d && u && d < u) }
 ' "$REPO/scripts/doctor.sh"
-! grep -q 'safe\.directory' "$REPO/scripts/doctor.sh"
-! grep -q 'git fetch' "$REPO/scripts/doctor.sh"
+if grep -q 'safe\.directory' "$REPO/scripts/doctor.sh"; then
+  echo "doctor must not set safe.directory" >&2
+  exit 1
+fi
+if grep -q 'git fetch' "$REPO/scripts/doctor.sh"; then
+  echo "doctor --check must not git fetch" >&2
+  exit 1
+fi
 grep -q 'ls-remote' "$REPO/scripts/doctor.sh"
 grep -q -- '-verify_hostname' "$REPO/scripts/doctor.sh"
 
