@@ -24,21 +24,34 @@ else
   c_reset='' c_dim='' c_bold='' c_cyan='' c_red='' c_green='' c_yellow=''
 fi
 
-# shellcheck source=../scripts/lib/envfile.sh
-if [[ -f "$APP_DIR/scripts/lib/envfile.sh" ]]; then
-  . "$APP_DIR/scripts/lib/envfile.sh"
-else
-  # Older install without the helpers — just enough to keep `deal-onboarding env
-  # show` working until the operator runs `sudo deal-onboarding update`.
-  env_show_redacted() {
-    awk '
-      /^[[:space:]]*#/ { next } /^[[:space:]]*$/ { next }
-      { eq = index($0, "="); if (eq == 0) { print; next }
-        key = substr($0, 1, eq - 1); sub(/^[[:space:]]+/, "", key)
-        if (key ~ /TOKEN|KEY|SECRET|PASSWORD|PASSWD/) printf "%s=[REDACTED]\n", key; else print }
-    ' "$1"
-  }
-fi
+# Loaded only for commands that need it. `deal-onboarding doctor` runs as root
+# and must not source the service tree: that tree is writable by the service user.
+load_env_helpers() {
+  # shellcheck source=../scripts/lib/envfile.sh
+  if [[ -f "$APP_DIR/scripts/lib/envfile.sh" ]]; then
+    . "$APP_DIR/scripts/lib/envfile.sh"
+  else
+    # Older install without the helpers — just enough to keep `deal-onboarding env
+    # show` working until the operator runs `sudo deal-onboarding update`.
+    env_show_redacted() {
+      awk '
+        /^[[:space:]]*#/ { next } /^[[:space:]]*$/ { next }
+        { eq = index($0, "="); if (eq == 0) { print; next }
+          key = substr($0, 1, eq - 1); sub(/^[[:space:]]+/, "", key)
+          if (key ~ /TOKEN|KEY|SECRET|PASSWORD|PASSWD/) printf "%s=[REDACTED]\n", key; else print }
+      ' "$1"
+    }
+  fi
+}
+
+# A script root may execute: not a symlink, owned by root, not group/world writable.
+script_root_owned() {
+  local p="$1" owner mode
+  [[ -f "$p" && ! -L "$p" ]] || return 1
+  owner="$(stat -c '%U' "$p" 2>/dev/null || echo "")"
+  mode="$(stat -c '%a' "$p" 2>/dev/null || echo 666)"
+  [[ "$owner" == root && $((8#$mode & 022)) -eq 0 ]]
+}
 
 # env_cmd SUBCMD ARGS... — dispatcher for `deal-onboarding env ...`
 env_cmd() {
@@ -279,6 +292,10 @@ _env_check() {
 cmd="${1:-}"
 shift || true
 
+if [[ "$cmd" != "doctor" ]]; then
+  load_env_helpers
+fi
+
 case "$cmd" in
   user)
     # shellcheck disable=SC1090
@@ -316,15 +333,34 @@ case "$cmd" in
     env_cmd "$@"
     ;;
   doctor)
-    # Read-only unless the script is given --repair (and even then only as
-    # root). Do not source .env here: the doctor reads it as data.
-    doctor_sh="$APP_DIR/scripts/doctor.sh"
-    if [[ ! -f "$doctor_sh" ]]; then
-      doctor_sh="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/doctor.sh"
+    # Root must not execute a script the service user can write. The installed
+    # copy is root-owned and lives outside the checkout. --help may read the
+    # repo copy; every other invocation refuses an untrusted path.
+    root_doctor=/usr/local/lib/deal-onboarding/doctor.sh
+    repo_doctor="$APP_DIR/scripts/doctor.sh"
+    if [[ ! -f "$repo_doctor" ]]; then
+      repo_doctor="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/doctor.sh"
     fi
-    if [[ ! -f "$doctor_sh" ]]; then
-      echo "doctor script not found (expected $APP_DIR/scripts/doctor.sh — run deal-onboarding update)" >&2
+    doctor_sh=""
+    if script_root_owned "$root_doctor" && script_root_owned "$(dirname "$root_doctor")/lib/envfile.sh"; then
+      doctor_sh="$root_doctor"
+    elif script_root_owned "$repo_doctor" && script_root_owned "$(dirname "$repo_doctor")/lib/envfile.sh"; then
+      doctor_sh="$repo_doctor"
+    fi
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+      help_sh="${doctor_sh:-$repo_doctor}"
+      if [[ ! -f "$help_sh" || -L "$help_sh" ]]; then
+        echo "doctor script not found" >&2
+        exit 1
+      fi
+      exec bash "$help_sh" --help
+    fi
+    if [[ -z "$doctor_sh" ]]; then
+      echo "refusing to run doctor as root from a service-writable script; run deal-onboarding update to install /usr/local/lib/deal-onboarding/doctor.sh" >&2
       exit 1
+    fi
+    if [[ $EUID -ne 0 ]]; then
+      exec sudo "$doctor_sh" "$@"
     fi
     exec bash "$doctor_sh" "$@"
     ;;

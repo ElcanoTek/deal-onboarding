@@ -20,6 +20,39 @@ info() { printf '» %s\n' "$*"; }
 step() { printf '\n▸ %s\n' "$*"; }
 die() { printf '✗ %s\n' "$*" >&2; exit 1; }
 
+# Copy SRC onto DEST as a root-owned regular file. A symlink destination is
+# replaced; a symlink source is refused. GNU install would follow either.
+install_root_script() {
+  local src="$1" dest="$2" mode="${3:-0755}" dir tmp
+  if [[ -L "$src" || ! -f "$src" ]]; then
+    echo "refusing to install $dest: $src is missing or a symlink" >&2
+    return 1
+  fi
+  dir="$(dirname -- "$dest")"
+  if [[ -L "$dir" ]]; then
+    echo "refusing to install under symlink $dir" >&2
+    return 1
+  fi
+  if [[ ! -d "$dir" ]]; then
+    mkdir -p -- "$dir"
+    if [[ $EUID -eq 0 ]]; then
+      chown root:root -- "$dir"
+      chmod 0755 -- "$dir"
+    fi
+  fi
+  if [[ -L "$dir" || ! -d "$dir" ]]; then
+    echo "refusing to install under $dir" >&2
+    return 1
+  fi
+  tmp="$(mktemp "$dir/.install.XXXXXX")"
+  cp -f -- "$src" "$tmp"
+  if [[ $EUID -eq 0 ]]; then
+    chown root:root -- "$tmp"
+  fi
+  chmod "$mode" -- "$tmp"
+  mv -f -- "$tmp" "$dest"
+}
+
 prompt() {
   local envvar="$1" label="$2" default="${3:-}" answer=""
   if [[ -n "${!envvar:-}" ]]; then
@@ -197,7 +230,9 @@ chown -R "$APP_USER:$APP_USER" "$APP_DIR"
 
 step "Installing service + CLI"
 install -m 0644 "$APP_DIR/deploy/deal-onboarding.service" /etc/systemd/system/deal-onboarding.service
-install -m 0755 "$APP_DIR/deploy/deal-onboarding-cli" "$CLI_PATH"
+install_root_script "$APP_DIR/deploy/deal-onboarding-cli" "$CLI_PATH"
+install_root_script "$APP_DIR/scripts/doctor.sh" "$(dirname -- "$(dirname -- "$CLI_PATH")")/lib/deal-onboarding/doctor.sh"
+install_root_script "$APP_DIR/scripts/lib/envfile.sh" "$(dirname -- "$(dirname -- "$CLI_PATH")")/lib/deal-onboarding/lib/envfile.sh" 0644
 systemctl daemon-reload
 systemctl enable --now deal-onboarding.service
 
