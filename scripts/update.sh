@@ -39,7 +39,7 @@ install_root_script() {
     chown root:root -- "$tmp"
   fi
   chmod "$mode" -- "$tmp"
-  mv -f -- "$tmp" "$dest"
+  mv -Tf -- "$tmp" "$dest"
 }
 
 [[ $EUID -eq 0 ]] || { echo "run as root: sudo deal-onboarding update" >&2; exit 1; }

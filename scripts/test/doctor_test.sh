@@ -424,6 +424,24 @@ db = next(c for c in doc["checks"] if c["name"] == "database")
 assert db["status"] == "pass" and want in db["detail"], db
 PY
 
+echo "== trailing slash on the default data dir is the same directory"
+cat > "$APP/.env" <<EOF
+HOST=127.0.0.1
+PORT=8080
+DATA_DIR=$APP/data/
+DEAL_ONBOARDING_SESSION_SECRET=$SECRET
+DEAL_ONBOARDING_PUBLIC_URL=https://deals.example.com
+EOF
+chmod 600 "$APP/.env"
+out="$(doctor --json)" || true
+python3 - "$out" "$APP/data" <<'PY'
+import json, sys
+doc = json.loads(sys.argv[1])
+want = sys.argv[2]
+db = next(c for c in doc["checks"] if c["name"] == "database")
+assert db["status"] == "pass" and want in db["detail"] and f"{want}/" not in db["detail"], db
+PY
+
 echo "== health uses a concrete HOST"
 cat > "$APP/.env" <<EOF
 HOST=10.1.2.3
@@ -464,6 +482,23 @@ assert tls["status"] == "fail" and "expired" in tls["detail"], tls
 PY
 [[ "$(cat "$DOCTOR_OPENSSL_LOG")" == *"-connect 127.0.0.1:8443"* ]]
 [[ "$(cat "$DOCTOR_OPENSSL_LOG")" == *"-verify_hostname deals.example.com"* ]]
+
+echo "== bracketed IPv6 bind is probed as written"
+cat > "$APP/.env" <<EOF
+HOST=[::1]
+PORT=8080
+DATA_DIR=$APP/data
+DEAL_ONBOARDING_SESSION_SECRET=$SECRET
+DEAL_ONBOARDING_PUBLIC_URL=https://deals.example.com
+EOF
+chmod 600 "$APP/.env"
+out="$(doctor --json)" || true
+python3 - "$out" <<'PY'
+import json, sys
+doc = json.loads(sys.argv[1])
+health = next(c for c in doc["checks"] if c["name"] == "health")
+assert "http://[::1]:8080/health" in health["detail"], health
+PY
 
 echo "== active but disabled unit is a warning"
 cat > "$BIN/systemctl" <<'EOF'
@@ -557,6 +592,11 @@ install_root_script "$TMP/cli-src" "$TMP/prefix/bin/deal-onboarding"
 [[ ! -L "$TMP/prefix/bin/deal-onboarding" ]]
 [[ "$(cat "$TMP/prefix/bin/deal-onboarding")" == *"installed"* ]]
 [[ "$(cat "$TMP/prefix/bin/original")" == original ]]
+mkdir -p "$TMP/prefix/bin/realdir"
+ln -sfn "$TMP/prefix/bin/realdir" "$TMP/prefix/bin/deal-onboarding"
+install_root_script "$TMP/cli-src" "$TMP/prefix/bin/deal-onboarding"
+[[ ! -L "$TMP/prefix/bin/deal-onboarding" && -f "$TMP/prefix/bin/deal-onboarding" ]]
+[[ -z "$(find "$TMP/prefix/bin/realdir" -name '.install.*' -print -quit)" ]]
 
 echo "== cli does not execute a service-writable doctor"
 doctor_src="$REPO/scripts/doctor.sh"

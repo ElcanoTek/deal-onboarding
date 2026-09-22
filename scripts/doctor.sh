@@ -420,7 +420,13 @@ check_health() {
   case "$bind" in
     ""|0.0.0.0|"::"|"[::]"|"*") bind=127.0.0.1 ;;
   esac
-  [[ "$bind" =~ ^[A-Za-z0-9._:-]+$ ]] || bind=127.0.0.1
+  # A concrete bracketed IPv6 address (HOST=[::1]) is a valid bind. Only
+  # wildcards were rewritten above; do not collapse those brackets to loopback.
+  if [[ "$bind" =~ ^\[[0-9A-Fa-f:.]+\]$ ]]; then
+    :
+  elif [[ ! "$bind" =~ ^[A-Za-z0-9._:-]+$ ]]; then
+    bind=127.0.0.1
+  fi
   url="http://${bind}:${port}/health"
   code="$(curl -sS --connect-timeout 2 --max-time 5 -o /dev/null -w '%{http_code}' "$url" 2>/dev/null || true)"
   if [[ "$code" == "200" ]]; then
@@ -525,6 +531,9 @@ check_data() {
   if [[ "$data" != /* ]]; then
     data="$APP_DIR/${data#./}"
   fi
+  while [[ "$data" == */ && "$data" != "/" ]]; do
+    data="${data%/}"
+  done
   DISK_PATH="$data"
   if [[ -L "$data" || "$data" == *..* ]]; then
     add fail database "refusing $data (symlink or ..); the file store must be a real directory"

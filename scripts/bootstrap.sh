@@ -50,7 +50,7 @@ install_root_script() {
     chown root:root -- "$tmp"
   fi
   chmod "$mode" -- "$tmp"
-  mv -f -- "$tmp" "$dest"
+  mv -Tf -- "$tmp" "$dest"
 }
 
 prompt() {
@@ -107,7 +107,7 @@ say "Deal Onboarding bootstrap"
 say "Safe to re-run: existing secrets and data are preserved."
 
 step "Installing system dependencies"
-dnf install -y git curl jq golang nodejs npm openssl rsync >/dev/null
+dnf install -y git curl jq golang nodejs npm openssl rsync python3 >/dev/null
 
 if ! command -v go >/dev/null 2>&1; then
   die "go command not found in PATH"
