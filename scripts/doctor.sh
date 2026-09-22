@@ -25,6 +25,7 @@ SRC_DIR="${DEAL_ONBOARDING_SRC_DIR:-/opt/deal-onboarding-src}"
 ENV_FILE="${DEAL_ONBOARDING_ENV_FILE:-$APP_DIR/.env}"
 APP_USER="${DEAL_ONBOARDING_APP_USER:-deal-onboarding}"
 SERVICE="${DEAL_ONBOARDING_SERVICE:-deal-onboarding.service}"
+UPDATE_CMD="deal-onboarding update"
 CADDYFILE="${DEAL_ONBOARDING_CADDYFILE:-/etc/caddy/Caddyfile}"
 OS_RELEASE="${DEAL_ONBOARDING_OS_RELEASE:-/etc/os-release}"
 FEDORA_FEED="https://fedoraproject.org/releases.json"
@@ -170,7 +171,7 @@ sys.stdout.write("\n")
     printf 'Doctor: %d pass, %d warn, %d fail (%d repaired).\n' \
       "$n_pass" "$n_warn" "$n_fail" "$n_fixed"
   else
-    printf 'Doctor: %d pass, %d warn, %d fail. Read-only; nothing was changed.\n' \
+    printf 'Doctor: %d pass, %d warn, %d fail. Read-only; the checkout was not changed.\n' \
       "$n_pass" "$n_warn" "$n_fail"
   fi
 }
@@ -435,27 +436,61 @@ check_updates() {
   fi
 }
 
+# reboot_hint runs a needs-restarting probe. Returns 0 and records the check
+# when the command itself worked (exit 0 = no reboot, exit 1 = reboot).
+# Returns 1 when the command is missing or failed, so the caller can try
+# the next probe. Fedora 44 boxes often have no needs-restarting binary;
+# `dnf needs-restarting -r` is the dnf5 plugin, and the kernel list is last.
+reboot_hint() {
+  local rc=0 out
+  set +e
+  out="$(timeout 20 "$@" 2>&1)"
+  rc=$?
+  set -e
+  if [[ "$rc" -eq 0 ]]; then
+    add pass reboot "no reboot required"
+    return 0
+  fi
+  if [[ "$rc" -eq 1 ]]; then
+    case "$out" in
+      *[Uu]nknown*command*|*[Nn]o\ such*|*not\ a\ valid*|*No\ such\ command*|*[Ee]rror:*)
+        return 1
+        ;;
+    esac
+    add warn reboot "reboot required to finish updates; doctor does not reboot"
+    return 0
+  fi
+  return 1
+}
+
 check_reboot() {
-  local rc=0
-  if have needs-restarting; then
-    set +e
-    timeout 20 needs-restarting -r >/dev/null 2>&1
-    rc=$?
-    set -e
-    if [[ "$rc" -eq 0 ]]; then
-      add pass reboot "no reboot required"
-    elif [[ "$rc" -eq 1 ]]; then
-      add warn reboot "reboot required to finish updates; doctor does not reboot"
-    else
-      add warn reboot "needs-restarting exited $rc"
-    fi
+  local line installed running
+  if have needs-restarting && reboot_hint needs-restarting -r; then
     return
+  fi
+  if have dnf && reboot_hint dnf needs-restarting -r; then
+    return
+  fi
+  if have rpm; then
+    # Newest installed kernel by install time. `uname -r` is that NVR
+    # without the kernel- prefix (pages/scripts/doctor.sh uses the same fact).
+    line="$(rpm -q kernel --last 2>/dev/null | awk 'NR==1 {print $1}' || true)"
+    if [[ "$line" == kernel-* ]]; then
+      installed="${line#kernel-}"
+      running="$(uname -r)"
+      if [[ "$installed" == "$running" ]]; then
+        add pass reboot "running kernel matches the newest installed"
+      else
+        add warn reboot "reboot pending: running kernel $running, installed $installed"
+      fi
+      return
+    fi
   fi
   if [[ -e /run/reboot-required || -e /var/run/reboot-required ]]; then
     add warn reboot "reboot required (/run/reboot-required); doctor does not reboot"
-  else
-    add warn reboot "needs-restarting is not installed; reboot state was not confirmed"
+    return
   fi
+  add warn reboot "could not determine whether a reboot is required"
 }
 
 check_fedora() {
@@ -505,7 +540,7 @@ print(max(nums))' 2>/dev/null || true)"
 gitc() { git -c "safe.directory=$SRC_DIR" -C "$SRC_DIR" "$@"; }
 
 check_git() {
-  local dirty branch counts behind ahead
+  local dirty branch counts behind ahead fetch_rc
   if [[ ! -d "$SRC_DIR/.git" ]]; then
     add warn git-clean "no git checkout at $SRC_DIR (deal-onboarding update needs it)"
     add warn git-branch "no git checkout at $SRC_DIR"
@@ -526,24 +561,34 @@ check_git() {
   else
     add warn git-branch "detached HEAD at $SRC_DIR, not main"
   fi
-  if ! gitc rev-parse --verify --quiet refs/remotes/origin/main >/dev/null 2>&1; then
-    add warn git-upstream "no origin/main ref at $SRC_DIR; doctor does not fetch"
+  # A local origin/main can be months stale. Fetch the branch tip only
+  # (FETCH_HEAD); do not merge or pull. Any failure is "could not reach
+  # origin" rather than a false "level".
+  fetch_rc=0
+  GIT_TERMINAL_PROMPT=0 \
+    timeout 10 git -c "safe.directory=${SRC_DIR}" -C "$SRC_DIR" fetch --quiet origin main >/dev/null 2>&1 || fetch_rc=$?
+  if [[ "$fetch_rc" -ne 0 ]] || ! gitc rev-parse --verify --quiet FETCH_HEAD >/dev/null 2>&1; then
+    add warn git-upstream "could not reach origin"
     return
   fi
-  counts="$(gitc rev-list --left-right --count origin/main...HEAD 2>/dev/null || true)"
+  counts="$(gitc rev-list --left-right --count FETCH_HEAD...HEAD 2>/dev/null || true)"
   counts="${counts//$'\t'/ }"
   # shellcheck disable=SC2086
   read -r behind ahead <<<"$counts"
   if [[ ! "$behind" =~ ^[0-9]+$ || ! "$ahead" =~ ^[0-9]+$ ]]; then
-    add warn git-upstream "cannot compare HEAD to origin/main"
+    add warn git-upstream "could not reach origin"
     return
   fi
   if [[ "$behind" -eq 0 && "$ahead" -eq 0 ]]; then
-    add pass git-upstream "level with the last fetched origin/main (doctor does not fetch)"
+    add pass git-upstream "level with origin/main"
   elif [[ "$behind" -gt 0 && "$ahead" -eq 0 ]]; then
-    add warn git-upstream "$behind commit(s) behind origin/main; deal-onboarding update pulls. Doctor does not."
+    if [[ "$behind" -eq 1 ]]; then
+      add warn git-upstream "1 commit behind — $UPDATE_CMD"
+    else
+      add warn git-upstream "$behind commits behind — $UPDATE_CMD"
+    fi
   elif [[ "$ahead" -gt 0 && "$behind" -eq 0 ]]; then
-    add warn git-upstream "$ahead commit(s) ahead of origin/main"
+    add warn git-upstream "$ahead commits ahead of origin/main"
   else
     add warn git-upstream "diverged from origin/main ($behind behind, $ahead ahead)"
   fi
