@@ -315,6 +315,19 @@ case "$cmd" in
     # prints .env with secrets redacted.
     env_cmd "$@"
     ;;
+  doctor)
+    # Read-only unless the script is given --repair (and even then only as
+    # root). Do not source .env here: the doctor reads it as data.
+    doctor_sh="$APP_DIR/scripts/doctor.sh"
+    if [[ ! -f "$doctor_sh" ]]; then
+      doctor_sh="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/doctor.sh"
+    fi
+    if [[ ! -f "$doctor_sh" ]]; then
+      echo "doctor script not found (expected $APP_DIR/scripts/doctor.sh — run deal-onboarding update)" >&2
+      exit 1
+    fi
+    exec bash "$doctor_sh" "$@"
+    ;;
   help|-h|--help|"")
     cat <<'EOF'
 deal-onboarding - Deal Onboarding operator CLI
@@ -338,6 +351,12 @@ CONFIG
                                              cleanly (run before 'deal-onboarding
                                              restart' if a recent edit might
                                              have changed perms or syntax)
+
+DIAGNOSIS
+  deal-onboarding doctor [--check] [--json] read-only box check (unit, env,
+                                             /health, TLS, disk, updates, git)
+  sudo deal-onboarding doctor --repair      fix env mode/owner and start an
+                                             inactive deal-onboarding.service
 
 SERVICE CONTROL
   deal-onboarding start | stop | restart            control deal-onboarding.service

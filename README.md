@@ -78,6 +78,28 @@ is the canonical spec for that seam and the invariants around it.
 
 ## Quick start
 
+### Install on a server
+
+On a Fedora server with curl and root access, install directly from this
+public repository — no GitHub account or deploy key needed:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ElcanoTek/deal-onboarding/main/install.sh | sudo bash
+```
+
+The installer clones `main` to `/opt/deal-onboarding-src` and runs
+`scripts/bootstrap.sh`, which asks for the hostname, builds the app, and
+installs the `deal-onboarding` operator command. Then:
+
+```bash
+deal-onboarding doctor          # read-only box check; add --json for a machine report
+sudo deal-onboarding doctor --repair
+deal-onboarding env edit        # set RUNNER_BASE_URL / RUNNER_API_KEY, OPENROUTER_API_KEY
+deal-onboarding update          # git pull + rebuild + restart
+```
+
+### Develop locally
+
 Requires Go 1.26+ and Node 22.12+, 24.x, or >=26.
 
 ```bash
@@ -153,6 +175,13 @@ node scripts/check-fleet-contract.mjs /path/to/fleet [/path/to/bundle]
 Single host, Fedora/RHEL-family:
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/ElcanoTek/deal-onboarding/main/install.sh | sudo bash
+```
+
+That is the same as cloning `main` to `/opt/deal-onboarding-src` and running
+`scripts/bootstrap.sh` yourself:
+
+```bash
 sudo dnf install -y git
 sudo git clone https://github.com/ElcanoTek/deal-onboarding.git /opt/deal-onboarding-src
 sudo bash /opt/deal-onboarding-src/scripts/bootstrap.sh
@@ -167,6 +196,7 @@ users, and optionally fronts the app with Caddy (Let's Encrypt or
 deal-onboarding user add alice@example.com
 deal-onboarding env edit        # set RUNNER_BASE_URL / RUNNER_API_KEY, OPENROUTER_API_KEY
 deal-onboarding env check
+deal-onboarding doctor
 deal-onboarding restart
 deal-onboarding logs
 deal-onboarding update          # git pull + rebuild + restart

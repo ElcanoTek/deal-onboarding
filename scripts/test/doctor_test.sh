@@ -1,0 +1,262 @@
+#!/usr/bin/env bash
+# SPDX-License-Identifier: BUSL-1.1
+# Copyright (c) 2026 ElcanoTek, Inc.
+# scripts/test/doctor_test.sh — deal-onboarding doctor, no root and no host mutation.
+set -euo pipefail
+
+REPO="$(cd "$(dirname "$0")/../.." && pwd)"
+ROOT="${TMPDIR:-/tmp}"
+avail="$(df -Pk "$ROOT" | awk 'END {print $4}')"
+if [[ ! "$avail" =~ ^[0-9]+$ || "$avail" -lt 1048576 ]]; then
+  ROOT="$HOME"
+fi
+TMP="$(mktemp -d "$ROOT/deal-onboarding-doctor.XXXXXX")"
+trap 'rm -rf "$TMP"' EXIT
+
+SECRET='SUPER_SECRET_SENTINEL_VALUE_1234567890'
+ORKEY='sk-or-v1-DO_NOT_PRINT_THIS_OPENROUTER_KEY'
+RUNKEY='runner-key-DO_NOT_PRINT'
+APP_USER="$(id -un)"
+BIN="$TMP/bin"
+APP="$TMP/app"
+SRC="$TMP/src"
+LOG="$TMP/systemctl.log"
+mkdir -p "$BIN" "$APP/data" "$SRC"
+
+git -C "$SRC" init -q -b main
+git -C "$SRC" config user.email t@example.com
+git -C "$SRC" config user.name t
+printf 'hi\n' > "$SRC/README"
+git -C "$SRC" add README
+git -C "$SRC" commit -q -m init
+git -C "$SRC" update-ref refs/remotes/origin/main HEAD
+
+write_env() {
+  cat > "$APP/.env" <<EOF
+HOST=127.0.0.1
+PORT=8080
+DATA_DIR=$APP/data
+DEAL_ONBOARDING_SESSION_SECRET=$SECRET
+DEAL_ONBOARDING_PUBLIC_URL=https://deals.example.com
+OPENROUTER_API_KEY=$ORKEY
+RUNNER_BASE_URL=https://fleet.example.com
+RUNNER_API_KEY=$RUNKEY
+EOF
+  chmod 600 "$APP/.env"
+  if getent group "$APP_USER" >/dev/null 2>&1; then
+    chgrp "$APP_USER" "$APP/.env" 2>/dev/null || true
+  fi
+}
+write_env
+
+cat > "$BIN/systemctl" <<'EOF'
+#!/usr/bin/env bash
+unit=""
+for a in "$@"; do
+  case "$a" in
+    *.service|*.target|*.timer) unit="$a" ;;
+  esac
+done
+case "$1" in
+  start)
+    printf '%s\n' "$unit" >> "${DOCTOR_STUB_LOG:?}"
+    exit 0
+    ;;
+  cat|is-active|is-enabled)
+    [[ "$unit" == "deal-onboarding.service" ]]
+    ;;
+  *) exit 1 ;;
+esac
+EOF
+
+cat > "$BIN/curl" <<'EOF'
+#!/usr/bin/env bash
+url="${*: -1}"
+case "$url" in
+  *releases.json*)
+    printf '%s\n' '[{"version":"44"},{"version":"45 Beta"},{"version":"43"}]'
+    ;;
+  *)
+    printf '200'
+    ;;
+esac
+EOF
+
+cat > "$BIN/dnf" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+
+cat > "$BIN/needs-restarting" <<'EOF'
+#!/usr/bin/env bash
+exit 0
+EOF
+
+cat > "$BIN/openssl" <<'EOF'
+#!/usr/bin/env bash
+if [[ "$*" == *x509* ]]; then
+  date -u -d '+90 days' '+notAfter=%b %e %H:%M:%S %Y GMT'
+fi
+exit 0
+EOF
+
+chmod 755 "$BIN"/*
+
+cat > "$TMP/os-release" <<'EOF'
+ID=fedora
+VERSION_ID=44
+EOF
+
+export PATH="$BIN:/usr/bin:/bin"
+export DOCTOR_STUB_LOG="$LOG"
+export DEAL_ONBOARDING_APP_DIR="$APP"
+export DEAL_ONBOARDING_SRC_DIR="$SRC"
+export DEAL_ONBOARDING_ENV_FILE="$APP/.env"
+export DEAL_ONBOARDING_APP_USER="$APP_USER"
+export DEAL_ONBOARDING_OS_RELEASE="$TMP/os-release"
+
+doctor() { bash "$REPO/scripts/doctor.sh" "$@"; }
+
+assert_clean() {
+  local out="$1"
+  if [[ "$out" == *"$SECRET"* || "$out" == *"$ORKEY"* || "$out" == *"$RUNKEY"* ]]; then
+    printf 'secret value leaked:\n%s\n' "$out" >&2
+    exit 1
+  fi
+}
+
+echo "== help"
+help_out="$(doctor --help)"
+[[ "$help_out" == *"read-only"* && "$help_out" == *"--repair"* && "$help_out" == *"--json"* ]]
+
+echo "== bad flags"
+set +e
+doctor --nope >/dev/null 2>"$TMP/bad.err"
+rc=$?
+set -e
+[[ "$rc" -eq 2 ]]
+set +e
+doctor --check --repair >/dev/null 2>"$TMP/both.err"
+rc=$?
+set -e
+[[ "$rc" -eq 2 ]]
+[[ "$(cat "$TMP/both.err")" == *"not allowed"* ]]
+
+echo "== happy path"
+out="$(doctor --check --json)"
+assert_clean "$out"
+python3 - "$out" <<'PY'
+import json, sys
+doc = json.loads(sys.argv[1])
+assert doc["ok"] is True, doc
+want = {
+    "install": "pass",
+    "env-perms": "pass",
+    "env-keys": "pass",
+    "service": "pass",
+    "caddy": "warn",
+    "health": "pass",
+    "tls": "pass",
+    "database": "pass",
+    "updates": "pass",
+    "reboot": "pass",
+    "fedora": "pass",
+    "git-clean": "pass",
+    "git-branch": "pass",
+    "git-upstream": "pass",
+}
+got = {c["name"]: c["status"] for c in doc["checks"]}
+for name, status in want.items():
+    if got.get(name) != status:
+        raise SystemExit(f"{name}: want {status}, got {got.get(name)!r}\n{doc}")
+disk = got.get("disk")
+if disk not in ("pass", "warn"):
+    raise SystemExit(f"disk: {disk}")
+PY
+[[ ! -s "$LOG" ]]
+
+echo "== cli dispatch"
+cli_out="$(APP_DIR="$REPO" bash "$REPO/deploy/deal-onboarding-cli" doctor --help)"
+[[ "$cli_out" == *"read-only"* ]]
+
+echo "== repair refused when not root"
+chmod 644 "$APP/.env"
+set +e
+doctor --repair --json >"$TMP/repair.out" 2>"$TMP/repair.err"
+rc=$?
+set -e
+[[ "$rc" -eq 1 ]]
+[[ "$(cat "$TMP/repair.err")" == *"sudo deal-onboarding doctor --repair"* ]]
+[[ "$(stat -c '%a' "$APP/.env")" == "644" ]]
+[[ ! -s "$LOG" ]]
+assert_clean "$(cat "$TMP/repair.out" "$TMP/repair.err")"
+chmod 600 "$APP/.env"
+
+echo "== symlink env is not read"
+printf 'DEAL_ONBOARDING_SESSION_SECRET=%s\n' "$SECRET" > "$TMP/real.env"
+ln -s "$TMP/real.env" "$TMP/link.env"
+set +e
+out="$(DEAL_ONBOARDING_ENV_FILE="$TMP/link.env" doctor --json)"
+set -e
+assert_clean "$out"
+python3 - "$out" <<'PY'
+import json, sys
+doc = json.loads(sys.argv[1])
+env = next(c for c in doc["checks"] if c["name"] == "env-file")
+assert env["status"] == "fail", env
+assert "symlink" in env["detail"]
+PY
+
+echo "== missing session secret fails without echoing it"
+cat > "$APP/.env" <<EOF
+PORT=8080
+DATA_DIR=$APP/data
+DEAL_ONBOARDING_SESSION_SECRET=short
+DEAL_ONBOARDING_PUBLIC_URL=https://deals.example.com
+EOF
+chmod 600 "$APP/.env"
+set +e
+out="$(doctor --json)"
+rc=$?
+set -e
+[[ "$rc" -eq 1 ]]
+assert_clean "$out"
+python3 - "$out" <<'PY'
+import json, sys
+doc = json.loads(sys.argv[1])
+assert doc["ok"] is False
+keys = next(c for c in doc["checks"] if c["name"] == "env-keys")
+assert keys["status"] == "fail"
+assert "DEAL_ONBOARDING_SESSION_SECRET" in keys["detail"]
+assert "short" not in keys["detail"]
+PY
+
+echo "== dirty checkout is a warning, not a pull"
+write_env
+printf 'x\n' > "$SRC/dirty"
+out="$(doctor --json)" || true
+assert_clean "$out"
+python3 - "$out" <<'PY'
+import json, sys
+doc = json.loads(sys.argv[1])
+git = next(c for c in doc["checks"] if c["name"] == "git-clean")
+assert git["status"] == "warn", git
+assert "dirty" in git["detail"]
+PY
+
+echo "== install.sh --help"
+install_help="$(bash "$REPO/install.sh" --help)"
+[[ "$install_help" == *"/opt/deal-onboarding-src"* ]]
+set +e
+bash "$REPO/install.sh" --nope >/dev/null 2>"$TMP/install.err"
+rc=$?
+set -e
+[[ "$rc" -eq 2 ]]
+set +e
+bash "$REPO/install.sh" >/dev/null 2>"$TMP/install-root.err"
+rc=$?
+set -e
+[[ "$rc" -eq 1 ]]
+[[ "$(cat "$TMP/install-root.err")" == *"sudo"* ]]
+
+echo "ok"
