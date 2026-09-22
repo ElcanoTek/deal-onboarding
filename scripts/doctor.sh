@@ -530,16 +530,13 @@ check_data() {
     add fail database "refusing $data (symlink or ..); the file store must be a real directory"
     return
   fi
-  if ! data_dir_claimable "$data"; then
-    add fail database "refusing DATA_DIR $data — not $APP_DIR/data and not an existing directory owned by $APP_USER under root-owned parents"
-    return
-  fi
   if [[ ! -d "$data" ]]; then
     if [[ -e "$data" ]]; then
       add fail database "$data exists but is not a directory"
       return
     fi
-    if [[ "$REPAIR" == 1 && "$data" == "${APP_DIR%/}/data" ]] && priv_mkdir "$data" "$APP_USER" "$APP_USER" 750; then
+    # Create only the default directory, and only when every parent is trusted.
+    if [[ "$REPAIR" == 1 && "$data" == "${APP_DIR%/}/data" ]] && data_dir_claimable "$data" && priv_mkdir "$data" "$APP_USER" "$APP_USER" 750; then
       n_fixed=$((n_fixed + 1))
       add pass database "repaired; created file store $data"
       return
@@ -547,6 +544,9 @@ check_data() {
     add fail database "$data is missing — sudo install -d -o $APP_USER -g $APP_USER -m 0750 $data"
     return
   fi
+  # Read-only: a real directory the service user owns and can write is enough.
+  # A nested store under the service-owned app tree is valid. Claimability
+  # only decides whether --repair may chown the path.
   if service_can_write "$data"; then
     writable=1
   fi
@@ -556,9 +556,13 @@ check_data() {
     add pass database "file store at $data is writable by $APP_USER (no database server)"
     return
   fi
-  if [[ "$REPAIR" == 1 ]] && priv_chown "$data" "$APP_USER" "$APP_USER" 750; then
+  if [[ "$REPAIR" == 1 ]] && data_dir_claimable "$data" && priv_chown "$data" "$APP_USER" "$APP_USER" 750; then
     n_fixed=$((n_fixed + 1))
     add pass database "repaired; $data is $APP_USER:$APP_USER mode 750"
+    return
+  fi
+  if ! data_dir_claimable "$data"; then
+    add fail database "$data is not a writable $APP_USER directory, and repair will not chown it"
     return
   fi
   add fail database "$data is not writable by $APP_USER ($owner mode $mode)"
@@ -716,6 +720,26 @@ gitc() {
   git -C "$SRC_DIR" "$@"
 }
 
+# Keep core.sshCommand (deploy key and known_hosts) and only add timeouts.
+# GIT_SSH_COMMAND replaces that command entirely, so it must include it.
+git_ssh_command() {
+  local base
+  base="$(gitc config --get core.sshCommand 2>/dev/null || true)"
+  base="${base//$'\n'/ }"
+  base="${base#"${base%%[![:space:]]*}"}"
+  base="${base%"${base##*[![:space:]]}"}"
+  [[ -n "$base" ]] || base="ssh"
+  case "$base" in
+    *BatchMode*) ;;
+    *) base="$base -o BatchMode=yes" ;;
+  esac
+  case "$base" in
+    *ConnectTimeout*) ;;
+    *) base="$base -o ConnectTimeout=5" ;;
+  esac
+  printf '%s' "$base"
+}
+
 gitc_timeout() {
   local secs="$1"
   shift
@@ -723,7 +747,14 @@ gitc_timeout() {
   if [[ $EUID -eq 0 ]]; then
     owner="$(stat -c '%U' "$SRC_DIR" 2>/dev/null || true)"
     if [[ -n "$owner" && "$owner" != root ]]; then
-      timeout "$secs" runuser -u "$owner" -- git -C "$SRC_DIR" "$@"
+      if [[ -n "${GIT_SSH_COMMAND:-}" ]]; then
+        timeout "$secs" runuser -u "$owner" -- env \
+          "GIT_TERMINAL_PROMPT=${GIT_TERMINAL_PROMPT:-0}" \
+          "GIT_SSH_COMMAND=${GIT_SSH_COMMAND}" \
+          git -C "$SRC_DIR" "$@"
+      else
+        timeout "$secs" runuser -u "$owner" -- git -C "$SRC_DIR" "$@"
+      fi
       return
     fi
   fi
@@ -758,7 +789,7 @@ check_git() {
   # ls-remote does not write FETCH_HEAD or remote-tracking refs, so --check
   # cannot change the checkout. A missing object locally still reports drift.
   fetch_rc=0
-  remote_sha="$(GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND='ssh -o BatchMode=yes -o ConnectTimeout=5' gitc_timeout 10 ls-remote origin refs/heads/main 2>/dev/null)" || fetch_rc=$?
+  remote_sha="$(GIT_TERMINAL_PROMPT=0 GIT_SSH_COMMAND="$(git_ssh_command)" gitc_timeout 10 ls-remote origin refs/heads/main 2>/dev/null)" || fetch_rc=$?
   remote_sha="${remote_sha%%$'\t'*}"
   remote_sha="${remote_sha%% *}"
   if [[ "$fetch_rc" -ne 0 || ! "$remote_sha" =~ ^[0-9a-f]{40}$ ]]; then

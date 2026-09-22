@@ -333,30 +333,48 @@ case "$cmd" in
     env_cmd "$@"
     ;;
   doctor)
-    # Root must not execute a script the service user can write. The installed
-    # copy is root-owned and lives outside the checkout. --help may read the
-    # repo copy; every other invocation refuses an untrusted path.
-    root_doctor=/usr/local/lib/deal-onboarding/doctor.sh
+    # Root must not execute a script the service user can write, including
+    # --help. The trusted copy is installed next to this CLI
+    # (CLI_PATH /usr/bin/deal-onboarding -> /usr/lib/deal-onboarding/doctor.sh).
+    self="${BASH_SOURCE[0]}"
+    case "$self" in
+      /*) ;;
+      *) self="$PWD/$self" ;;
+    esac
+    prefix="$(dirname -- "$(dirname -- "$self")")"
     repo_doctor="$APP_DIR/scripts/doctor.sh"
     if [[ ! -f "$repo_doctor" ]]; then
       repo_doctor="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/scripts/doctor.sh"
     fi
     doctor_sh=""
-    if script_root_owned "$root_doctor" && script_root_owned "$(dirname "$root_doctor")/lib/envfile.sh"; then
-      doctor_sh="$root_doctor"
-    elif script_root_owned "$repo_doctor" && script_root_owned "$(dirname "$repo_doctor")/lib/envfile.sh"; then
-      doctor_sh="$repo_doctor"
-    fi
-    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-      help_sh="${doctor_sh:-$repo_doctor}"
-      if [[ ! -f "$help_sh" || -L "$help_sh" ]]; then
-        echo "doctor script not found" >&2
-        exit 1
+    for candidate in "$prefix/lib/deal-onboarding/doctor.sh" /usr/local/lib/deal-onboarding/doctor.sh "$repo_doctor"; do
+      if script_root_owned "$candidate" && script_root_owned "$(dirname -- "$candidate")/lib/envfile.sh"; then
+        doctor_sh="$candidate"
+        break
       fi
-      exec bash "$help_sh" --help
+    done
+    if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+      if [[ -n "$doctor_sh" ]]; then
+        exec bash "$doctor_sh" --help
+      fi
+      if [[ $EUID -ne 0 && -f "$repo_doctor" && ! -L "$repo_doctor" ]]; then
+        exec bash "$repo_doctor" --help
+      fi
+      cat <<'EOF'
+deal-onboarding doctor — read-only box diagnosis (safe repairs only with --repair)
+
+  deal-onboarding doctor            inspect only; change nothing
+  deal-onboarding doctor --check    same as the default
+  deal-onboarding doctor --json     JSON report on stdout
+  sudo deal-onboarding doctor --repair
+                             fix env mode and start an inactive unit
+
+Help from the CLI; the checkout script was not executed.
+EOF
+      exit 0
     fi
     if [[ -z "$doctor_sh" ]]; then
-      echo "refusing to run doctor as root from a service-writable script; run deal-onboarding update to install /usr/local/lib/deal-onboarding/doctor.sh" >&2
+      echo "refusing to run doctor as root from a service-writable script; run deal-onboarding update to install the root-owned copy next to this command" >&2
       exit 1
     fi
     if [[ $EUID -ne 0 ]]; then

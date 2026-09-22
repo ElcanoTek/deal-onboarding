@@ -121,7 +121,7 @@ ID=fedora
 VERSION_ID=44
 EOF
 
-export PATH="$BIN:/usr/bin:/bin"
+export PATH="$BIN:/usr/sbin:/usr/bin:/sbin:/bin"
 export DOCTOR_STUB_LOG="$LOG"
 export DEAL_ONBOARDING_APP_DIR="$APP"
 export DEAL_ONBOARDING_SRC_DIR="$SRC"
@@ -403,6 +403,27 @@ assert db["status"] == "fail" and "/etc" in db["detail"], db
 assert "/etc" in disk["detail"], disk
 PY
 
+echo "== nested data dir under the service tree is accepted"
+mkdir -p "$APP/data/prod"
+chmod 750 "$APP/data/prod"
+cat > "$APP/.env" <<EOF
+HOST=127.0.0.1
+PORT=8080
+DATA_DIR=$APP/data/prod
+DEAL_ONBOARDING_SESSION_SECRET=$SECRET
+DEAL_ONBOARDING_PUBLIC_URL=https://deals.example.com
+EOF
+chmod 600 "$APP/.env"
+out="$(doctor --json)" || true
+assert_clean "$out"
+python3 - "$out" "$APP/data/prod" <<'PY'
+import json, sys
+doc = json.loads(sys.argv[1])
+want = sys.argv[2]
+db = next(c for c in doc["checks"] if c["name"] == "database")
+assert db["status"] == "pass" and want in db["detail"], db
+PY
+
 echo "== health uses a concrete HOST"
 cat > "$APP/.env" <<EOF
 HOST=10.1.2.3
@@ -537,7 +558,10 @@ install_root_script "$TMP/cli-src" "$TMP/prefix/bin/deal-onboarding"
 [[ "$(cat "$TMP/prefix/bin/deal-onboarding")" == *"installed"* ]]
 [[ "$(cat "$TMP/prefix/bin/original")" == original ]]
 
-echo "== cli does not sudo a service-writable doctor"
+echo "== cli does not execute a service-writable doctor"
+doctor_src="$REPO/scripts/doctor.sh"
+saved_mode="$(stat -c '%a' "$doctor_src")"
+chmod a+w "$doctor_src"
 mkdir -p "$TMP/sudo-bin"
 cat > "$TMP/sudo-bin/sudo" <<'EOF'
 #!/usr/bin/env bash
@@ -548,9 +572,16 @@ chmod 755 "$TMP/sudo-bin/sudo"
 set +e
 cli_out="$(PATH="$TMP/sudo-bin:/usr/bin:/bin" APP_DIR="$REPO" bash "$REPO/deploy/deal-onboarding-cli" doctor --check 2>&1)"
 rc=$?
+help_out="$(PATH="$TMP/sudo-bin:/usr/bin:/bin" APP_DIR="$REPO" bash "$REPO/deploy/deal-onboarding-cli" doctor --help 2>&1)"
+help_rc=$?
 set -e
+chmod "$saved_mode" "$doctor_src"
 [[ "$rc" -eq 1 ]]
 [[ "$cli_out" == *"service-writable"* ]]
 [[ "$cli_out" != *"sudo should not run"* ]]
+if [[ "$EUID" -eq 0 ]]; then
+  [[ "$help_rc" -eq 0 ]]
+  [[ "$help_out" == *"was not executed"* ]]
+fi
 
 echo "ok"
