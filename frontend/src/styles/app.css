@@ -7104,6 +7104,11 @@ details.mini-accordion[open] > summary {
   background: color-mix(in srgb, var(--color-surface-1) 96%, var(--color-primary));
 }
 
+/* Minimized: the panel stays mounted (the conversation survives) but must
+   actually leave the screen — `.assistant-dock { display: flex }` outranks
+   the browser's `[hidden] { display: none }`, so say it explicitly. */
+.assistant-dock[hidden] { display: none; }
+
 @media (prefers-reduced-motion: no-preference) {
   .assistant-dock.is-open { animation: assistant-dock-up 180ms ease-out; }
 }
